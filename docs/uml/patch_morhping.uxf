@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="14.2">
+  <zoom_level>10</zoom_level>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>220</x>
+      <y>330</y>
+      <w>130</w>
+      <h>280</h>
+    </coordinates>
+    <panel_attributes>  "mainlayer"
+    "sun"
+      "presentations"
+        "logic"
+          ver=1
+    "ship"
+      "properties"
+        "tag" = "player"
+      "presentations"
+        "audio"
+          ver=2
+        "logic"
+          ver=1
+
+halign=left</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>420</x>
+      <y>260</y>
+      <w>110</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>lw=2
+AudioEngine</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>300</x>
+      <y>30</y>
+      <w>130</w>
+      <h>190</h>
+    </coordinates>
+    <panel_attributes>  "background"
+    "music"
+      "presentations"
+        "audio"
+          ver=3
+  "mainlayer"
+    "ship"
+      "properties"
+        "tag" = "player"
+      "presentations"
+        "audio"
+          ver=1
+
+halign=left</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>620</x>
+      <y>330</y>
+      <w>130</w>
+      <h>280</h>
+    </coordinates>
+    <panel_attributes>  "mainlayer"
+    "sun"
+      "presentations"
+        "logic"
+          ver=1
+    "ship"
+      "properties"
+        "tag" = "player"
+      "presentations"
+        "audio"
+          ver=2
+        "logic"
+          ver=1
+
+halign=left</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>530</x>
+      <y>30</y>
+      <w>130</w>
+      <h>190</h>
+    </coordinates>
+    <panel_attributes>  "background"
+    "music"
+      "presentations"
+        "audio"
+          ver=3
+  "mainlayer"
+    "ship"
+      "properties"
+        "tag" = "player"
+      "presentations"
+        "audio"
+          ver=2
+
+halign=left</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>290</x>
+      <y>290</y>
+      <w>150</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+
+  1</panel_attributes>
+    <additional_attributes>130.0;10.0;10.0;40.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>520</x>
+      <y>290</y>
+      <w>160</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+3
+</panel_attributes>
+    <additional_attributes>140.0;40.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>470</x>
+      <y>130</y>
+      <w>30</w>
+      <h>150</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+
+2</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;130.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>420</x>
+      <y>120</y>
+      <w>130</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;.
+</panel_attributes>
+    <additional_attributes>110.0;20.0;10.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>420</x>
+      <y>180</y>
+      <w>50</w>
+      <h>100</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>30.0;80.0;30.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>700</x>
+      <y>290</y>
+      <w>130</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-</panel_attributes>
+    <additional_attributes>110.0;10.0;10.0;40.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>150</x>
+      <y>290</y>
+      <w>140</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-</panel_attributes>
+    <additional_attributes>120.0;40.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>400</x>
+      <y>360</y>
+      <w>190</w>
+      <h>200</h>
+    </coordinates>
+    <panel_attributes>Нужно ли в исходящий
+патч добавлять изменения,
+предназначенные только нам?
+--
+Патч не изменяем.
+--
+можем схлопнуть
+несколько патчей?
+--
+на усмотрение движков,
+но надо быть к этому готовым:
+если значение в патче есть,
+но оно такое же как и было,
+то считаем, что изменение
+произошло</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>720</x>
+      <y>30</y>
+      <w>210</w>
+      <h>150</h>
+    </coordinates>
+    <panel_attributes>Хочу плавную коррекцию
+к сетевым обновлениям. Как?
+--
+Interpolator/Extrapolator после
+физического движка.
+Физический движок принимает
+сетевые данные как есть, а
+интерполятор сглаживает данные
+после физического движка.</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>70</x>
+      <y>30</y>
+      <w>190</w>
+      <h>110</h>
+    </coordinates>
+    <panel_attributes>Нужно ли хранить всю
+модель или хватит наших
+данных плюс location плюс
+properties?
+--
+Может оставить
+на усмотрение движков?</panel_attributes>
+    <additional_attributes/>
+  </element>
+</diagram>

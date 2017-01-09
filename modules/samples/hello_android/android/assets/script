@@ -1,0 +1,97 @@
+
+scene = {}
+
+function len(obj)
+	if type(obj) == "number" then return error("Unable to get length of number") end
+ 	if type(obj) == "function" then return error("Unable to get length of function") end
+
+	if type(obj) == "nil" then return 0 end
+	if type(obj) == "string" then return strlen(obj) end
+	if type(obj) == "table" then
+		local count = 0
+		for _ in pairs(obj) do count = count + 1 end
+		return count
+	end
+	error("Unexpected type in function 'len'")
+end
+
+function init(cfg)
+	pisk.log("info", "init")
+	pisk.log("info", "==============")
+end
+
+function deinit()
+	pisk.log("info", "deinit")
+	pisk.log("info", "==============")
+end
+
+function on_update_location(location)
+	pisk.log("info", location)
+end
+
+function on_update_status(status)
+	pisk.log("info", status)
+end
+
+function on_update_error(err)
+	pisk.log("info", err)
+end
+
+function init(cfg)
+	pisk.log("info", "init")
+	pisk_geolocation2go.subscribe("update_location", "on_update_location")
+	pisk_geolocation2go.subscribe("update_status", "on_update_status")
+	pisk_geolocation2go.subscribe("update_error", "on_update_error")
+
+	pisk_geolocation2go.enable_provider("IP")
+	pisk_geolocation2go.enable_provider("PhoneCell")
+	pisk_geolocation2go.enable_provider("Sattelite")
+	pisk.log("info", "==============")
+end
+
+function deinit()
+	pisk.log("info", "deinit")
+	pisk.log("info", "==============")
+end
+
+function patch_scene(patch)
+	if type(patch["events"]) ~= "table" then return end
+	for i = 1, len(patch["events"]), 1 do
+		if patch["events"][i]["source"] == "audio" then
+			local update = {}
+			update["children"] = {}
+			update["children"]["root"] = {}
+			update["children"]["root"]["properties"] = {}
+			update["children"]["root"]["properties"]["state"] = {}
+			if scene["children"]["root"]["properties"]["state"] == "purring" then
+				update["children"]["root"]["properties"]["state"] = "meow"
+			else
+				update["children"]["root"]["properties"]["state"] = "purring"
+			end
+			scene["children"]["root"]["properties"]["state"] = update["children"]["root"]["properties"]["state"]
+			pisk.push_changes(update)
+		end
+	end
+end
+
+function update()
+	if len(scene) == 0 then
+		local intro_scene = {}
+		intro_scene["children"] = {}
+		intro_scene["children"]["root"] = {}
+		intro_scene["children"]["root"]["properties"] = {}
+		intro_scene["children"]["root"]["properties"]["id"] = "root"
+		intro_scene["children"]["root"]["properties"]["state"] = "purring"
+		intro_scene["children"]["root"]["presentations"] = {}
+		intro_scene["children"]["root"]["presentations"]["audio"] = {}
+		intro_scene["children"]["root"]["presentations"]["audio"]["states"] = {}
+		intro_scene["children"]["root"]["presentations"]["audio"]["states"]["purring"] = {}
+		intro_scene["children"]["root"]["presentations"]["audio"]["states"]["purring"]["res_id"] = "story/purring"
+		intro_scene["children"]["root"]["presentations"]["audio"]["states"]["meow"] = {}
+		intro_scene["children"]["root"]["presentations"]["audio"]["states"]["meow"]["res_id"] = "story/meow"
+		scene = intro_scene
+		pisk.push_changes(intro_scene)
+		return
+	end
+end
+

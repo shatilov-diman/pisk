@@ -1,0 +1,14 @@
+syntax: glob
+*/msvc/obj/*
+bin/*
+*/lib/*
+obj/*
+libs/*
+msvc/Debug/*
+msvc/Release/*
+msvc/UnitTestsDebug/*
+build/*
+apk/*
+android/*
+*.swp
+

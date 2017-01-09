@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="14.1">
+  <zoom_level>8</zoom_level>
+  <element>
+    <id>UMLPackage</id>
+    <coordinates>
+      <x>352</x>
+      <y>248</y>
+      <w>144</w>
+      <h>80</h>
+    </coordinates>
+    <panel_attributes>system
+--
+Logger
+ResourcesManager
+EventsManager
+EngineTask
+halign=left</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLPackage</id>
+    <coordinates>
+      <x>104</x>
+      <y>176</y>
+      <w>144</w>
+      <h>48</h>
+    </coordinates>
+    <panel_attributes>loader:audio
+halign=left</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLPackage</id>
+    <coordinates>
+      <x>272</x>
+      <y>176</y>
+      <w>144</w>
+      <h>48</h>
+    </coordinates>
+    <panel_attributes>service:http
+halign=left</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLPackage</id>
+    <coordinates>
+      <x>520</x>
+      <y>248</y>
+      <w>144</w>
+      <h>80</h>
+    </coordinates>
+    <panel_attributes>os
+--
+MainLoop
+WindowsManager
+SysEventDispatcher
+halign=left</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLPackage</id>
+    <coordinates>
+      <x>440</x>
+      <y>176</y>
+      <w>144</w>
+      <h>48</h>
+    </coordinates>
+    <panel_attributes>service:geolocation
+halign=left</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLPackage</id>
+    <coordinates>
+      <x>608</x>
+      <y>176</y>
+      <w>144</w>
+      <h>48</h>
+    </coordinates>
+    <panel_attributes>loader:lua
+--
+halign=left</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLPackage</id>
+    <coordinates>
+      <x>776</x>
+      <y>176</y>
+      <w>144</w>
+      <h>48</h>
+    </coordinates>
+    <panel_attributes>service:script
+halign=left</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLPackage</id>
+    <coordinates>
+      <x>424</x>
+      <y>344</y>
+      <w>144</w>
+      <h>96</h>
+    </coordinates>
+    <panel_attributes>base
+--
+Application
+  ComponentsLoader
+  ComponentsManager
+ModulesLoader
+Utils
+halign=left</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>64</x>
+      <y>232</y>
+      <w>1072</w>
+      <h>24</h>
+    </coordinates>
+    <panel_attributes>lt=-</panel_attributes>
+    <additional_attributes>10.0;10.0;1320.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>72</x>
+      <y>328</y>
+      <w>1064</w>
+      <h>24</h>
+    </coordinates>
+    <panel_attributes>lt=-</panel_attributes>
+    <additional_attributes>10.0;10.0;1310.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLPackage</id>
+    <coordinates>
+      <x>104</x>
+      <y>80</y>
+      <w>144</w>
+      <h>48</h>
+    </coordinates>
+    <panel_attributes>audio
+--
+AudioEngine
+halign=left</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLPackage</id>
+    <coordinates>
+      <x>272</x>
+      <y>80</y>
+      <w>144</w>
+      <h>48</h>
+    </coordinates>
+    <panel_attributes>physics
+--
+PhysicsEngine
+halign=left</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLPackage</id>
+    <coordinates>
+      <x>440</x>
+      <y>80</y>
+      <w>144</w>
+      <h>48</h>
+    </coordinates>
+    <panel_attributes>graphics
+--
+GraphicsEngine
+halign=left</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLPackage</id>
+    <coordinates>
+      <x>608</x>
+      <y>80</y>
+      <w>144</w>
+      <h>48</h>
+    </coordinates>
+    <panel_attributes>io
+--
+Mouse
+Keyboard
+halign=left</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLPackage</id>
+    <coordinates>
+      <x>776</x>
+      <y>80</y>
+      <w>144</w>
+      <h>48</h>
+    </coordinates>
+    <panel_attributes>script
+--
+ScriptEngine</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLPackage</id>
+    <coordinates>
+      <x>944</x>
+      <y>80</y>
+      <w>144</w>
+      <h>48</h>
+    </coordinates>
+    <panel_attributes>custom
+--
+UserDevice
+UserService
+halign=left</panel_attributes>
+    <additional_attributes/>
+  </element>
+</diagram>

@@ -1,0 +1,348 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="14.1">
+  <zoom_level>10</zoom_level>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>390</x>
+      <y>230</y>
+      <w>140</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>/ScriptResource/
+--
+/+load: Script/
+transparency=0</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLPackage</id>
+    <coordinates>
+      <x>620</x>
+      <y>180</y>
+      <w>220</w>
+      <h>240</h>
+    </coordinates>
+    <panel_attributes>loader:lua
+--
+transparency=0
+bg=#65cc65
+layer=-1</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLPackage</id>
+    <coordinates>
+      <x>50</x>
+      <y>50</y>
+      <w>510</w>
+      <h>370</h>
+    </coordinates>
+    <panel_attributes>engine:script
+--
+transparency=0
+bg=#ffff44
+layer=-1</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>650</x>
+      <y>90</y>
+      <w>150</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>ResourceManager
+valign=center
+transparency=0</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLPackage</id>
+    <coordinates>
+      <x>620</x>
+      <y>50</y>
+      <w>220</w>
+      <h>110</h>
+    </coordinates>
+    <panel_attributes>system
+--
+bg=#6565ff
+transparency=0
+layer=-1</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>80</x>
+      <y>90</y>
+      <w>130</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>ScriptEngine
+valign=center
+transparency=0</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>650</x>
+      <y>230</y>
+      <w>150</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>ScriptResource
+valign=center
+transparency=0</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>520</x>
+      <y>240</y>
+      <w>150</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;130.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>790</x>
+      <y>110</y>
+      <w>150</w>
+      <h>160</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;create&gt;&gt;
+lt=&lt;.</panel_attributes>
+    <additional_attributes>10.0;140.0;80.0;140.0;80.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLPackage</id>
+    <coordinates>
+      <x>940</x>
+      <y>180</y>
+      <w>220</w>
+      <h>240</h>
+    </coordinates>
+    <panel_attributes>loader:dll
+--
+transparency=70
+bg=#65cc65
+fg=gray
+layer=-1</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>790</x>
+      <y>110</y>
+      <w>320</w>
+      <h>140</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;create&gt;&gt;
+lt=&lt;.
+fg=gray</panel_attributes>
+    <additional_attributes>250.0;120.0;250.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>970</x>
+      <y>230</y>
+      <w>150</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>ScriptResource
+valign=center
+transparency=70
+fg=gray</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>310</x>
+      <y>210</y>
+      <w>100</w>
+      <h>70</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;uses&gt;&gt;
+lt=&lt;.</panel_attributes>
+    <additional_attributes>80.0;50.0;10.0;50.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>290</x>
+      <y>100</y>
+      <w>380</w>
+      <h>80</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;uses&gt;&gt;
+lt=&lt;.</panel_attributes>
+    <additional_attributes>360.0;20.0;10.0;20.0;10.0;60.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>390</x>
+      <y>330</y>
+      <w>140</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>/Script/
+--
+/+execute/
+transparency=0</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>270</x>
+      <y>210</y>
+      <w>140</w>
+      <h>180</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
+m1=1
+m2=*</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;150.0;120.0;150.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>650</x>
+      <y>330</y>
+      <w>140</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>/Script/
+--
+/+execute/
+transparency=0</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>520</x>
+      <y>340</y>
+      <w>150</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;130.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>710</x>
+      <y>270</y>
+      <w>80</w>
+      <h>80</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;create&gt;&gt;
+lt=&lt;.</panel_attributes>
+    <additional_attributes>10.0;60.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>970</x>
+      <y>330</y>
+      <w>150</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>Script
+valign=center
+transparency=70
+fg=gray</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>230</x>
+      <y>160</y>
+      <w>140</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>ScriptManager
+--
++execute
+transparency=0</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>140</x>
+      <y>130</y>
+      <w>110</w>
+      <h>90</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
+m1=1
+m2=1</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;60.0;90.0;60.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>520</x>
+      <y>360</y>
+      <w>470</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-
+fg=gray
+layer=0</panel_attributes>
+    <additional_attributes>10.0;10.0;450.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>520</x>
+      <y>260</y>
+      <w>470</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-
+fg=gray
+layer=0</panel_attributes>
+    <additional_attributes>10.0;10.0;450.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1030</x>
+      <y>270</y>
+      <w>80</w>
+      <h>80</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;create&gt;&gt;
+lt=&lt;.
+fg=gray</panel_attributes>
+    <additional_attributes>10.0;60.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>620</x>
+      <y>440</y>
+      <w>540</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>ScriptResource required to avoid issue with multi thread.
+transparency=0</panel_attributes>
+    <additional_attributes/>
+  </element>
+</diagram>

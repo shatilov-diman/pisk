@@ -1,0 +1,381 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="14.2">
+  <zoom_level>10</zoom_level>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>260</x>
+      <y>250</y>
+      <w>100</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>Engine
+valign=center
+transparency=0</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>330</x>
+      <y>560</y>
+      <w>170</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>ComponentsManager
+transparency=0</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>160</x>
+      <y>420</y>
+      <w>130</w>
+      <h>100</h>
+    </coordinates>
+    <panel_attributes>Application
+valign=center
+transparency=0</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>220</x>
+      <y>510</y>
+      <w>130</w>
+      <h>80</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+while
+run</panel_attributes>
+    <additional_attributes>110.0;60.0;10.0;60.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>400</x>
+      <y>440</y>
+      <w>30</w>
+      <h>140</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-
+m1=1
+m2=*</panel_attributes>
+    <additional_attributes>10.0;120.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>610</x>
+      <y>70</y>
+      <w>120</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>EngineTask
+valign=center
+transparency=0</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>310</x>
+      <y>420</y>
+      <w>210</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>Component
+transparency=0</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>320</x>
+      <y>290</y>
+      <w>60</w>
+      <h>150</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>40.0;130.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>720</x>
+      <y>70</y>
+      <w>220</w>
+      <h>130</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;call&gt;&gt;
+lt=&lt;.</panel_attributes>
+    <additional_attributes>160.0;110.0;160.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>810</x>
+      <y>180</y>
+      <w>140</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>EngineStrategy
+valign=center
+transparency=0</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLPackage</id>
+    <coordinates>
+      <x>780</x>
+      <y>30</y>
+      <w>200</w>
+      <h>300</h>
+    </coordinates>
+    <panel_attributes>Engine
+--
+bg=#ffff44
+transparency=0</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLPackage</id>
+    <coordinates>
+      <x>140</x>
+      <y>30</y>
+      <w>620</w>
+      <h>300</h>
+    </coordinates>
+    <panel_attributes>System
+--
+bg=#6565ff
+transparency=0
+layer=-1</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLPackage</id>
+    <coordinates>
+      <x>140</x>
+      <y>350</y>
+      <w>420</w>
+      <h>260</h>
+    </coordinates>
+    <panel_attributes>Base
+--
+bg=#65ff65
+transparency=0</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>610</x>
+      <y>170</y>
+      <w>120</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>PatchGate
+valign=center
+transparency=0</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>440</x>
+      <y>290</y>
+      <w>70</w>
+      <h>150</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;130.0;50.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>450</x>
+      <y>250</y>
+      <w>160</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>EngineComponentFactory
+valign=center
+transparency=0</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>350</x>
+      <y>250</y>
+      <w>120</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;create&gt;&gt;
+lt=&lt;.</panel_attributes>
+    <additional_attributes>10.0;20.0;100.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>600</x>
+      <y>250</y>
+      <w>200</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;uses&gt;&gt;
+lt=&lt;.</panel_attributes>
+    <additional_attributes>10.0;20.0;180.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>490</x>
+      <y>320</y>
+      <w>460</w>
+      <h>280</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;load&gt;&gt;
+lt=&lt;.</panel_attributes>
+    <additional_attributes>400.0;10.0;400.0;260.0;10.0;260.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>150</x>
+      <y>100</y>
+      <w>140</w>
+      <h>70</h>
+    </coordinates>
+    <panel_attributes>Task manager?
+Abstract component
+factory?
+I can do it late.
+transparency=30
+fg=gray</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>790</x>
+      <y>240</y>
+      <w>180</w>
+      <h>80</h>
+    </coordinates>
+    <panel_attributes>Is it required to access
+to strategy (or smth also)
+from framework
+(or other engines)?
+No.
+transparency=30
+layer=1
+fg=gray</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>570</x>
+      <y>520</y>
+      <w>280</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>Returns System::Engine component.
+CM makes smart_ptr which holds
+Engine module</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>450</x>
+      <y>120</y>
+      <w>90</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>PatchPortal
+valign=center
+transparency=0</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>660</x>
+      <y>100</y>
+      <w>30</w>
+      <h>90</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
+m1=1
+m2=1</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;70.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>500</x>
+      <y>150</y>
+      <w>130</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;link&gt;&gt;
+lt=&lt;.</panel_attributes>
+    <additional_attributes>110.0;40.0;20.0;40.0;18.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>320</x>
+      <y>80</y>
+      <w>310</w>
+      <h>190</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
+m1=1
+m2=1</panel_attributes>
+    <additional_attributes>10.0;170.0;10.0;10.0;290.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>720</x>
+      <y>90</y>
+      <w>130</w>
+      <h>110</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
+m1=1
+m2=1</panel_attributes>
+    <additional_attributes>10.0;10.0;110.0;10.0;110.0;90.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>480</x>
+      <y>150</y>
+      <w>30</w>
+      <h>120</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
+m1=1
+m2=1</panel_attributes>
+    <additional_attributes>10.0;100.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>660</x>
+      <y>180</y>
+      <w>110</w>
+      <h>80</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;notify&gt;&gt;
+lt=&lt;.</panel_attributes>
+    <additional_attributes>10.0;30.0;10.0;60.0;90.0;60.0;90.0;10.0;68.0;10.0</additional_attributes>
+  </element>
+</diagram>

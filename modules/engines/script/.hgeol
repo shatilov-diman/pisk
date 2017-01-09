@@ -1,0 +1,14 @@
+
+[repository]
+native = LF
+
+[patterns]
+**.cpp = native
+**.c = native
+**.hpp = native
+**.h = native
+
+**.java = native
+
+**.xml = native
+**.txt = native

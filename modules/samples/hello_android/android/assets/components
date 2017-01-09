@@ -1,0 +1,68 @@
+[
+	{
+		"type": "loader",
+		"name": "lua",
+		"module": "lua",
+		"factory": "get_lua_loader_factory",
+		"dependencies": [
+			"luajit"
+		]
+	},
+	{
+		"type": "service",
+		"name": "http",
+		"module": "http",
+		"factory": "get_http_service_factory",
+		"dependencies": [
+			"curl"
+		]
+	},
+	{
+		"type": "service",
+		"name": "geolocation",
+		"module": "geolocation",
+		"factory": "get_geolocation_service_factory"
+	},
+	{
+		"type": "resource_loader",
+		"name": "ogg_loader",
+		"module": "audio_loader",
+		"factory": "get_ogg_stream_loader_factory",
+		"dependencies": [
+			"ogg",
+			"vorbis",
+			"vorbisfile"
+		]
+	},
+	{
+		"type": "engine",
+		"name": "io",
+		"module": "io",
+		"factory": "get_io_engine_factory"
+	},
+	{
+		"type": "engine",
+		"name": "audio",
+		"module": "audio",
+		"factory": "get_audio_engine_factory",
+		"dependencies": [
+			"openal"
+		]
+	},
+	{
+		"type": "service2go",
+		"name": "geolocation2go",
+		"module": "geolocation",
+		"factory": "get_geolocation_service2go_factory"
+	},
+	{
+		"type": "engine",
+		"name": "script",
+		"module": "script",
+		"factory": "get_script_engine_factory",
+		"config" : {
+			"service2go" : ["geolocation2go"]
+		}
+	}
+]
+

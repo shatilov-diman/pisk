@@ -1,0 +1,531 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="14.2">
+  <zoom_level>8</zoom_level>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>656</x>
+      <y>64</y>
+      <w>128</w>
+      <h>56</h>
+    </coordinates>
+    <panel_attributes>AppEvents
+--
++AppStart: signaler
++AppStop: signaler
+transparency=0</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>592</x>
+      <y>88</y>
+      <w>80</w>
+      <h>32</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
+m1=1
+m2=1</panel_attributes>
+    <additional_attributes>10.0;10.0;80.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>416</x>
+      <y>64</y>
+      <w>184</w>
+      <h>80</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;director&gt;&gt;
+impl::Application
+--
++get_events: AppEvents
++start
++stop
+transparency=0</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>232</x>
+      <y>80</y>
+      <w>128</w>
+      <h>32</h>
+    </coordinates>
+    <panel_attributes>Service Locator
+transparency=0</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>288</x>
+      <y>104</y>
+      <w>24</w>
+      <h>72</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
+m1=1
+m2=*</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;70.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>168</x>
+      <y>160</y>
+      <w>744</w>
+      <h>32</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;interface&gt;&gt;
+Component
+transparency=0</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>352</x>
+      <y>88</y>
+      <w>80</w>
+      <h>32</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
+m1=1
+m2=1</panel_attributes>
+    <additional_attributes>80.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>328</x>
+      <y>392</y>
+      <w>600</w>
+      <h>152</h>
+    </coordinates>
+    <panel_attributes>OS Specific
+valign=bottom
+halign=left
+lt=..
+layer=-1
+bg=#eeeeff
+fg=red
+//redesign</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>624</x>
+      <y>336</y>
+      <w>104</w>
+      <h>32</h>
+    </coordinates>
+    <panel_attributes>WindowContext
+transparency=0</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>672</x>
+      <y>360</y>
+      <w>24</w>
+      <h>152</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;170.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>624</x>
+      <y>496</y>
+      <w>104</w>
+      <h>32</h>
+    </coordinates>
+    <panel_attributes>ImplWindowContext
+transparency=0</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>720</x>
+      <y>504</y>
+      <w>80</w>
+      <h>24</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;80.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>784</x>
+      <y>496</y>
+      <w>128</w>
+      <h>32</h>
+    </coordinates>
+    <panel_attributes>OpenGLWindow
+transparency=0</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>248</x>
+      <y>336</y>
+      <w>24</w>
+      <h>96</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-
+m1=1
+m2=*</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;100.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>160</x>
+      <y>408</y>
+      <w>152</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>template=Event
+&lt;&lt;chain responsibility&gt;&gt;
+EventHandler
+transparency=0</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>456</x>
+      <y>496</y>
+      <w>128</w>
+      <h>32</h>
+    </coordinates>
+    <panel_attributes>ImplWindow
+transparency=0</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>512</x>
+      <y>360</y>
+      <w>24</w>
+      <h>152</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;170.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>576</x>
+      <y>504</y>
+      <w>64</w>
+      <h>24</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-</panel_attributes>
+    <additional_attributes>60.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>784</x>
+      <y>312</y>
+      <w>128</w>
+      <h>32</h>
+    </coordinates>
+    <panel_attributes>GraphicsEngine
+valign=center
+transparency=0</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>840</x>
+      <y>184</y>
+      <w>24</w>
+      <h>144</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;&gt;</panel_attributes>
+    <additional_attributes>10.0;160.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>840</x>
+      <y>336</y>
+      <w>56</w>
+      <h>176</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;.
+&lt;&lt;uses&gt;&gt;</panel_attributes>
+    <additional_attributes>10.0;200.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>576</x>
+      <y>344</y>
+      <w>64</w>
+      <h>24</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-</panel_attributes>
+    <additional_attributes>60.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>552</x>
+      <y>456</y>
+      <w>120</w>
+      <h>56</h>
+    </coordinates>
+    <panel_attributes>lt=-()
+m2=EventHandler&lt;Event&gt;</panel_attributes>
+    <additional_attributes>10.0;50.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>168</x>
+      <y>304</y>
+      <w>136</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>template=Event
+SysEventDispatcher
+transparency=0</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>224</x>
+      <y>184</y>
+      <w>24</w>
+      <h>144</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;160.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>272</x>
+      <y>312</y>
+      <w>104</w>
+      <h>96</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;.
+     &lt;&lt;push&gt;&gt;</panel_attributes>
+    <additional_attributes>10.0;20.0;110.0;20.0;110.0;100.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>184</x>
+      <y>336</y>
+      <w>56</w>
+      <h>96</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;uses&gt;&gt;
+lt=&lt;.</panel_attributes>
+    <additional_attributes>10.0;100.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLPackage</id>
+    <coordinates>
+      <x>152</x>
+      <y>240</y>
+      <w>168</w>
+      <h>304</h>
+    </coordinates>
+    <panel_attributes>System
+--
+bg=#6565ff
+transparency=0
+layer=-2</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLPackage</id>
+    <coordinates>
+      <x>152</x>
+      <y>32</y>
+      <w>776</w>
+      <h>184</h>
+    </coordinates>
+    <panel_attributes>Base
+--
+bg=#65ff65
+transparency=0
+layer=-2</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>976</x>
+      <y>136</y>
+      <w>112</w>
+      <h>56</h>
+    </coordinates>
+    <panel_attributes>alut?
+how link event
+dispatcher with
+listeners?
+fg=red</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>456</x>
+      <y>336</y>
+      <w>128</w>
+      <h>32</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;interface&gt;&gt;
+Window
+transparency=0</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>336</x>
+      <y>416</y>
+      <w>112</w>
+      <h>32</h>
+    </coordinates>
+    <panel_attributes>WindowManager
+transparency=0</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>384</x>
+      <y>440</y>
+      <w>88</w>
+      <h>88</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;.
+&lt;&lt;create&gt;&gt;</panel_attributes>
+    <additional_attributes>90.0;90.0;10.0;90.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>952</x>
+      <y>96</y>
+      <w>160</w>
+      <h>24</h>
+    </coordinates>
+    <panel_attributes>ServliceLocator::replace
+fg=red</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>440</x>
+      <y>424</y>
+      <w>56</w>
+      <h>88</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
+m1=1
+m2=*</panel_attributes>
+    <additional_attributes>10.0;10.0;50.0;10.0;50.0;90.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLPackage</id>
+    <coordinates>
+      <x>768</x>
+      <y>240</y>
+      <w>160</w>
+      <h>304</h>
+    </coordinates>
+    <panel_attributes>Engine
+--
+bg=#ffff44
+transparency=0
+layer=-2</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>336</x>
+      <y>272</y>
+      <w>112</w>
+      <h>32</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;interface&gt;&gt;
+WindowManager
+transparency=0</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>384</x>
+      <y>296</y>
+      <w>24</w>
+      <h>136</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;&gt;</panel_attributes>
+    <additional_attributes>10.0;150.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>384</x>
+      <y>184</y>
+      <w>24</w>
+      <h>104</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;&gt;</panel_attributes>
+    <additional_attributes>10.0;110.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>512</x>
+      <y>280</y>
+      <w>112</w>
+      <h>72</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
+m1=1
+m2=1
+fg=gray</panel_attributes>
+    <additional_attributes>10.0;70.0;10.0;10.0;120.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>608</x>
+      <y>264</y>
+      <w>136</w>
+      <h>48</h>
+    </coordinates>
+    <panel_attributes>WindowEvents
+--
++WindowCreate: signaler
++WindowDestroy: signaler
+fg=gray
+transparency=0</panel_attributes>
+    <additional_attributes/>
+  </element>
+</diagram>

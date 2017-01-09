@@ -1,0 +1,24 @@
+
+* Use gtest & gmock!
+* Optimization: use pool of property::dictionary and unordered_map
+* Library size: strip libraries; use shared std lib
+* Externals: rewrite scripts: use python!
+* Engine config:
+**	add get_default_config():property
+**	try to load <engine_name>.cfg and merge it with default config
+**	path result config to the on_init; on_init should return void
+* Logger: replace get().debug, etc with debug().print: do not build message if log level is high then requested
+* Model: use edit() insted const_ref() to avoid issue with auto remove on read
+* Fix on_init_app !!!
+* Fix the issue with load library: library can't load when it is not in the current directory
+* Fix TODO
+
+Notes:
+* Think about dog-nail for android (android_main in os module)
+* Model: solve issue: should system events passed over model?  -  no in  general: if I need it then I can add engine in any time
+* Play two sounds per one object!
+* loader<pisk::tools::ResourceManager, require<pisk::tools::SceneLoaader>> factory([](pisk::tools::ResourceManager, pisk::tools::SceneLoader) { });
+
+Offtop notes:
+  I want console task manager
+

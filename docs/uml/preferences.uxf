@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="14.1">
+  <zoom_level>10</zoom_level>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>510</x>
+      <y>430</y>
+      <w>210</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;singleton&gt;&gt;
+infrastructure::impl::Preferences
+{threadsafe}</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLInterface</id>
+    <coordinates>
+      <x>1990</x>
+      <y>340</y>
+      <w>80</w>
+      <h>100</h>
+    </coordinates>
+    <panel_attributes>Interface
+--
+Operation1
+Operation2</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>490</x>
+      <y>260</y>
+      <w>260</w>
+      <h>80</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;interface&gt;&gt;
+infrastructure::Preferences
+{threadsafe}
+--
+$instance(): infrastructure::Preferences</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>610</x>
+      <y>330</y>
+      <w>30</w>
+      <h>120</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;100.0</additional_attributes>
+  </element>
+</diagram>

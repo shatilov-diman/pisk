@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="14.1">
+  <zoom_level>10</zoom_level>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>320</x>
+      <y>130</y>
+      <w>450</w>
+      <h>150</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;interface&gt;&gt;
+/infrastructure::Logger/
+{threadsafe}
+--
+$instance(): infrastructure::Logger
+/+set_log_storage(storage: LogStorage) {threadsafe}/
+/+log(level: loglevel, tag: string, message: string) {threadsafe}/
+/+log(level: loglevel, tag: string, messages: vector&lt;string&gt;) {threadsafe}/
++multymessage(): MessageMaker {threadsafe}
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>450</x>
+      <y>370</y>
+      <w>190</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>infrastructure::impl::Logger
+{threadsafe}</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>540</x>
+      <y>270</y>
+      <w>30</w>
+      <h>120</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;100.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>890</x>
+      <y>160</y>
+      <w>330</w>
+      <h>100</h>
+    </coordinates>
+    <panel_attributes>infrastructure::MessageMaker
+{std::noncupyable}
+--
+$instance(): infrastructure::Logger
+/+addline(format: string, ...): MessageMaker&amp; /
+/+commit(level: loglevel, tag: string)/
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>760</x>
+      <y>170</y>
+      <w>150</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;.
+&lt;&lt;create&gt;&gt;</panel_attributes>
+    <additional_attributes>130.0;20.0;10.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>760</x>
+      <y>200</y>
+      <w>150</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;.
+&lt;&lt;uses&gt;&gt;</panel_attributes>
+    <additional_attributes>10.0;20.0;130.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>860</x>
+      <y>360</y>
+      <w>390</w>
+      <h>70</h>
+    </coordinates>
+    <panel_attributes>LogStorage
+--
+/+store(level: loglevel, tag: string, message: string)/
+/+store(level: loglevel, tag: string, messages: vector&lt;string&gt;)/
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>630</x>
+      <y>380</y>
+      <w>250</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
+m1=1
+m2=1</panel_attributes>
+    <additional_attributes>10.0;10.0;230.0;10.0</additional_attributes>
+  </element>
+</diagram>

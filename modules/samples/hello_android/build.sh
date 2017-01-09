@@ -1,0 +1,45 @@
+#!/bin/bash
+
+THIRD_PARTY=~/Develop/3rd_party/
+THIS_DIR=$(pwd)
+
+ABI="armeabi-v7a"
+ARCH="armv7-a"
+API_LEVEL="15"
+TARGET_PLATFORM="android-${API_LEVEL}"
+API_SIGNER_KEYSTORE="${THIS_DIR}/android/keystore"
+API_SIGNER_ALIAS="pisk"
+
+PISK_DIR=`realpath -m ${THIS_DIR}/../../../`
+EXTERNAL_DIR=`realpath -m ${THIS_DIR}/../../../../pisk-externals/`
+BUILD_DIR="${THIS_DIR}/build/${TARGET_PLATFORM}/${ARCH}"
+BUILD_TYPE="Debug"
+
+CMAKE_TOOLCHAIN_FILE="${PISK_DIR}/cmake/toolchain.android.${ARCH}.cmake"
+ANDROID_TOOLCHAIN=arm-linux-androideabi-6
+TOOLCHAIN_ROOT=${EXTERNAL_DIR}/sources/${TARGET_PLATFORM}/${ARCH}/${ANDROID_TOOLCHAIN}/
+
+PATH=${EXTERNAL_DIR}/sources/android-sdk/tools:$PATH
+PATH=${EXTERNAL_DIR}/sources/android-sdk/build-tools/25.0.1/:$PATH
+
+CMAKE_CMD="cmake
+
+-DANDROID_ABI=${ABI}
+-DANDROID_APK_API_LEVEL=${API_LEVEL}
+-DTARGET_PLATFORM=${TARGET_PLATFORM}
+-DANDROID_APK_SIGNER_KEYSTORE=${API_SIGNER_KEYSTORE}
+-DANDROID_APK_SIGNER_ALIAS=${API_SIGNER_ALIAS}
+
+-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+-DTOOLCHAIN_ROOT=${TOOLCHAIN_ROOT}
+-DCMAKE_SYSROOT=${TOOLCHAIN_ROOT}/sysroot
+-DCMAKE_FIND_ROOT_PATH=${PISK_DIR}
+
+-DCMAKE_BUILD_TYPE=${BUILD_TYPE}
+-DPISK_FIND_CMAKE_DIR=${PISK_DIR}/cmake
+../../.."
+
+cmake -E make_directory $BUILD_DIR
+cmake -E chdir $BUILD_DIR $CMAKE_CMD
+cmake --build $BUILD_DIR --config ${BUILD_TYPE} -- -sj2
+

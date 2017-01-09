@@ -1,0 +1,510 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="14.2">
+  <zoom_level>10</zoom_level>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>730</x>
+      <y>270</y>
+      <w>100</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;component&gt;&gt;
+Network
+transparency=0</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>160</x>
+      <y>140</y>
+      <w>100</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;engine&gt;&gt;
+Scripts (10Hz)
+transparency=0</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>330</x>
+      <y>290</y>
+      <w>100</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;engine&gt;&gt;
+Graphics(100Hz)
+transparency=0</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>270</x>
+      <y>240</y>
+      <w>100</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;engine&gt;&gt;
+Audio(100Hz)
+transparency=0</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>210</x>
+      <y>190</y>
+      <w>100</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;engine&gt;&gt;
+Physics (10Hz)
+transparency=0</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>710</x>
+      <y>240</y>
+      <w>90</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;.</panel_attributes>
+    <additional_attributes>10.0;10.0;70.0;10.0;70.0;30.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>280</x>
+      <y>70</y>
+      <w>160</w>
+      <h>140</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-</panel_attributes>
+    <additional_attributes>10.0;120.0;140.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>730</x>
+      <y>170</y>
+      <w>100</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;component&gt;&gt;
+Input
+transparency=0</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>660</x>
+      <y>180</y>
+      <w>90</w>
+      <h>70</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;.</panel_attributes>
+    <additional_attributes>10.0;50.0;10.0;10.0;70.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>160</x>
+      <y>50</y>
+      <w>800</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>PatchPortal
+valign=center
+transparency=0</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>860</x>
+      <y>140</y>
+      <w>100</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;device&gt;&gt;
+Keyboard
+transparency=0</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>820</x>
+      <y>170</y>
+      <w>110</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;.</panel_attributes>
+    <additional_attributes>10.0;20.0;90.0;20.0;90.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>860</x>
+      <y>200</y>
+      <w>100</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;device&gt;&gt;
+Mouse
+transparency=0</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>820</x>
+      <y>180</y>
+      <w>110</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;.</panel_attributes>
+    <additional_attributes>10.0;10.0;90.0;10.0;90.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>860</x>
+      <y>270</y>
+      <w>100</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;device&gt;&gt;
+Session
+transparency=0</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>820</x>
+      <y>280</y>
+      <w>60</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;.</panel_attributes>
+    <additional_attributes>10.0;10.0;40.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>130</x>
+      <y>430</y>
+      <w>190</w>
+      <h>190</h>
+    </coordinates>
+    <panel_attributes>Changes in model:
+1. Location
+2. Object properties:
+   - active state
+3. Game properties set:
+	- max health
+	- health
+	- level
+	- damage
+	- etc...
+4. Set of objects:
+   - add object
+   - remove object
+5. Hierarchie</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>330</x>
+      <y>430</y>
+      <w>240</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>From logic to graphics: &gt; 1 ms
+From logic to auido:    &gt; 1 ms
+From logic to scripts:  &gt; 10ms
+From logic to physics:  &gt; 10ms</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>400</x>
+      <y>70</y>
+      <w>40</w>
+      <h>240</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-</panel_attributes>
+    <additional_attributes>10.0;220.0;20.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>340</x>
+      <y>70</y>
+      <w>100</w>
+      <h>190</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-</panel_attributes>
+    <additional_attributes>10.0;170.0;80.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>250</x>
+      <y>70</y>
+      <w>190</w>
+      <h>90</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-</panel_attributes>
+    <additional_attributes>10.0;70.0;170.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>330</x>
+      <y>590</y>
+      <w>240</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>Graphics can interpolate itself</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>330</x>
+      <y>490</y>
+      <w>240</w>
+      <h>100</h>
+    </coordinates>
+    <panel_attributes>Presentations contains update_id:
+if engine notify logic with old
+update_id then changes dropped.
+
+Input generate new patches with
+newest update_id. Physics patches
+always dropped?
+fg=red</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>300</x>
+      <y>70</y>
+      <w>280</w>
+      <h>150</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-</panel_attributes>
+    <additional_attributes>260.0;10.0;260.0;130.0;10.0;130.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>250</x>
+      <y>70</y>
+      <w>390</w>
+      <h>100</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+&lt;&lt;patches&gt;&gt;
+</panel_attributes>
+    <additional_attributes>310.0;10.0;310.0;80.0;10.0;80.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>420</x>
+      <y>70</y>
+      <w>160</w>
+      <h>250</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-</panel_attributes>
+    <additional_attributes>140.0;10.0;140.0;230.0;10.0;230.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>360</x>
+      <y>70</y>
+      <w>220</w>
+      <h>200</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-</panel_attributes>
+    <additional_attributes>200.0;10.0;200.0;180.0;10.0;180.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>730</x>
+      <y>330</y>
+      <w>100</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;component&gt;&gt;
+Output
+transparency=0</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>660</x>
+      <y>260</y>
+      <w>90</w>
+      <h>110</h>
+    </coordinates>
+    <panel_attributes>lt=.&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;90.0;70.0;90.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>600</x>
+      <y>130</y>
+      <w>390</w>
+      <h>270</h>
+    </coordinates>
+    <panel_attributes>IO components
+bg=#ccffcc
+transparency=0
+
+layer=-1</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>130</x>
+      <y>130</y>
+      <w>390</w>
+      <h>270</h>
+    </coordinates>
+    <panel_attributes>Engine components
+valign=bottom
+bg=#ffff44
+transparency=0
+layer=-1</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>390</x>
+      <y>340</y>
+      <w>100</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;engine&gt;&gt;
+Logic(200Hz)
+valign=center
+transparency=0</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>550</x>
+      <y>70</y>
+      <w>90</w>
+      <h>190</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;170.0;70.0;170.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>410</x>
+      <y>70</y>
+      <w>230</w>
+      <h>180</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-</panel_attributes>
+    <additional_attributes>210.0;160.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>860</x>
+      <y>330</y>
+      <w>100</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;device&gt;&gt;
+highlight
+transparency=0</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>820</x>
+      <y>340</y>
+      <w>60</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;.</panel_attributes>
+    <additional_attributes>40.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>130</x>
+      <y>30</y>
+      <w>860</w>
+      <h>70</h>
+    </coordinates>
+    <panel_attributes>System
+bg=#6565ff
+transparency=0
+layer=-1</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>480</x>
+      <y>70</y>
+      <w>100</w>
+      <h>300</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-</panel_attributes>
+    <additional_attributes>80.0;10.0;80.0;280.0;10.0;280.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>620</x>
+      <y>230</y>
+      <w>100</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;engine&gt;&gt;
+IO(200Hz)
+valign=center
+transparency=0</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>410</x>
+      <y>70</y>
+      <w>80</w>
+      <h>290</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-</panel_attributes>
+    <additional_attributes>60.0;270.0;10.0;10.0</additional_attributes>
+  </element>
+</diagram>
