@@ -1,0 +1,9 @@
+data/sources/lua/LuaLoader.h.i
+data/tests/lua/ServiceTest.cpp.i
+data/.hgeol.i
+data/sources/lua/LuaLoader.cpp.i
+data/tests/main.cpp.i
+data/sources/lua/LuaScript.cpp.i
+data/.hgignore.i
+data/COPYING.i
+data/CMakeLists.txt.i

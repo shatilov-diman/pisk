@@ -1,0 +1,11 @@
+
+#version 100
+
+uniform mat4 mvp_matrix;
+attribute vec4 vertex;
+
+void main()
+{
+	gl_Position = mvp_matrix * vec4(vertex.xyz, 1);
+}
+

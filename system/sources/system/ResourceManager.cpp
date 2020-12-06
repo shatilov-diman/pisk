@@ -1,24 +1,6 @@
 // Project pisk
 // Copyright (C) 2016-2017 Dmitry Shatilov
 //
-// This file is a part of the module system of the project pisk.
-// This file is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
-// Additional restriction according to GPLv3 pt 7:
-// b) required preservation author attributions;
-// c) required preservation links to original sources
-//
 // Original sources:
 //   https://github.com/shatilov-diman/pisk/
 //   https://bitbucket.org/charivariltd/pisk/
@@ -57,23 +39,23 @@ namespace impl
 		{
 			delete this;
 		}
-		virtual ResourcePtr load(const std::string& rid, const std::string& resource_type) threadsafe const override final
+		virtual ResourcePtr load(const std::string& rid, const std::string& resource_type) threadsafe const final override
 		{
-			infrastructure::Logger::get().debug("resource_manager", "Loading resource '%s'", rid.c_str());
+			logger::debug("resource_manager", "Loading resource '{}'", rid);
 			infrastructure::DataStreamPtr stream = packs.open(rid);
 			if (stream == nullptr)
 				throw infrastructure::NullPointerException();
 			ResourceLoaderPtr loader = loader_registry.get_loader(resource_type, stream);
-			infrastructure::Logger::get().debug("resource_manager", "Loader was found for resource '%s'", rid.c_str());
+			logger::debug("resource_manager", "Loader was found for resource '{}'", rid);
 			ResourcePtr resource = loader->load(std::move(stream));
-			infrastructure::Logger::get().debug("resource_manager", "Resource '%s' was successfully loaded", rid.c_str());
+			logger::debug("resource_manager", "Resource '{}' was successfully loaded", rid);
 			return resource;
  		}
-		virtual system::ResourcePackManager& get_pack_manager()
+		virtual system::ResourcePackManager& get_pack_manager() final override
 		{
 			return packs;
 		}
-		virtual system::ResourceLoaderRegistry& get_loader_registry()
+		virtual system::ResourceLoaderRegistry& get_loader_registry() final override
 		{
 			return loader_registry;
 		}

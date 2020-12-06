@@ -1,7 +1,17 @@
 cmake_minimum_required(VERSION 2.8)
 
+if (NOT CMAKE_BUILD_TYPE)
+	set(CMAKE_BUILD_TYPE RelWithDebInfo)
+endif()
+message(STATUS "CMAKE_BUILD_TYPE           = ${CMAKE_BUILD_TYPE}"         )
+
+
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+message(STATUS "CMAKE_SYSTEM_NAME          = ${CMAKE_SYSTEM_NAME}"         )
+message(STATUS "CMAKE_CXX_COMPILER_ID      = ${CMAKE_CXX_COMPILER_ID}"     )
+message(STATUS "CMAKE_CXX_COMPILER_VERSION = ${CMAKE_CXX_COMPILER_VERSION}")
 
 if (NOT DEFINED PROJECT_OUTPUT_DIR)
 	set(PROJECT_OUTPUT_DIR "${PROJECT_SOURCE_DIR}/.output/${CMAKE_SYSTEM_NAME}/${CMAKE_SYSTEM_PROCESSOR}")
@@ -9,6 +19,10 @@ endif()
 
 set(EXECUTABLE_OUTPUT_PATH "${PROJECT_OUTPUT_DIR}/libs")
 set(LIBRARY_OUTPUT_PATH "${PROJECT_OUTPUT_DIR}/libs")
+
+if (APPLE)
+	set(CMAKE_MACOSX_RPATH 1)
+endif()
 
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/")
 
@@ -32,6 +46,8 @@ endif()
 
 if(ANDROID)
 	set(OSDIR "android")
+elseif(APPLE)
+	set(OSDIR "macos")
 elseif(WIN32)
 	set(OSDIR "windows")
 elseif(UNIX)
@@ -41,12 +57,25 @@ else()
 endif()
 
 
-if(MSVC)
+if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4 /WX")
-elseif(CMAKE_COMPILER_IS_GNUCXX)
+elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror")
+	set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g")
+	set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+	set(CMAKE_CXX_FLAGS_MINSIZEREL "-Os")
+	set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O3 -g")
 	if(ANDROID)
 		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-variable")
+	endif()
+elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror")
+	set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g")
+	set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+	set(CMAKE_CXX_FLAGS_MINSIZEREL "-Os")
+	set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O3 -g")
+	if(APPLE)
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-value")
 	endif()
 endif()
 
@@ -97,7 +126,7 @@ file(REMOVE_RECURSE "${PROJECT_OUTPUT_DIR}/include")
 foreach(DIR ${DIRS})
 	if (IS_DIRECTORY "${PROJECT_SOURCE_DIR}/${DIR}/include")
 		message(STATUS "copy headers from '${DIR}' to the output directory")
-		file(COPY "${DIR}/include" DESTINATION "${PROJECT_OUTPUT_DIR}/")
+		file(COPY "${DIR}/include" DESTINATION "${PROJECT_OUTPUT_DIR}/" FILES_MATCHING REGEX "(\\.h|\\.hpp)$")
 	endif()
 
 	if (IS_DIRECTORY "${PROJECT_SOURCE_DIR}/${DIR}/${OSDIR}")

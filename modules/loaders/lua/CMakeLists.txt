@@ -21,6 +21,12 @@ file(GLOB_RECURSE MY_INCLUDES LIST_DIRECTORIES true "include/*.h")
 set(MY_TEST_NAME test_${BASE_NAME})
 project(${MY_TEST_NAME})
 
+if(APPLE)
+	if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+		set(CMAKE_CXX_LINK_FLAGS "${CMAKE_CXX_LINK_FLAGS} -pagezero_size 0x10000 -image_base 0x6000000")
+	endif()
+endif()
+
 add_executable(${MY_TEST_NAME} ${MY_SOURCES} ${MY_HEADERS} ${MY_INCLUDES} ${MY_TESTS})
 target_link_libraries(${MY_TEST_NAME} ${LUA_LIBRARIES} ${OS_SPECIFIC_LIBRARIES} ${PISK_LIBRARIES})
 add_dependencies(${MY_TEST_NAME} ${PISK_LIBRARIES})

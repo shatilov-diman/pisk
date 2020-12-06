@@ -1,24 +1,6 @@
 // Project pisk
 // Copyright (C) 2016-2017 Dmitry Shatilov
 //
-// This file is a part of the module model of the project pisk.
-// This file is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
-// Additional restriction according to GPLv3 pt 7:
-// b) required preservation author attributions;
-// c) required preservation links to original sources
-//
 // Original sources:
 //   https://github.com/shatilov-diman/pisk/
 //   https://bitbucket.org/charivariltd/pisk/
@@ -53,6 +35,15 @@ namespace model
 			return **this;
 		}
 
+		utils::keystring get_key() const
+		{
+			return iter.get_key();
+		}
+		std::size_t get_index() const
+		{
+			return iter.get_index();
+		}
+
 		ReflectedItemType operator*() const
 		{
 			if (this->orig.is_none() and this->prop.is_none())
@@ -65,12 +56,12 @@ namespace model
 				return ReflectedItemType(cv_property::none_property(), *iter);
 
 			if (this->orig.is_dictionary())
-				return ReflectedItemType(this->orig[iter.get_key()], *iter);
+				return ReflectedItemType(this->orig[get_key()], *iter);
 
 			if (this->orig.is_array())
 			{
-				if (iter.get_index() < this->orig.size())
-					return ReflectedItemType(this->orig[iter.get_index()], *iter);
+				if (get_index() < this->orig.size())
+					return ReflectedItemType(this->orig[get_index()], *iter);
 				return ReflectedItemType(cv_property::none_property(), *iter);
 			}
 

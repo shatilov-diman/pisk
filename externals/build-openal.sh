@@ -41,6 +41,7 @@ rm build -r
 mkdir build
 
 cmake -E chdir build cmake .. \
+	-DHAVE_LRINTF=FALSE \
 	-DCMAKE_TOOLCHAIN_FILE="${CMAKE_TOOLCHAIN_FILE}" \
 	-DCMAKE_FIND_ROOT_PATH="${ANDROID_SYSROOT}" \
 	-DCMAKE_SYSROOT="${ANDROID_SYSROOT}" \

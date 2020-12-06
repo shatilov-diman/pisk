@@ -1,19 +1,26 @@
 @echo off
 
-set COMPILER="Visual Studio 14 2015"
+set COMPILER="Visual Studio 15 2017"
 set BUILD_TYPE=RelWithDebInfo
 
 set THIRD_PARTY_DIR=D:\\Develop\\3rd_party
 
 set IGLOO_ROOT_DIR=-DIGLOO_ROOT_DIR:PATH="%THIRD_PARTY_DIR%\\igloo\\"
+set GTEST_ROOT_DIR=-DGTEST_ROOT:PATH="%THIRD_PARTY_DIR%\\googletest-master\\googletest\\"
+set GMOCK_ROOT_DIR=-DGMOCK_ROOT:PATH="%THIRD_PARTY_DIR%\\googletest-master\\googlemock\\"
 set JSON_ROOT_DIR=-DJSONCPP_ROOT_DIR:PATH="%THIRD_PARTY_DIR%\\jsoncpp-master\\"
 set VORBIS_ROOT_DIR=-DVORBIS_ROOT_DIR:PATH="%THIRD_PARTY_DIR%\\libvorbis-1.3.5\\"
 set OGG_ROOT_DIR=-DOGG_ROOT_DIR:PATH="%THIRD_PARTY_DIR%\\libogg-1.3.2\\"
 set OPENSSL_DIRS=-DOPENSSL_ROOT_DIR:PATH="%THIRD_PARTY_DIR%\\OpenSSL\\"
 set CURL_DIRS=-DCURL_INCLUDE_DIR:PATH="%THIRD_PARTY_DIR%\\curl-7.51.0\\include" -DCURL_LIBRARY:PATH="%THIRD_PARTY_DIR%\\curl-7.51.0\\libs\libcurl.lib"
+set GLES2_ROOT_DIR=-DEGL_ROOT_DIR:PATH="%THIRD_PARTY_DIR%\\GLES_SDK_v31\\" -DGLES2_ROOT_DIR:PATH="%THIRD_PARTY_DIR%\\GLES_SDK_v31\\"
 
 set LUA_DIR=%THIRD_PARTY_DIR%\\LuaJIT-2.0.4\\src\\
 
-cmake -E chdir build cmake -G%COMPILER% -DSUBSYSTEM=GUI %IGLOO_ROOT_DIR% %JSON_ROOT_DIR% %VORBIS_ROOT_DIR% %OGG_ROOT_DIR% %CURL_DIRS% %OPENSSL_DIRS% ..
-cmake --build build --config %BUILD_TYPE% -- /verbosity:minimal
+set TARGET_PLATFORM="Windows"
+set ARCH="x64"
+set BUILD_DIR=".build\\%TARGET_PLATFORM%\\%ARCH%"
+cmake -E make_directory %BUILD_DIR%
+cmake -E chdir %BUILD_DIR% cmake -G%COMPILER% -DSUBSYSTEM=GUI %GTEST_ROOT_DIR% %GMOCK_ROOT_DIR% %IGLOO_ROOT_DIR% %JSON_ROOT_DIR% %VORBIS_ROOT_DIR% %OGG_ROOT_DIR% %CURL_DIRS% %OPENSSL_DIRS% %GLES2_ROOT_DIR% ..\\..\\..
+cmake --build %BUILD_DIR% --config %BUILD_TYPE% -- /verbosity:minimal
 

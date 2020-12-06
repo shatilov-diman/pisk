@@ -1,24 +1,6 @@
 // Project pisk
 // Copyright (C) 2016-2017 Dmitry Shatilov
 //
-// This file is a part of the module base of the project pisk.
-// This file is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
-// Additional restriction according to GPLv3 pt 7:
-// b) required preservation author attributions;
-// c) required preservation links to original sources
-//
 // Original sources:
 //   https://github.com/shatilov-diman/pisk/
 //   https://bitbucket.org/charivariltd/pisk/
@@ -34,7 +16,12 @@
 #include "../defines.h"
 #include <cstdio>
 #include <string>
+#include <cstring>
 #include <cstdarg>
+#include <algorithm>
+#include <type_traits>
+
+#include "../infrastructure/Exception.h"
 
 namespace pisk
 {
@@ -74,19 +61,189 @@ namespace algorithm
 		}
 		return out;
 	}
-}
+
+	template<typename Range>
+	Range split(const std::string& source, const std::string& splitter)
+	{
+		Range out;
+
+		std::string tmp;
+		for (const auto& ch : source)
+		{
+			if (splitter.find(ch) == std::string::npos)
+				tmp.push_back(ch);
+			else if (not tmp.empty())
+				out.emplace_back(std::move(tmp));
+		}
+		if (not tmp.empty())
+			out.emplace_back(std::move(tmp));
+		return out;
+	}
+}//namespace algorithm
 
 namespace string
 {
-	template <size_t buffer_limit = 1024, typename String, typename ...TArgs>
-	String format(const String& format, TArgs... args)
+	namespace details
 	{
-		typedef typename String::value_type TChar;
-		TChar buffer[buffer_limit];
-		snprintf(buffer, countof(buffer), format.data(), args...);
-		return buffer;
+		constexpr const char hex_prefix[] = "0x";
+
+		template <typename TArg>
+		inline std::size_t get_to_string_size(const TArg&, std::enable_if_t<std::is_arithmetic<TArg>::value>* = 0)
+		{
+			static_assert(std::numeric_limits<TArg>::digits10 != 0, "qwe");
+			return std::numeric_limits<TArg>::digits10;
+		}
+		template <typename TArg>
+		inline std::size_t get_to_string_size(const TArg&, std::enable_if_t<std::is_enum<TArg>::value>* = 0)
+		{
+			using subtype_t = std::underlying_type_t<TArg>;
+			static_assert(std::numeric_limits<subtype_t>::digits10 != 0, "qwe");
+			return std::numeric_limits<subtype_t>::digits10;
+		}
+		template <typename TArg>
+		inline std::size_t get_to_string_size(const TArg&, std::enable_if_t<std::is_pointer<TArg>::value>* = 0)
+		{
+			return sizeof(hex_prefix)-1 + get_to_string_size(static_cast<std::size_t>(0));
+		}
+		template <typename TArg>
+		inline std::size_t get_to_string_size(const TArg&, std::enable_if_t<std::is_same<TArg, bool>::value>* = 0)
+		{
+			return 5;
+		}
+		inline std::size_t get_to_string_size(const char&)
+		{
+			return 1;
+		}
+		template <std::size_t N>
+		inline std::size_t get_to_string_size(const char (&arg)[N])
+		{
+			return N * get_to_string_size(arg[0]);
+		}
+		inline std::size_t get_to_string_size(const char* arg)
+		{
+			return std::strlen(arg);
+		}
+
+		inline std::size_t get_to_string_size(const std::string& arg)
+		{
+			return arg.size();
+		}
+
+		inline std::size_t get_total_size()
+		{
+			return 0;
+		}
+
+		template <typename TArg, typename ... TArgs>
+		inline std::size_t get_total_size(const TArg& arg, const TArgs& ... args)
+		{
+			return get_to_string_size(arg) + get_total_size(args...);
+		}
+
+		template <typename TArg>
+		inline std::string to_string(const TArg& arg, std::enable_if_t<std::is_arithmetic<TArg>::value>* = 0)
+		{
+			return std::to_string(arg);
+		}
+		template <typename TArg>
+		inline std::string to_string(const TArg& arg, std::enable_if_t<std::is_enum<TArg>::value>* = 0)
+		{
+			using subtype_t = std::underlying_type_t<TArg>;
+			return to_string(static_cast<subtype_t>(arg));
+		}
+		template <typename TArg>
+		inline std::string to_string(const TArg& arg, std::enable_if_t<std::is_pointer<TArg>::value>* = 0)
+		{
+			return hex_prefix + std::to_string(reinterpret_cast<std::size_t>(arg));
+		}
+		template <typename TArg>
+		inline std::string to_string(const TArg& arg, std::enable_if_t<std::is_same<TArg, bool>::value>* = 0)
+		{
+			return arg ? "true" : "false";
+		}
+		inline std::string to_string(const char& arg)
+		{
+			return std::string(1, arg);
+		}
+
+		template <std::size_t N>
+		inline std::string to_string(const char (&str)[N])
+		{
+			return str;
+		}
+		inline std::string to_string(const char* str)
+		{
+			return str;
+		}
+		inline std::string to_string(const std::string& arg)
+		{
+			return arg;
+		}
+		inline std::string to_string(std::string&& arg)
+		{
+			return std::move(arg);
+		}
+
+		template <typename TArg>
+		inline std::size_t to_string(std::string& out, std::size_t opos, const TArg& arg)
+		{
+			const auto& tmp = to_string(arg);
+			for (const char& ch : tmp)
+				out[opos++] = ch;
+			return tmp.size();
+		}
+
+		inline std::size_t format(const std::string& f, std::string& out, std::size_t fpos, std::size_t opos)
+		{
+			const std::size_t count = f.size();
+			const std::size_t ocount = out.size();
+			for (;fpos != count; ++fpos)
+			{
+				if (opos >= ocount)
+					throw infrastructure::OutOfRangeException();
+				out[opos++] = f[fpos];
+			}
+			return opos;
+		}
+
+		template <typename TArg, typename ... TArgs>
+		inline std::size_t format(const std::string& f, std::string& out, std::size_t fpos, std::size_t opos, TArg&& arg, TArgs&& ... args)
+		{
+			const std::size_t count = f.size();
+			const std::size_t ocount = out.size();
+			for (;fpos != count; ++fpos)
+			{
+				const char ch = f[fpos];
+				if (ch == '\x0')
+					break;
+				if (ch == '{')
+				{
+					if (f[fpos+1] == '}')
+					{
+						opos += to_string(out, opos, arg);
+						return format(f, out, fpos+2, opos, std::forward<TArgs>(args)...);
+					}
+				}
+
+				if (opos >= ocount)
+					throw infrastructure::OutOfRangeException();
+
+				out[opos++] = ch;
+			}
+			return opos;
+		}
+	}//namespace details
+
+	template <typename ... TArgs>
+	inline std::string format(const std::string& f, TArgs&& ... args)
+	{
+		std::string out;
+		out.resize(f.size() + details::get_total_size(args...));
+		const std::size_t count = details::format(f, out, 0, 0, std::forward<TArgs>(args)...);
+		out.resize(count);
+		return out;
 	}
-}
+}//namespace string
 
 namespace iterators
 {

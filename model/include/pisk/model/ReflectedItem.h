@@ -1,24 +1,6 @@
 // Project pisk
 // Copyright (C) 2016-2017 Dmitry Shatilov
 //
-// This file is a part of the module model of the project pisk.
-// This file is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
-// Additional restriction according to GPLv3 pt 7:
-// b) required preservation author attributions;
-// c) required preservation links to original sources
-//
 // Original sources:
 //   https://github.com/shatilov-diman/pisk/
 //   https://bitbucket.org/charivariltd/pisk/
@@ -42,104 +24,6 @@ namespace pisk
 {
 namespace model
 {
-namespace path
-{
-	inline utils::keystring add(const utils::keystring& id_path, const utils::keystring& id)
-	{
-		const std::string& left = id_path.get_content();
-		const std::string& right = id.get_content();
-
-		std::string out;
-		out.reserve(left.size() + right.size() + 2);
-
-		bool prev_char_is_divider = false;
-		bool char_before_div_is_node = false;
-		for (const auto& ch : left)
-			if (ch == '/')
-			{
-				prev_char_is_divider = true;
-			}
-			else
-			{
-				if (prev_char_is_divider and char_before_div_is_node)
-				{
-					out.push_back('/');
-				}
-				out.push_back(ch);
-				prev_char_is_divider = false;
-				char_before_div_is_node = true;
-			}
-
-		prev_char_is_divider = char_before_div_is_node = not out.empty();
-
-		for (const auto& ch : right)
-			if (ch == '/')
-			{
-				prev_char_is_divider = true;
-			}
-			else
-			{
-				if (prev_char_is_divider and char_before_div_is_node)
-				{
-					out.push_back('/');
-				}
-				out.push_back(ch);
-				prev_char_is_divider = false;
-				char_before_div_is_node = true;
-			}
-
-		return utils::keystring {std::move(out)};
-	}
-	inline utils::keystring front(const utils::keystring& id_path, utils::keystring& tail)
-	{
-		const std::string& content = id_path.get_content();
-		const std::size_t start = content.find_first_not_of("/");
-		if (start == std::string::npos)
-		{
-			tail = "";
-			return {};
-		}
-		const std::size_t pos = content.find('/', start);
-		if (pos == std::string::npos)
-		{
-			tail = "";
-			if (start == 0)
-				return id_path;
-			return utils::keystring { content.substr(start, content.size()) };
-		}
-		const std::size_t tail_pos = content.find_first_not_of("/", pos);
-		if (tail_pos == std::string::npos)
-			tail = "";
-		else
-			tail = utils::keystring {content.substr(tail_pos)};
-		return utils::keystring {content.substr(start, pos-start)};
-	}
-	inline utils::keystring back(const utils::keystring& id_path, utils::keystring& head)
-	{
-		const std::string& content = id_path.get_content();
-		const std::size_t start = content.find_last_not_of("/");
-		if (start == std::string::npos)
-		{
-			head = "";
-			return {};
-		}
-		const std::size_t pos = content.rfind('/', start);
-		if (pos == std::string::npos)
-		{
-			head = "";
-			if (start == 0)
-				return id_path;
-			return utils::keystring { content.substr(0, start+1) };
-		}
-		const std::size_t head_pos = content.find_last_not_of("/", pos);
-		if (head_pos == std::string::npos)
-			head = "";
-		else
-			head = utils::keystring {content.substr(0, head_pos+1)};
-		return utils::keystring {content.substr(pos+1, start+1-pos)};
-	}
-}
-
 	class UnexpectedItemTypeException :
 		public infrastructure::Exception
 	{};
@@ -190,6 +74,11 @@ namespace path
 		bool has_origin() const
 		{
 			return not orig.is_none();
+		}
+
+		bool is_changed() const
+		{
+			return prop != orig;
 		}
 
 		bool is_none() const
@@ -418,6 +307,18 @@ namespace path
 		{
 			return const_ref().get_item(key);
 		}
+		void remove_item(const std::size_t key)
+		{
+			if (this->prop.is_array())
+				return this->prop.remove(key);
+			if (this->prop.is_none())
+				if (this->orig.is_array())
+				{
+					this->prop = this->orig;
+					return this->prop.remove(key);
+				}
+			throw UnexpectedItemTypeException();
+		}
 		std::vector<utils::keystring> get_members() const
 		{
 			auto members = [](const cv_property& prop) {
@@ -442,6 +343,18 @@ namespace path
 		{
 			return const_ref().get_item(key);
 		}
+		void remove_item(const utils::keystring& key)
+		{
+			if (this->prop.is_dictionary())
+				return this->prop.remove(key);
+			if (this->prop.is_none())
+				if (this->orig.is_dictionary())
+				{
+					this->prop = this->orig;
+					return this->prop.remove(key);
+				}
+			throw UnexpectedItemTypeException();
+		}
 
 		template <typename Key>
 		ReflectedItemBase<cv_property> get_bool_item(const Key& key)
@@ -461,6 +374,45 @@ namespace path
 		{
 			auto item = get_item(key);
 			if (item.is_none() or item.is_int())
+				return item;
+			throw UnexpectedItemTypeException();
+		}
+		template <typename Key>
+		ReflectedItemBase<const cv_property> get_long_item(const Key& key) const
+		{
+			return const_ref().get_long_item(key);
+		}
+		template <typename Key>
+		ReflectedItemBase<cv_property> get_long_item(const Key& key)
+		{
+			auto item = get_item(key);
+			if (item.is_none() or item.is_long())
+				return item;
+			throw UnexpectedItemTypeException();
+		}
+		template <typename Key>
+		ReflectedItemBase<const cv_property> get_float_item(const Key& key) const
+		{
+			return const_ref().get_float_item(key);
+		}
+		template <typename Key>
+		ReflectedItemBase<cv_property> get_float_item(const Key& key)
+		{
+			auto item = get_item(key);
+			if (item.is_none() or item.is_float())
+				return item;
+			throw UnexpectedItemTypeException();
+		}
+		template <typename Key>
+		ReflectedItemBase<const cv_property> get_double_item(const Key& key) const
+		{
+			return const_ref().get_double_item(key);
+		}
+		template <typename Key>
+		ReflectedItemBase<cv_property> get_double_item(const Key& key)
+		{
+			auto item = get_item(key);
+			if (item.is_none() or item.is_double())
 				return item;
 			throw UnexpectedItemTypeException();
 		}
@@ -505,6 +457,18 @@ namespace path
 			return const_ref().get_array_item(key);
 		}
 		template <typename ReflectedItemType>
+		ReflectedItemType get_custom_item(const std::size_t index)
+		{
+			check_type<ReflectedItemType, ReflectedItemBase<cv_property> >();
+			ReflectedItemType item(this->orig[index], this->prop[index]);
+			return item;
+		}
+		template <typename ReflectedItemType>
+		ReflectedItemType get_custom_item(const std::size_t index) const
+		{
+			return const_ref().template get_custom_item<ReflectedItemType>(index);
+		}
+		template <typename ReflectedItemType>
 		ReflectedItemType get_custom_item(const utils::keystring& key)
 		{
 			check_type<ReflectedItemType, ReflectedItemBase<cv_property> >();
@@ -514,9 +478,21 @@ namespace path
 		template <typename ReflectedItemType>
 		ReflectedItemType get_custom_item(const utils::keystring& key) const
 		{
-			return const_ref().get_custom_item<ReflectedItemType>(key);
+			return const_ref().template get_custom_item<ReflectedItemType>(key);
 		}
 
+		template <typename ReflectedItemType>
+		ReflectedItemType cast()
+		{
+			check_type<ReflectedItemType, ReflectedItemBase<cv_property> >();
+			ReflectedItemType item(this->orig, this->prop);
+			return item;
+		}
+		template <typename ReflectedItemType>
+		ReflectedItemType cast() const
+		{
+			return const_ref().template cast<ReflectedItemType>();
+		}
 	protected:
 		template <typename CastedType, typename BaseType>
 		static void check_type()

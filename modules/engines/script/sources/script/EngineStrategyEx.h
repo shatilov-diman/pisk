@@ -1,24 +1,6 @@
 // Project pisk
 // Copyright (C) 2016-2017 Dmitry Shatilov
 //
-// This file is a part of the module script of the project pisk.
-// This file is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
-// Additional restriction according to GPLv3 pt 7:
-// b) required preservation author attributions;
-// c) required preservation links to original sources
-//
 // Original sources:
 //   https://github.com/shatilov-diman/pisk/
 //   https://bitbucket.org/charivariltd/pisk/
@@ -43,10 +25,14 @@ namespace pisk
 {
 namespace script
 {
+	constexpr const char pisk_namprefix[] = "pisk";
+
 	template <typename BaseStrategy>
 	class PushChangesEngineStrategy :
 		public BaseStrategy
 	{
+		const utils::keystring push_changes_member {"push_changes"};
+
 	public:
 		template <typename ... TArgs>
 		PushChangesEngineStrategy(TArgs& ... args):
@@ -58,8 +44,12 @@ namespace script
 
 		virtual Configure on_init_app() override
 		{
-			if (not this->get_script_manager().register_external_function("script", "pisk", "push_changes", std::bind(&PushChangesEngineStrategy::push_changes_wrapper, this, std::placeholders::_1)))
-				infrastructure::Logger::get().warning("script", "Unalbe to register 'push_changes' external function");
+			if (not this->get_script_manager().register_external_function(
+				"script", pisk_namprefix, push_changes_member,
+				[this] (auto&& args) { return this->push_changes_wrapper(std::move(args)); }))
+			{
+				logger::warning("script", "Unalbe to register '{}:{}' external function", pisk_namprefix, push_changes_member);
+			}
 
 			return BaseStrategy::on_init_app();
 		}
@@ -67,26 +57,84 @@ namespace script
 		virtual void on_deinit_app() override
 		{
 			BaseStrategy::on_deinit_app();
-			if (not this->get_script_manager().unregister_external_function("script", "pisk", "push_changes"))
-				infrastructure::Logger::get().warning("script", "Unalbe to unregister 'push_changes' external function");
+			if (not this->get_script_manager().unregister_external_function("script", pisk_namprefix, push_changes_member))
+				logger::warning("script", "Unalbe to unregister '{}:{}' external function", pisk_namprefix, push_changes_member);
 		}
 
-		Results push_changes_wrapper(const Arguments& arguments)
+		Results push_changes_wrapper(Arguments&& arguments)
 		{
 			if (arguments.size() != 1)
 			{
-				infrastructure::Logger::get().warning("script", "Unexpected argumens count while call 'push_changes'");
+				logger::warning("script", "Unexpected argumens count while call 'push_changes'");
 				throw infrastructure::InvalidArgumentException();
 			}
 			if (not arguments[0].is_dictionary())
 			{
-				infrastructure::Logger::get().warning("script", "'push_changes' required only table with string as key");
+				logger::warning("script", "'push_changes' required only table with string as key");
 				throw infrastructure::InvalidArgumentException();
 			}
 
-			this->push_changes(arguments[0]);
+			this->push_changes(std::move(arguments[0]));
 
 			return {};
+		}
+	};
+
+	template <typename BaseStrategy>
+	class StopAppEngineStrategy :
+		public BaseStrategy
+	{
+		const utils::keystring stop_app_member {"stop_app"};
+
+		tools::MainLoopPtr main_loop;
+
+	public:
+		template <typename ... TArgs>
+		StopAppEngineStrategy(const tools::MainLoopPtr& main_loop, TArgs& ... args):
+			BaseStrategy(args...),
+			main_loop(main_loop)
+		{}
+
+	protected:
+		using Configure = typename BaseStrategy::Configure;
+
+		virtual Configure on_init_app() override
+		{
+			if (not this->get_script_manager().register_external_function(
+				"script", pisk_namprefix, stop_app_member,
+				[this] (auto&& args) { return this->stop_app_wrapper(std::move(args)); }))
+			{
+				logger::warning("script", "Unalbe to register '{}:{}' external function", pisk_namprefix, stop_app_member);
+			}
+
+			return BaseStrategy::on_init_app();
+		}
+
+		virtual void on_deinit_app() override
+		{
+			BaseStrategy::on_deinit_app();
+			if (not this->get_script_manager().unregister_external_function("script", pisk_namprefix, stop_app_member))
+				logger::warning("script", "Unalbe to unregister '{}:{}' external function", pisk_namprefix, stop_app_member);
+		}
+
+	private:
+		Results stop_app_wrapper(Arguments&& arguments)
+		{
+			if (arguments.size() != 0)
+			{
+				logger::warning("script", "Unexpected argumens count while call 'stop_app'");
+				throw infrastructure::InvalidArgumentException();
+			}
+
+			this->stop_app();
+
+			return {};
+		}
+
+		void stop_app()
+		{
+			logger::info("script", "Stop application request has been received");
+			main_loop->stop();
 		}
 	};
 
@@ -95,6 +143,8 @@ namespace script
 	class LogEngineStrategy :
 		public BaseStrategy
 	{
+		const utils::keystring log_member {"log"};
+
 	public:
 		template <typename ... TArgs>
 		LogEngineStrategy(TArgs& ... args):
@@ -106,8 +156,12 @@ namespace script
 
 		virtual Configure on_init_app() override
 		{
-			if (not this->get_script_manager().register_external_function("script", "pisk", "log", std::bind(&LogEngineStrategy::log, this, std::placeholders::_1)))
-				infrastructure::Logger::get().warning("script", "Unalbe to register 'push_changes' external function");
+			if (not this->get_script_manager().register_external_function(
+				"script", pisk_namprefix, log_member,
+				[this] (auto&& args) { return this->log(std::move(args)); }))
+			{
+				logger::warning("script", "Unalbe to register '{}:{}' external function", pisk_namprefix, log_member);
+			}
 
 			return BaseStrategy::on_init_app();
 		}
@@ -115,25 +169,25 @@ namespace script
 		virtual void on_deinit_app() override
 		{
 			BaseStrategy::on_deinit_app();
-			if (not this->get_script_manager().unregister_external_function("script", "pisk", "log"))
-				infrastructure::Logger::get().warning("script", "Unalbe to unregister 'push_changes' external function");
+			if (not this->get_script_manager().unregister_external_function("script", pisk_namprefix, log_member))
+				logger::warning("script", "Unalbe to unregister '{}:{}' external function", pisk_namprefix, log_member);
 		}
 
-		Results log(const Arguments& arguments)
+		Results log(Arguments&& arguments)
 		{
 			if (arguments.size() != 2)
 			{
-				infrastructure::Logger::get().error("script", "Unexpected count of arguments for 'log' external function");
+				logger::error("script", "Unexpected count of arguments for 'log' external function");
 				return {};
 			}
 			if (not arguments[0].is_string())
 			{
-				infrastructure::Logger::get().error("script", "Unexpected arguments for 'log' external function");
+				logger::error("script", "Unexpected arguments for 'log' external function");
 				return {};
 			}
 
 			const infrastructure::Logger::Level loglevel = arg_to_loglevel(arguments[0].as_keystring());
-			infrastructure::Logger::get().log(loglevel, "script log", utils::json::to_string(arguments[1]).c_str());
+			logger::log(loglevel, "script log", utils::json::to_string(arguments[1]));
 			return {};
 		}
 		static infrastructure::Logger::Level arg_to_loglevel(const utils::keystring& loglevel)
@@ -151,5 +205,72 @@ namespace script
 			return infrastructure::Logger::Level::Information;
 		}
 	};
+
+	template <typename BaseStrategy>
+	class LoadSceneEngineStrategy :
+		public BaseStrategy
+	{
+		const utils::keystring load_scene_member {"load_scene"};
+
+		system::ResourceManagerPtr resource_manager;
+
+	public:
+		template <typename ... TArgs>
+		LoadSceneEngineStrategy(const system::ResourceManagerPtr& _resource_manager, TArgs& ... args):
+			BaseStrategy(_resource_manager, args...),
+			resource_manager(_resource_manager)
+		{
+			if (resource_manager == nullptr)
+				throw infrastructure::InvalidArgumentException();
+		}
+
+	protected:
+		using Configure = typename BaseStrategy::Configure;
+
+		virtual Configure on_init_app() override
+		{
+			if (not this->get_script_manager().register_external_function(
+				"script", pisk_namprefix, load_scene_member,
+				[this](auto&& args) { return this->script_load_scene(std::move(args)); }
+			))
+			{
+				logger::warning("script", "Unalbe to register '{}:{}' external function", pisk_namprefix, load_scene_member);
+			}
+
+			return BaseStrategy::on_init_app();
+		}
+
+		virtual void on_deinit_app() override
+		{
+			BaseStrategy::on_deinit_app();
+			if (not this->get_script_manager().unregister_external_function("script", pisk_namprefix, load_scene_member))
+				logger::warning("script", "Unalbe to unregister '{}:{}' external function", pisk_namprefix, load_scene_member);
+		}
+
+		Results script_load_scene(Arguments&& arguments)
+		{
+			static const char signature[] = "load_scene(path_to_scene:string, clear_all:bool)";
+			if (arguments.size() != 2)
+			{
+				logger::error("script", "Unexpected count of arguments for external function '{}'", signature);
+				return {};
+			}
+			if (not arguments[0].is_string())
+			{
+				logger::error("script", "Unexpected 1st argument for external function '{}'", signature);
+				return {};
+			}
+			if (not arguments[1].is_bool())
+			{
+				logger::error("script", "Unexpected 2nd argument for external function '{}'", signature);
+				return {};
+			}
+
+			this->load_scene(arguments[0].as_keystring(), arguments[1].as_bool());
+
+			return {};
+		}
+	};
 }// namespace script
 }// namespace pisk
+

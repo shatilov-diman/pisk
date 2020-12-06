@@ -1,24 +1,6 @@
 // Project pisk
 // Copyright (C) 2016-2017 Dmitry Shatilov
 //
-// This file is a part of the module model of the project pisk.
-// This file is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
-// Additional restriction according to GPLv3 pt 7:
-// b) required preservation author attributions;
-// c) required preservation links to original sources
-//
 // Original sources:
 //   https://github.com/shatilov-diman/pisk/
 //   https://bitbucket.org/charivariltd/pisk/
@@ -255,6 +237,184 @@ Describe(TestReflectedObject) {
 					Assert::That(Root().cobject.child("zxc").is_none(), Is().EqualTo(true));
 				}
 			};
+		};
+	};
+	Context(check_tags) {
+		static std::size_t calculate_tags(const ReflectedObject& object) {
+			std::size_t count = 0;
+			for (auto tag : object.tags())
+			{
+				UNUSED(tag);
+				++count;
+			}
+			return count;
+		}
+		static bool object_has_tag(const ReflectedObject& object, const keystring& check_tag) {
+			for (auto tag : object.tags())
+				if (tag == check_tag)
+					return true;
+			return false;
+		}
+		When(no_tags) {
+			Then(tags_returns_empty) {
+				Assert::That(calculate_tags(Root().object), Is().EqualTo(0U));
+			}
+			When(add_empty_tag) {
+				void SetUp() {
+					Root().object.add_tag("");
+				}
+				Then(tags_returns_three_items) {
+					Assert::That(calculate_tags(Root().object), Is().EqualTo(1U));
+					Assert::That(object_has_tag(Root().object, ""), Is().EqualTo(true));
+				}
+				When(remove_empty_tag) {
+					void SetUp() {
+						Root().object.remove_tag("");
+					}
+					Then(tags_returns_two_items_again) {
+						Assert::That(calculate_tags(Root().object), Is().EqualTo(0U));
+						Assert::That(object_has_tag(Root().object, ""), Is().EqualTo(false));
+					}
+				};
+			};
+		};
+		When(add_tag) {
+			void SetUp() {
+				Assert::That(object_has_tag(Root().object, "background"), Is().EqualTo(false));
+				Root().object.add_tag("background");
+			}
+			Then(tags_returns_one_item) {
+				Assert::That(calculate_tags(Root().object), Is().EqualTo(1U));
+				Assert::That(object_has_tag(Root().object, "background"), Is().EqualTo(true));
+			}
+			When(add_the_tag_again) {
+				void SetUp() {
+					Root().object.add_tag("background");
+				}
+				Then(tags_returns_one_item) {
+					Assert::That(calculate_tags(Root().object), Is().EqualTo(1U));
+					Assert::That(object_has_tag(Root().object, "background"), Is().EqualTo(true));
+				}
+			};
+			When(remove_one_tag) {
+				void SetUp() {
+					Root().object.remove_tag("background");
+				}
+				Then(tags_returns_no_items) {
+					Assert::That(calculate_tags(Root().object), Is().EqualTo(0U));
+					Assert::That(object_has_tag(Root().object, "background"), Is().EqualTo(false));
+				}
+				When(remove_the_tag_again) {
+					void SetUp() {
+						Root().object.remove_tag("background");
+					}
+					Then(tags_returns_no_items) {
+						Assert::That(calculate_tags(Root().object), Is().EqualTo(0U));
+						Assert::That(object_has_tag(Root().object, "background"), Is().EqualTo(false));
+					}
+				};
+			};
+			When(remove_one_nonexisten_tag) {
+				void SetUp() {
+					Assert::That(object_has_tag(Root().object, "foreground"), Is().EqualTo(false));
+					Root().object.remove_tag("foreground");
+				}
+				Then(tags_returns_one_item) {
+					Assert::That(calculate_tags(Root().object), Is().EqualTo(1U));
+					Assert::That(object_has_tag(Root().object, "foreground"), Is().EqualTo(false));
+				}
+			};
+		};
+		When(add_two_tags) {
+			void SetUp() {
+				Root().object.add_tag("layer_1");
+				Root().object.add_tag("layer_2");
+			}
+			Then(tags_returns_two_items) {
+				Assert::That(calculate_tags(Root().object), Is().EqualTo(2U));
+				Assert::That(object_has_tag(Root().object, "layer_1"), Is().EqualTo(true));
+				Assert::That(object_has_tag(Root().object, "layer_2"), Is().EqualTo(true));
+			}
+			When(remove_one_tag) {
+				void SetUp() {
+					Root().object.remove_tag("layer_1");
+				}
+				Then(tags_returns_one_item) {
+					Assert::That(calculate_tags(Root().object), Is().EqualTo(1U));
+					Assert::That(object_has_tag(Root().object, "layer_1"), Is().EqualTo(false));
+					Assert::That(object_has_tag(Root().object, "layer_2"), Is().EqualTo(true));
+				}
+			};
+			When(add_empty_tag) {
+				void SetUp() {
+					Root().object.add_tag("");
+				}
+				Then(tags_returns_three_items) {
+					Assert::That(calculate_tags(Root().object), Is().EqualTo(3U));
+					Assert::That(object_has_tag(Root().object, "layer_1"), Is().EqualTo(true));
+					Assert::That(object_has_tag(Root().object, "layer_2"), Is().EqualTo(true));
+					Assert::That(object_has_tag(Root().object, ""), Is().EqualTo(true));
+				}
+				When(remove_empty_tag) {
+					void SetUp() {
+						Root().object.remove_tag("");
+					}
+					Then(tags_returns_two_items_again) {
+						Assert::That(calculate_tags(Root().object), Is().EqualTo(2U));
+						Assert::That(object_has_tag(Root().object, "layer_1"), Is().EqualTo(true));
+						Assert::That(object_has_tag(Root().object, "layer_2"), Is().EqualTo(true));
+						Assert::That(object_has_tag(Root().object, ""), Is().EqualTo(false));
+					}
+				};
+			};
+		};
+	};
+	Context(check_enabled) {
+		When(set_enabled) {
+			void SetUp() {
+				Root().object.enabled() = true;
+			}
+			Then(is_enabled) {
+				Assert::That(Root().object.enabled(), Is().EqualTo(true));
+				Assert::That(Root().cobject.enabled(), Is().EqualTo(true));
+			}
+			Then(check_diff) {
+				property check;
+				check["properties"]["enabled"] = true;
+				Assert::That(Root().diff, Is().EqualTo(check));
+			}
+		};
+		When(set_not_enabled) {
+			void SetUp() {
+				Root().object.enabled() = false;
+			}
+			Then(is_not_enabled) {
+				Assert::That(Root().object.enabled(), Is().EqualTo(false));
+				Assert::That(Root().cobject.enabled(), Is().EqualTo(false));
+			}
+			Then(check_diff) {
+				property check;
+				check["properties"]["enabled"] = false;
+				Assert::That(Root().diff, Is().EqualTo(check));
+			}
+		};
+		When(load_enabled) {
+			void SetUp() {
+				Root().diff["properties"]["enabled"] = true;
+			}
+			Then(is_enabled) {
+				Assert::That(Root().object.enabled(), Is().EqualTo(true));
+				Assert::That(Root().cobject.enabled(), Is().EqualTo(true));
+			}
+		};
+		When(load_not_enabled) {
+			void SetUp() {
+				Root().diff["properties"]["enabled"] = false;
+			}
+			Then(is_not_enabled) {
+				Assert::That(Root().object.enabled(), Is().EqualTo(false));
+				Assert::That(Root().cobject.enabled(), Is().EqualTo(false));
+			}
 		};
 	};
 };

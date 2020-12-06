@@ -1,24 +1,6 @@
 // Project pisk
 // Copyright (C) 2016-2017 Dmitry Shatilov
 //
-// This file is a part of the module http of the project pisk.
-// This file is free software: you can redistribute it and/or modify
-// it under the terms of the GNU Lesser General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
-// Additional restriction according to GPLv3 pt 7:
-// b) required preservation author attributions;
-// c) required preservation links to original sources
-//
 // Original sources:
 //   https://github.com/shatilov-diman/pisk/
 //   https://bitbucket.org/charivariltd/pisk/
@@ -72,16 +54,26 @@ namespace http
 		CURLM* multi_handle = nullptr;
 
 	private:
-		virtual void init_service() noexcept final override
+		virtual bool init_service() noexcept final override
 		{
-			infrastructure::Logger::get().info("http", "Curl: init curl");
+			logger::info("http", "Curl: init curl");
 
-			curl_global_init(CURL_GLOBAL_DEFAULT);
+			if (const auto err = curl_global_init(CURL_GLOBAL_DEFAULT))
+			{
+				logger::error("http", "Curl: failed to global init curl");
+				return false;
+			}
 			multi_handle = curl_multi_init();
+			if (multi_handle == nullptr)
+			{
+				logger::error("http", "Curl: failed to init curl handle");
+				return false;
+			}
+			return true;
 		}
 		virtual void deinit_service() noexcept final override
 		{
-			infrastructure::Logger::get().info("http", "Curl: deinit curl");
+			logger::info("http", "Curl: deinit curl");
 
 			for (const auto& task : tasks)
 				close_handle(task.first);
@@ -155,6 +147,8 @@ namespace http
 			curl_easy_setopt_wrap(curl, CURLOPT_READFUNCTION, &read_data);
 			curl_easy_setopt_wrap(curl, CURLOPT_READDATA, task.get());
 
+			curl_easy_setopt_wrap(curl, CURLOPT_SSLCERTTYPE, "PEM");
+			curl_easy_setopt_wrap(curl, CURLOPT_SSL_VERIFYPEER, 1L);
 			curl_easy_setopt_wrap(curl, CURLOPT_SSL_CTX_DATA, this);
 			curl_easy_setopt_wrap(curl, CURLOPT_SSL_CTX_FUNCTION, &ssl_ctx_callback_wrap);
 		}
@@ -199,12 +193,22 @@ namespace http
 
 		static CURLcode ssl_ctx_callback_wrap(CURL* curl, void* ssl_ctx, void* userptr)
 		{
+			if (curl == nullptr or ssl_ctx == nullptr or userptr == nullptr)
+			{
+				log_error("ssl_ctx_callback_wrap received nullptr argument");
+				return CURLE_OK;
+			}
 			cURLWorker* pthis = static_cast<cURLWorker*>(userptr);
-			return pthis->ssl_ctx_callback(curl, ssl_ctx);
+			return pthis->ssl_ctx_callback(curl, static_cast<SSL_CTX *>(ssl_ctx));
 		}
-		CURLcode ssl_ctx_callback(CURL*, void* ssl_ctx)
+		CURLcode ssl_ctx_callback(CURL*, SSL_CTX* ssl_ctx)
 		{
-			X509_STORE* store = SSL_CTX_get_cert_store(static_cast<SSL_CTX *>(ssl_ctx));
+			X509_STORE* store = SSL_CTX_get_cert_store(ssl_ctx);
+			if (store == nullptr)
+			{
+				log_error("SSL_CTX_get_cert_store");
+				return CURLE_OK;
+			}
 
 			for (const auto& ca_cert : CurlCAList)
 			{
@@ -214,28 +218,28 @@ namespace http
 					log_error("BIO_new_mem_buf");
 					continue;
 				}
-				X509 *cert = nullptr;
-				PEM_read_bio_X509(bio, &cert, 0, NULL);
+				X509 *cert = PEM_read_bio_X509_AUX(bio, NULL, 0, NULL);
 				if(cert == NULL)
 				{
-					log_error("PEM_read_bio_X509");
+					log_error("PEM_read_bio_X509_AUX");
 				}
 				else
 				{
 					if(X509_STORE_add_cert(store, cert) == 0)
-						infrastructure::Logger::get().error("http:ssl", "error adding certificate");
+						log_error("X509_STORE_add_cert");
+					else
+						logger::info("http:ssl", "Add OK");
 
 					X509_free(cert);
 				}
 				BIO_free(bio);
 			}
 
-			/* all set to go */
 			return CURLE_OK;
 		}
 
 	private:
-		void log_error(const utils::keystring& functionname)
+		static void log_error(const utils::keystring& functionname)
 		{
 			char buffer[128] = "";
 			for (;;)
@@ -244,7 +248,10 @@ namespace http
 				if (err == 0)
 					break;
 				ERR_error_string_n(err, buffer, sizeof(buffer));
-				infrastructure::Logger::get().error("http:ssl", "%s failed 0x%x: %s", functionname.c_str(), err, buffer);
+				if (ERR_GET_LIB(err) == ERR_LIB_X509 && ERR_GET_REASON(err) == X509_R_CERT_ALREADY_IN_HASH_TABLE)
+					logger::info("http:ssl", "{} failed {}: {}", functionname, err, buffer);
+				else
+					logger::error("http:ssl", "{} failed {}: {}", functionname, err, buffer);
 			}
 		}
 
@@ -263,7 +270,7 @@ namespace http
 			const CURLMcode cc = check_code(curl_multi_fdset(multi_handle, &fdread, &fdwrite, &fdexcep, &maxfd), "curl_multi_fdset");
 			if (cc != CURLM_OK)
 			{
-				infrastructure::Logger::get().error("http", "curl_multi_fdset exit with error: %d", static_cast<int>(cc));
+				logger::error("http", "curl_multi_fdset exit with error: {}", static_cast<int>(cc));
 				return;
 			}
 
@@ -275,7 +282,7 @@ namespace http
 			{
 				timeval timeout = get_timeout();
 				if (select(maxfd + 1, &fdread, &fdwrite, &fdexcep, &timeout) == -1)
-					infrastructure::Logger::get().error("http", "select exit with error: %d", errno);
+					logger::error("http", "select exit with error: {}", errno);
 			}
 
 			int still_running = 0;
@@ -313,7 +320,7 @@ namespace http
 			const CurlTaskPtr& task = tasks[msg->easy_handle];
 			task->http_task->response.error_code = static_cast<ErrorCode>(msg->data.result);
 			if (msg->data.result != CURLE_OK)
-				infrastructure::Logger::get().error("http", "select exit with error: %d (%s)", static_cast<int>(msg->data.result), curl_easy_strerror(msg->data.result));
+				logger::error("http", "select exit with error: {} ({})", static_cast<int>(msg->data.result), curl_easy_strerror(msg->data.result));
 			else
 			{
 				long status_code = static_cast<long>(Status::UNKNOWN);
@@ -341,14 +348,14 @@ namespace http
 		{
 			assert(function != nullptr);
 			if (code != CURLE_OK)
-				infrastructure::Logger::get().warning("http", "Curl: error while execute function: %s; error: %s", function, curl_easy_strerror(code));
+				logger::warning("http", "Curl: error while execute function: {}; error: {}", function, curl_easy_strerror(code));
 			return code;
 		}
 		static CURLMcode check_code(CURLMcode code, const char* function)
 		{
 			assert(function != nullptr);
 			if (code != CURLM_OK)
-				infrastructure::Logger::get().warning("http", "Curl: error while execute function: %s; error: %s", function, curl_multi_strerror(code));
+				logger::warning("http", "Curl: error while execute function: {}; error: {}", function, curl_multi_strerror(code));
 			return code;
 		}
 	};

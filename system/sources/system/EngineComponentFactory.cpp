@@ -1,24 +1,6 @@
 // Project pisk
 // Copyright (C) 2016-2017 Dmitry Shatilov
 //
-// This file is a part of the module system of the project pisk.
-// This file is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
-// Additional restriction according to GPLv3 pt 7:
-// b) required preservation author attributions;
-// c) required preservation links to original sources
-//
 // Original sources:
 //   https://github.com/shatilov-diman/pisk/
 //   https://bitbucket.org/charivariltd/pisk/
@@ -29,22 +11,36 @@
 //
 
 
-#include "EngineComponentFactory.h"
-
 #include <pisk/tools/ComponentsLoader.h>
+#include <pisk/tools/MainLoop.h>
+
+#include "EngineComponentFactory.h"
+#include "EngineSynchronizer.h"
 
 #include <memory>
 
-pisk::system::PatchPortalPtr CreatePatchPortal();
-
+using namespace pisk::utils;
 using namespace pisk::tools;
+using namespace pisk::system;
 
-SafeComponentPtr __cdecl engine_component_factory_factory(const ServiceRegistry&, const InstanceFactory& factory, const pisk::utils::property&)
+SafeComponentPtr __cdecl engine_component_factory_factory(const ServiceRegistry& temp_sl, const InstanceFactory& factory, const property&)
 {
 	static_assert(std::is_convertible<decltype(&engine_component_factory_factory), pisk::tools::components::ComponentFactory>::value, "Signature was changed!");
 
-	pisk::system::PatchPortalPtr&& portal = CreatePatchPortal();
-	return factory.make<pisk::system::impl::EngineComponentFactory>(std::move(portal));
+	auto main_loop = temp_sl.get<MainLoop>(MainLoop::uid);
+	if (main_loop == nullptr)
+		return {};
+
+	auto engine_factory = factory.make<subscribtions_holder_proxy<impl::EngineComponentFactory>>();
+
+	engine_factory->store_subscribtion(main_loop->on_begin_loop.subscribe(std::bind(
+		&impl::EngineComponentFactory::start, engine_factory.get()//use raw pointer to avoid issue with cyclic links
+	)));
+	engine_factory->store_subscribtion(main_loop->on_end_loop.subscribe(std::bind(
+		&impl::EngineComponentFactory::stop, engine_factory.get()//use raw pointer to avoid issue with cyclic links
+	)));
+
+	return engine_factory;
 }
 
 extern "C"

@@ -1,24 +1,6 @@
 // Project pisk
 // Copyright (C) 2016-2017 Dmitry Shatilov
 //
-// This file is a part of the module lua of the project pisk.
-// This file is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
-// Additional restriction according to GPLv3 pt 7:
-// b) required preservation author attributions;
-// c) required preservation links to original sources
-//
 // Original sources:
 //   https://github.com/shatilov-diman/pisk/
 //   https://bitbucket.org/charivariltd/pisk/
@@ -73,7 +55,7 @@ namespace loaders
 		{
 			if (lua_gettop(state) != top)
 			{
-				infrastructure::Logger::get().critical("lua", "Lua stack-checker just detected stack leak. Restore stack");
+				logger::critical("lua", "Lua stack-checker just detected stack leak. Restore stack");
 				lua_settop(state, top);
 			}
 		}
@@ -95,7 +77,7 @@ namespace loaders
 			LuaStackChecker checker(state);
 			try
 			{
-				infrastructure::Logger::get().debug("lua", "ctor: init lua script");
+				logger::debug("lua", "ctor: init lua script");
 
 				load_content(data);
 				load_standart_libs();
@@ -103,7 +85,7 @@ namespace loaders
 			}
 			catch (const infrastructure::InitializeError&)
 			{
-				infrastructure::Logger::get().error("lua", "ctor: exception occured while init lua script");
+				logger::error("lua", "ctor: exception occured while init lua script");
 				lua_close(state);
 				throw;
 			}
@@ -111,7 +93,7 @@ namespace loaders
 
 		virtual ~LuaScript()
 		{
-			infrastructure::Logger::get().debug("lua", "dtor: deinit lua script");
+			logger::debug("lua", "dtor: deinit lua script");
 			lua_close(state);
 		}
 
@@ -123,7 +105,7 @@ namespace loaders
 			if (load_result != LUA_OK)
 			{
 				const utils::keystring& error_msg = pop_result().as_keystring();
-				infrastructure::Logger::get().debug("lua", "luaL_loadstring ended with error: %d, %s", load_result, error_msg.c_str());
+				logger::debug("lua", "luaL_loadstring ended with error: {}, {}", load_result, error_msg);
 				throw ScriptException (error_msg, to_error(load_result));
 			}
 		}
@@ -137,7 +119,7 @@ namespace loaders
 			if (run_main_result != LUA_OK)
 			{
 				const utils::keystring& error_msg = pop_result().as_keystring();
-				infrastructure::Logger::get().debug("lua", "lua_pcall entry_point ended with error: %d, %s", run_main_result, error_msg.c_str());
+				logger::debug("lua", "lua_pcall entry_point ended with error: {}, {}", run_main_result, error_msg);
 				throw ScriptException (error_msg, to_error(run_main_result));
 			}
 		}
@@ -145,11 +127,11 @@ namespace loaders
 	private:
 		virtual bool register_external_function(const utils::keystring& nameprefix, const utils::keystring& name, ExternalFunction function) final override
 		{
-			infrastructure::Logger::get().debug("lua", "Register external function '%s.%s'", nameprefix.c_str(), name.c_str());
+			logger::debug("lua", "Register external function '{}.{}'", nameprefix, name);
 			const std::string fullname = nameprefix.get_content() + '.' + name.get_content();
 			if (functions[fullname] != nullptr)
 			{
-				infrastructure::Logger::get().debug("lua", "External function '%s.%s' already exists", nameprefix.c_str(), name.c_str());
+				logger::debug("lua", "External function '{}.{}' already exists", nameprefix, name);
 				return false;
 			}
 			functions[fullname] = function;
@@ -187,11 +169,11 @@ namespace loaders
 		}
 		virtual bool unregister_external_function(const utils::keystring& nameprefix, const utils::keystring& name) final override
 		{
-			infrastructure::Logger::get().debug("lua", "Unregister external function '%s.%s'", nameprefix.c_str(), name.c_str());
+			logger::debug("lua", "Unregister external function '{}.{}'", nameprefix, name);
 			const std::string fullname = nameprefix.get_content() + '.' + name.get_content();
 			if (functions[fullname] == nullptr)
 			{
-				infrastructure::Logger::get().debug("lua", "External function '%s.%s' not found", nameprefix.c_str(), name.c_str());
+				logger::debug("lua", "External function '{}.{}' not found", nameprefix, name);
 				return false;
 			}
 			functions.erase(fullname);
@@ -202,7 +184,7 @@ namespace loaders
 			{
 				lua_getglobal(state, name.c_str());
 				if (lua_isnil(state, -1))
-					infrastructure::Logger::get().warning("lua", "unregister: unable to locate '%s.%s'", nameprefix.c_str(), name.c_str());
+					logger::warning("lua", "unregister: unable to locate '{}.{}'", nameprefix, name);
 				else
 				{
 					lua_pop(state, 1);
@@ -214,7 +196,7 @@ namespace loaders
 			{
 				lua_getglobal(state, nameprefix.c_str());//try to get table on the top
 				if (lua_isnil(state, -1))
-					infrastructure::Logger::get().warning("lua", "unregister: unable to locate '%s.%s'", nameprefix.c_str(), name.c_str());
+					logger::warning("lua", "unregister: unable to locate '{}.{}'", nameprefix, name);
 				else
 				{
 					lua_pushstring(state, name.c_str());//table key
@@ -228,14 +210,14 @@ namespace loaders
 
 		static int closure(lua_State* state)
 		{
-			infrastructure::Logger::get().spam("lua", "closure");
+			logger::spam("lua", "closure");
 
 			const int this_idx = lua_upvalueindex(1);
 			const int fn_name_idx = lua_upvalueindex(2);
 
 			if (not lua_isuserdata(state, this_idx) or not lua_isstring(state, fn_name_idx))
 			{
-				infrastructure::Logger::get().error("lua", "Unepxected closure variables");
+				logger::error("lua", "Unepxected closure variables");
 				return luaL_error(state, "Unepxected closure variables");
 			}
 
@@ -243,18 +225,18 @@ namespace loaders
 			const char* function_name = lua_tostring(state, fn_name_idx);
 			if (function_name == nullptr)
 			{
-				infrastructure::Logger::get().error("lua", "closure contains nullptr function name");
+				logger::error("lua", "closure contains nullptr function name");
 				return luaL_error(state, "closure contains nullptr function name");
 			}
 
-			infrastructure::Logger::get().spam("lua", "closure '%s'", function_name);
+			logger::spam("lua", "closure '{}'", function_name);
 			int result = pthis->closure(function_name);
-			infrastructure::Logger::get().spam("lua", "closure '%s' complete with return %d args", function_name, result);
+			logger::spam("lua", "closure '{}' complete with return {} args", function_name, result);
 			return result;
 		}
 		int closure(const std::string& function_name)
 		{
-			infrastructure::Logger::get().spam("lua", "External function '%s' call", function_name.c_str());
+			logger::spam("lua", "External function '{}' call", function_name);
 			const int top = lua_gettop(state);
 			try
 			{
@@ -266,25 +248,25 @@ namespace loaders
 			}
 			catch (const infrastructure::InvalidArgumentException&)
 			{
-				infrastructure::Logger::get().warning("lua", "Unexpected arguments received while run '%s'", function_name.c_str());
+				logger::warning("lua", "Unexpected arguments received while run '{}'", function_name);
 				lua_settop(state, top);
-				return luaL_error(state, "Unexpected arguments received while run '%s'", function_name.c_str());
+				return luaL_error(state, "Unexpected arguments received while run '{}'", function_name.c_str());
 			}
 			catch (const infrastructure::Exception&)
 			{
-				infrastructure::Logger::get().warning("lua", "Unexpected exception received while run '%s'", function_name.c_str());
+				logger::warning("lua", "Unexpected exception received while run '{}'", function_name);
 				lua_settop(state, top);
-				return luaL_error(state, "Unexpected exception received while run '%s'", function_name.c_str());
+				return luaL_error(state, "Unexpected exception received while run '{}'", function_name.c_str());
 			}
 			catch (const std::exception& ex)
 			{
-				infrastructure::Logger::get().warning("lua", "Unexpected std::exception received while run '%s': %s", function_name.c_str(), ex.what());
+				logger::warning("lua", "Unexpected std::exception received while run '{}': {}", function_name, ex.what());
 				lua_settop(state, top);
 				throw;
 			}
 			catch (...)
 			{
-				infrastructure::Logger::get().warning("lua", "Unexpected arguments received while run '%s'", function_name.c_str());
+				logger::warning("lua", "Unexpected arguments received while run '{}'", function_name);
 				lua_settop(state, top);
 				throw;
 			}
@@ -298,7 +280,7 @@ namespace loaders
 			const int top = lua_gettop(state);
 			try
 			{
-				infrastructure::Logger::get().spam("lua", "Execute function '%s'", function.c_str());
+				logger::spam("lua", "Execute function '{}'", function);
 
 				push_function(function);
 				push_arguments(arguments);
@@ -308,7 +290,7 @@ namespace loaders
 			}
 			catch (...)
 			{
-				infrastructure::Logger::get().error("lua", "exception detected while execute function '%s'", function.c_str());
+				logger::error("lua", "exception detected while execute function '{}'", function);
 				lua_settop(state, top);
 				throw;
 			}
@@ -318,8 +300,8 @@ namespace loaders
 			lua_getglobal(state, function.c_str());
 			if (lua_isnil(state, -1))
 			{
-				const utils::keystring& error_msg = utils::string::format(utils::keystring { "Function '%s' not found" }, function.c_str());
-				infrastructure::Logger::get().error("lua", error_msg.c_str());
+				const utils::keystring error_msg { utils::string::format("Function '{}' not found", function.c_str()) };
+				logger::error("lua", error_msg.get_content());
 				throw ScriptException (error_msg, ScriptException::runtime_error);
 			}
 		}
@@ -329,7 +311,7 @@ namespace loaders
 			if (result != LUA_OK)
 			{
 				const utils::keystring& error_msg = pop_result().as_keystring();
-				infrastructure::Logger::get().error("lua", "lua_pcall ended with error: %d, %s", result, error_msg.c_str());
+				logger::error("lua", "lua_pcall ended with error: {}, {}", result, error_msg);
 				throw ScriptException (error_msg, to_error(result));
 			}
 		}
@@ -397,7 +379,7 @@ namespace loaders
 					}
 					break;
 				default:
-					infrastructure::Logger::get().error("lua", "Unexpected property type detected while push arguments");
+					logger::error("lua", "Unexpected property type detected while push arguments");
 					break;
 			}
 		}
@@ -432,8 +414,14 @@ namespace loaders
 					{
 						if (lua_isnumber(state, -2))
 						{
-							const auto& key = static_cast<std::size_t>(lua_tonumber(state, -2));
-							out[key-1] = pop_result();
+							const auto& key = static_cast<std::ptrdiff_t>(lua_tointeger(state, -2));
+							if (key > 0)
+								out[key-1] = pop_result();
+							else
+							{
+								logger::warning("lua", "Lua array keys starts from 1. Skip it");
+								pop_result();
+							}
 						}
 						else if (lua_isstring(state, -2))
 						{
@@ -442,13 +430,13 @@ namespace loaders
 						}
 						else
 						{
-							infrastructure::Logger::get().warning("lua", "Unsupported lua type detected for key of table");
+							logger::warning("lua", "Unsupported lua type detected for key of table: {}", lua_type(state, -2));
 							lua_pop(state, 1);
 						}
 					}
 					break;
 				default:
-					infrastructure::Logger::get().error("lua", "Unsupported lua type detected while pop arguments");
+					logger::error("lua", "Unsupported lua type detected while pop arguments: {}", type);
 					break;
 			}
 			lua_pop(state, 1);

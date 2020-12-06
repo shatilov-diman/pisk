@@ -1,24 +1,6 @@
 // Project pisk
 // Copyright (C) 2016-2017 Dmitry Shatilov
 //
-// This file is a part of the module audio of the project pisk.
-// This file is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
-// Additional restriction according to GPLv3 pt 7:
-// b) required preservation author attributions;
-// c) required preservation links to original sources
-//
 // Original sources:
 //   https://github.com/shatilov-diman/pisk/
 //   https://bitbucket.org/charivariltd/pisk/
@@ -49,7 +31,7 @@ namespace audio
 		{
 			::alGenBuffers(1, &buffer_id);
 			if (auto error_code = ::alGetError())
-				infrastructure::Logger::get().error("openal", "Unable to allocate audio buffer: %s", al_get_error(error_code).c_str());
+				logger::error("openal", "Unable to allocate audio buffer: {}", al_get_error(error_code));
 		}
 		~Buffer()
 		{
@@ -57,7 +39,7 @@ namespace audio
 			{
 				::alDeleteBuffers(1, &buffer_id);
 				if (auto error_code = ::alGetError())
-					infrastructure::Logger::get().error("openal", "Unable to release audio buffer: %s", al_get_error(error_code).c_str());
+					logger::error("openal", "Unable to release audio buffer: {}", al_get_error(error_code));
 			}
 		}
 		ALuint handle() const
@@ -74,7 +56,7 @@ namespace audio
 		{
 			::alGenSources(1, &source_id);
 			if (auto error_code = ::alGetError())
-				infrastructure::Logger::get().error("openal", "Unable to allocate audio source: %s", al_get_error(error_code).c_str());
+				logger::error("openal", "Unable to allocate audio source: {}", al_get_error(error_code));
 		}
 		~Source()
 		{
@@ -82,7 +64,7 @@ namespace audio
 			{
 				::alDeleteSources(1, &source_id);
 				if (auto error_code = ::alGetError())
-					infrastructure::Logger::get().error("openal", "Unable to release audio source: %s", al_get_error(error_code).c_str());
+					logger::error("openal", "Unable to release audio source: {}", al_get_error(error_code));
 			}
 		}
 		ALuint handle() const
@@ -117,7 +99,7 @@ namespace audio
 		{
 			if (stream == nullptr)
 			{
-				infrastructure::Logger::get().critical("openal", "Unable to build audio source from nullptr");
+				logger::critical("openal", "Unable to build audio source from nullptr");
 				throw infrastructure::NullPointerException();
 			}
 			::alSourcef(source.handle(), AL_PITCH, 1.f);
@@ -126,12 +108,12 @@ namespace audio
 			::alSource3f(source.handle(), AL_POSITION, 0.f, 0.f, 0.f);
 			::alSource3f(source.handle(), AL_VELOCITY, 0.f, 0.f, 0.f);
 			if (auto error_code = ::alGetError())
-				infrastructure::Logger::get().error("openal", "Source: %s", al_get_error(error_code).c_str());
+				logger::error("openal", "Source: {}", al_get_error(error_code));
 
 			data_stream = stream->decode();
 			if (data_stream == nullptr)
 			{
-				infrastructure::Logger::get().critical("openal", "Unable to decode audio source");
+				logger::critical("openal", "Unable to decode audio source");
 				throw infrastructure::NullPointerException();
 			}
 			load_metainfo();
@@ -166,11 +148,11 @@ namespace audio
 			ALuint handles[] = {buffers[0].handle(), buffers[1].handle()};
 			::alSourceQueueBuffers(source.handle(), countof(handles), handles);
 			if (auto error_code = ::alGetError())
-				infrastructure::Logger::get().error("openal", "Source: %s", al_get_error(error_code).c_str());
+				logger::error("openal", "Source: {}", al_get_error(error_code));
 
 			::alSourcePlay(source.handle());
 			if (auto error_code = ::alGetError())
-				infrastructure::Logger::get().error("openal", "Source::play: %s", al_get_error(error_code).c_str());
+				logger::error("openal", "Source::play: {}", al_get_error(error_code));
 		}
 
 	public:
@@ -178,20 +160,20 @@ namespace audio
 		{
 			::alSourceStop(source.handle());
 			if (auto error_code = ::alGetError())
-				infrastructure::Logger::get().error("openal", "Source::stop: %s", al_get_error(error_code).c_str());
+				logger::error("openal", "Source::stop: {}", al_get_error(error_code));
 			set_state(AL_STOPPED);
 
 			ALint queued;
 			::alGetSourcei(source.handle(), AL_BUFFERS_QUEUED, &queued);
 			if (auto error_code = ::alGetError())
-				infrastructure::Logger::get().error("openal", "~AudioSource: %s", al_get_error(error_code).c_str());
+				logger::error("openal", "~AudioSource: {}", al_get_error(error_code));
 
 			while (queued--)
 			{
 				ALuint buffer_id;
 				::alSourceUnqueueBuffers(source.handle(), 1, &buffer_id);
 				if (auto error_code = ::alGetError())
-					infrastructure::Logger::get().error("openal", "~AudioSource: %s", al_get_error(error_code).c_str());
+					logger::error("openal", "~AudioSource: {}", al_get_error(error_code));
 			}
 		}
 		void update()
@@ -225,7 +207,7 @@ namespace audio
 			else
 				::alSourceStop(source.handle());
 			if (auto error_code = ::alGetError())
-				infrastructure::Logger::get().error("openal", "Source::check_and_force_state: %s", al_get_error(error_code).c_str());
+				logger::error("openal", "Source::check_and_force_state: {}", al_get_error(error_code));
 		}
 
 	private:
@@ -256,7 +238,7 @@ namespace audio
 			ALint state = AL_STOPPED;
 			::alGetSourcei(source.handle(), AL_SOURCE_STATE, &state);
 			if (auto error_code = ::alGetError())
-				infrastructure::Logger::get().error("openal", "Source::get_state: %s", al_get_error(error_code).c_str());
+				logger::error("openal", "Source::get_state: {}", al_get_error(error_code));
 			return state;
 		}
 		bool load_buffers()
@@ -264,14 +246,14 @@ namespace audio
 			ALint processed;
 			::alGetSourcei(source.handle(), AL_BUFFERS_PROCESSED, &processed);
 			if (auto error_code = ::alGetError())
-				infrastructure::Logger::get().error("openal", "Source::load_buffers: %s", al_get_error(error_code).c_str());
+				logger::error("openal", "Source::load_buffers: {}", al_get_error(error_code));
 
 			while (processed--)
 			{
 				ALuint buffer_id;
 				::alSourceUnqueueBuffers(source.handle(), 1, &buffer_id);
 				if (auto error_code = ::alGetError())
-					infrastructure::Logger::get().error("openal", "Source::load_buffers: %s", al_get_error(error_code).c_str());
+					logger::error("openal", "Source::load_buffers: {}", al_get_error(error_code));
 				if (is_data_ends())
 					continue;
 				if (not fill_buffer(buffer_id))
@@ -281,7 +263,7 @@ namespace audio
 				}
 				::alSourceQueueBuffers(source.handle(), 1, &buffer_id);
 				if (auto error_code = ::alGetError())
-					infrastructure::Logger::get().error("openal", "Source::load_buffers: %s", al_get_error(error_code).c_str());
+					logger::error("openal", "Source::load_buffers: {}", al_get_error(error_code));
 			}
 			return not is_data_ends();
 		}
@@ -330,7 +312,7 @@ namespace audio
 
 			::alBufferData(buffer_id, audio_format, data_buffer.data(), ret, audio_freq);
 			if (auto error_code = ::alGetError())
-				infrastructure::Logger::get().error("openal", "Source::fill_buffer: %s", al_get_error(error_code).c_str());
+				logger::error("openal", "Source::fill_buffer: {}", al_get_error(error_code));
 			return true;
 		}
 	};

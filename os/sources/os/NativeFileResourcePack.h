@@ -1,24 +1,6 @@
 // Project pisk
 // Copyright (C) 2016-2017 Dmitry Shatilov
 //
-// This file is a part of the module os of the project pisk.
-// This file is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
-// Additional restriction according to GPLv3 pt 7:
-// b) required preservation author attributions;
-// c) required preservation links to original sources
-//
 // Original sources:
 //   https://github.com/shatilov-diman/pisk/
 //   https://bitbucket.org/charivariltd/pisk/
@@ -69,14 +51,14 @@ class FileResourcePack : public pisk::system::ResourcePack {
 			return content_end;
 		}
 
-		virtual std::size_t tell() const {
+		virtual std::size_t tell() const override {
 			std::ifstream& ref = const_cast<std::ifstream&>(file);
 			if (file.bad())
 				return DataStream::error;
 			return static_cast<std::size_t>(ref.tellg());
 		}
 
-		virtual std::size_t seek(const long pos, const Whence whence) {
+		virtual std::size_t seek(const long pos, const Whence whence) override {
 			std::ifstream& ref = const_cast<std::ifstream&>(file);
 			if (whence == Whence::begin)
 				ref.seekg(pos, std::ios::beg);
@@ -130,7 +112,7 @@ public:
 	virtual pisk::infrastructure::DataStreamPtr open(const std::string& rid) const noexcept threadsafe final override
 	{
 		const auto& path = resource_prefix.empty() ? rid : resource_prefix.get_content() + '/' + rid;
-		pisk::infrastructure::Logger::get().debug("filepack", "Try to open '%s'", path.c_str());
+		pisk::logger::debug("filepack", "Try to open '{}'", path);
 		return FileDataStream::open(path);
 	}
 };

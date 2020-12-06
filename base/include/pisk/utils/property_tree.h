@@ -1,24 +1,6 @@
 // Project pisk
 // Copyright (C) 2016-2017 Dmitry Shatilov
 //
-// This file is a part of the module base of the project pisk.
-// This file is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
-// Additional restriction according to GPLv3 pt 7:
-// b) required preservation author attributions;
-// c) required preservation links to original sources
-//
 // Original sources:
 //   https://github.com/shatilov-diman/pisk/
 //   https://bitbucket.org/charivariltd/pisk/
@@ -547,17 +529,19 @@ namespace utils
 		property& operator=(const property& property) {
 			if (this == &property)
 				return *this;
-			if (property._type == type::_string)
-				*this = property.as_keystring_cref();
-			else if (property._type == type::_dictionary)
-				*this = property.as_dictionary_cref();
-			else if (property._type == type::_array)
-				*this = property.as_array_cref();
-			else {
-				set_type(property._type);
-				::memcpy(&_union, &property._union, sizeof(t_union));
-			}
-			return *this;
+			switch(property._type) {
+				case type::_none: return *this = nullptr;
+				case type::_bool: return *this = property._union._bool;
+				case type::_int: return *this = property._union._int; 
+				case type::_long: return *this = property._union._long;
+				case type::_float: return *this = property._union._float;
+				case type::_double: return *this = property._union._double;
+				case type::_string: return *this = property.as_keystring_cref();
+				case type::_dictionary: return *this = property.as_dictionary_cref();
+				case type::_array: return *this = property.as_array_cref();
+
+				default: assert(!"Unsupported property_tree type"); return *this;
+			};
 		}
 		property& operator=(property&& property) {
 			if (this == &property)
@@ -682,7 +666,19 @@ namespace utils
 		void remove(const std::size_t key) const {
 			UNUSED(key);
 			check_type(type::_array);
-			throw infrastructure::Exception();//Not implemented
+			if (key > _union._array->size())
+				throw PropertyOutOfRangeException();
+			auto it = _union._array->find(key);
+			if (it == _union._array->end())
+				throw PropertyOutOfRangeException();
+			auto prev = it++;
+			while (it != _union._array->end())
+			{
+				prev->second = std::move(it->second);
+				prev = it;
+				++it;
+			}
+			_union._array->erase(prev);
 		}
 		void remove(const keystring& key) const {
 			check_type(type::_dictionary);
@@ -692,29 +688,74 @@ namespace utils
 			_union._dictionary->erase(it);
 		}
 
-		static property merge(const property& original, const property& admixture)
+		void replace(const property& admixture)
+		{
+			replace(*this, std::move(admixture));
+		}
+
+		void replace(property&& admixture)
+		{
+			replace(*this, std::move(admixture));
+		}
+
+		static void replace(property& original, const property& admixture)
 		{
 			if (original.is_none())
-				return admixture;
+			{
+				original = admixture;
+				return;
+			}
 			if (admixture.is_none())
-				return original;
+			{
+				return ;
+			}
+
 			if (original.get_type() != admixture.get_type())
 				throw PropertyCastException();
+
 			if (original.is_dictionary())
 			{
-				property out = original;
 				for (auto it = admixture.begin(); it != admixture.end(); ++it)
-					out[it.get_key()] = merge(original[it.get_key()], *it);
-				return out;
+					replace(original[it.get_key()], *it);
+				return;
 			}
 			if (original.is_array())
 			{
-				property out = original;
 				for (auto it = admixture.begin(); it != admixture.end(); ++it)
-					out[it.get_index()] = merge(out[it.get_index()], *it);
-				return out;
+					replace(original[it.get_index()], *it);
+				return;
 			}
-			return admixture;
+			original = admixture;
+		}
+
+		static void replace(property& original, property&& admixture)
+		{
+			if (original.is_none())
+			{
+				original = std::move(admixture);
+				return;
+			}
+			if (admixture.is_none())
+			{
+				return ;
+			}
+
+			if (original.get_type() != admixture.get_type())
+				throw PropertyCastException();
+
+			if (original.is_dictionary())
+			{
+				for (auto it = admixture.begin(); it != admixture.end(); ++it)
+					replace(original[it.get_key()], std::move(*it));
+				return;
+			}
+			if (original.is_array())
+			{
+				for (auto it = admixture.begin(); it != admixture.end(); ++it)
+					replace(original[it.get_index()], std::move(*it));
+				return;
+			}
+			original = std::move(admixture);
 		}
 	};
 }

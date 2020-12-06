@@ -1,24 +1,6 @@
 // Project pisk
 // Copyright (C) 2016-2017 Dmitry Shatilov
 //
-// This file is a part of the module os of the project pisk.
-// This file is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
-// Additional restriction according to GPLv3 pt 7:
-// b) required preservation author attributions;
-// c) required preservation links to original sources
-//
 // Original sources:
 //   https://github.com/shatilov-diman/pisk/
 //   https://bitbucket.org/charivariltd/pisk/
@@ -34,10 +16,11 @@
 #include <pisk/utils/noncopyable.h>
 
 #include <pisk/infrastructure/Logger.h>
-
 #include <pisk/tools/ComponentPtr.h>
+#include <pisk/os/MainLoopRemoteTasks.h>
 
-#include <set>
+#include <mutex>
+#include <map>
 
 namespace pisk
 {
@@ -57,7 +40,7 @@ namespace os
 		{}
 
 	public:
-		virtual void handle(const Event& event) = 0;
+		virtual bool handle(const Event& event) = 0;
 	};
 
 	template <typename Event>
@@ -67,33 +50,74 @@ namespace os
 		template <typename E>
 		friend class SysEventHandler;
 
-		std::set<SysEventHandlerBase<Event>*> handlers;
+		MainLoopRemoteTasksPtr main_loop_remote_tasks;
+
+		mutable std::recursive_mutex mutex;
+		std::map<void*, SysEventHandlerBase<Event>*> handlers;
+
+	public:
+
+		SysEventDispatcher(const MainLoopRemoteTasksPtr& _main_loop_remote_tasks) :
+			main_loop_remote_tasks(_main_loop_remote_tasks)
+		{
+			if (main_loop_remote_tasks == nullptr)
+				throw infrastructure::NullPointerException();
+		}
 
 		virtual void release() final override
 		{
-			pisk::infrastructure::Logger::get().info("sys_event_dispatcher", "Destroing");
+			pisk::logger::info("sys_event_dispatcher", "Destroing");
 			delete this;
 		}
 
-		void subscribe(SysEventHandlerBase<Event>* handler)
+	private:
+		void subscribe(SysEventHandlerBase<Event>* handler) threadsafe
 		{
-			pisk::infrastructure::Logger::get().debug("sys_event_dispatcher", "subscribe 0x%x", handler);
-			handlers.insert(handler);
+			pisk::logger::debug("sys_event_dispatcher", "subscribe {}", handler);
+
+			std::lock_guard<std::recursive_mutex> guard(mutex);
+			handlers[handler] = handler;
 		}
 
-		void unsubscribe(SysEventHandlerBase<Event>* handler)
+		void unsubscribe(SysEventHandlerBase<Event>* handler) threadsafe
 		{
-			pisk::infrastructure::Logger::get().debug("sys_event_dispatcher", "unsubscribe 0x%x", handler);
-			handlers.erase(handler);
+			pisk::logger::debug("sys_event_dispatcher", "unsubscribe {}", handler);
+
+			std::lock_guard<std::recursive_mutex> guard(mutex);
+			handlers[handler] = nullptr;
+		}
+
+	public:
+		template <typename Callee>
+		auto run_from_dispatcher_thread_sync(Callee&& runnable) threadsafe -> decltype(runnable())
+		{
+			return main_loop_remote_tasks->run_from_main_thread_sync(std::forward<Callee>(runnable));
+		}
+
+		template <typename Callee>
+		auto run_from_dispatcher_thread_async(Callee&& runnable) threadsafe -> decltype(main_loop_remote_tasks->run_from_main_thread_async(std::forward<Callee>(runnable)))
+		{
+			return main_loop_remote_tasks->run_from_main_thread_async(std::forward<Callee>(runnable));
 		}
 
 	public:
 		constexpr static const char* uid = "sys_event_dispatcher";
 
-		void dispatch(const Event& event) const
+		bool dispatch(const Event& event) threadsafe
 		{
-			for (auto handler : handlers)
-				handler->handle(event);
+			bool result = false;
+			std::lock_guard<std::recursive_mutex> guard(mutex);
+			for (auto iter = handlers.begin(); iter != handlers.end();)
+			{
+				if (iter->second == nullptr)
+					iter = handlers.erase(iter);
+				else
+				{
+					result |= iter->second->handle(event);
+					++iter;
+				}
+			}
+			return result;
 		}
 	};
 	template <typename Event>
@@ -114,6 +138,23 @@ namespace os
 		~SysEventHandler()
 		{
 			dispatcher->unsubscribe(this);
+		}
+
+		SysEventDispatcherPtr<Event> get_dispatcher() const
+		{
+			return dispatcher;
+		}
+
+		template <typename Callee>
+		auto run_from_dispatcher_thread_sync(Callee&& runnable) -> decltype(runnable()) threadsafe
+		{
+			return dispatcher->run_from_dispatcher_thread_sync(std::forward<Callee>(runnable));
+		}
+
+		template <typename Callee>
+		auto run_from_dispatcher_thread_async(Callee&& runnable) -> decltype(dispatcher->run_from_dispatcher_thread_async(std::forward<Callee>(runnable))) threadsafe
+		{
+			return dispatcher->run_from_dispatcher_thread_async(std::forward<Callee>(runnable));
 		}
 	};
 }

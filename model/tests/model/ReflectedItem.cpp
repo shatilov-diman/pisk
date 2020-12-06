@@ -1,24 +1,6 @@
 // Project pisk
 // Copyright (C) 2016-2017 Dmitry Shatilov
 //
-// This file is a part of the module model of the project pisk.
-// This file is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
-// Additional restriction according to GPLv3 pt 7:
-// b) required preservation author attributions;
-// c) required preservation links to original sources
-//
 // Original sources:
 //   https://github.com/shatilov-diman/pisk/
 //   https://bitbucket.org/charivariltd/pisk/
@@ -32,6 +14,7 @@
 #include <pisk/bdd.h>
 
 #include <pisk/model/ReflectedItem.h>
+#include <pisk/model/ReflectedObject.h>
 
 #include <limits>
 
@@ -56,6 +39,9 @@ Describe(TestReflectedItem) {
 	Spec(size_is_zero) {
 		Assert::That(item.size(), Is().EqualTo(0U));
 	}
+	Spec(item_is_not_changed) {
+		Assert::That(item.is_changed(), Is().EqualTo(false));
+	}
 	Spec(item_as_type_thrown_exception) {
 		AssertThrowsEx(PropertyCastException, item.as_bool());
 		AssertThrowsEx(PropertyCastException, item.as_int());
@@ -78,6 +64,9 @@ Describe(TestReflectedItem) {
 		}
 		Then(item_has_not_changes) {
 			Assert::That(Root().item.has_changes(), Is().EqualTo(false));
+		}
+		Then(item_is_changed) {
+			Assert::That(Root().item.is_changed(), Is().EqualTo(true));
 		}
 		Then(check_data) {
 			Assert::That(Root().item.get_int_item("asd"), Is().EqualTo(15));
@@ -105,6 +94,7 @@ Describe(TestReflectedItem) {
 			Root().diff = true;
 			Assert::That(Root().item.is_bool(), Is().EqualTo(true));
 			Assert::That(Root().item.as_bool(), Is().EqualTo(true));
+			Assert::That(Root().item.is_changed(), Is().EqualTo(true));
 			AssertThrowsEx(PropertyCastException, Root().item.size());
 		}
 	};
@@ -113,6 +103,7 @@ Describe(TestReflectedItem) {
 			Root().diff = 7;
 			Assert::That(Root().item.is_int(), Is().EqualTo(true));
 			Assert::That(Root().item.as_int(), Is().EqualTo(7));
+			Assert::That(Root().item.is_changed(), Is().EqualTo(true));
 			AssertThrowsEx(PropertyCastException, Root().item.size());
 		}
 	};
@@ -165,11 +156,15 @@ Describe(TestReflectedItem) {
 			Root().diff["4"] = "asd";
 			Root().diff["5"]["6"] = 123;
 			Root().diff["7"][std::size_t(0)] = 15;
+			Root().diff["7"][std::size_t(2)] = 42;
+			Root().diff["8"] = 146L;
+			Root().diff["9"] = 732.f;
+			Root().diff["a"] = 5.;
 		}
 		Then(item_is_dictionary) {
 			Assert::That(Root().item.is_dictionary(), Is().EqualTo(true));
 			Assert::That(citem.is_dictionary(), Is().EqualTo(true));
-			Assert::That(Root().item.size(), Is().EqualTo(6U));
+			Assert::That(Root().item.size(), Is().EqualTo(9U));
 		}
 		Spec(get_bool_item) {
 			Assert::That(Root().item.get_bool_item("2").as_bool(), Is().EqualTo(true));
@@ -178,6 +173,18 @@ Describe(TestReflectedItem) {
 		Spec(get_int_item) {
 			Assert::That(Root().item.get_int_item("3").as_int(), Is().EqualTo(15));
 			Assert::That(citem.get_int_item("3").as_int(), Is().EqualTo(15));
+		}
+		Spec(get_long_item) {
+			Assert::That(Root().item.get_long_item("8").as_long(), Is().EqualTo(146L));
+			Assert::That(citem.get_long_item("8").as_long(), Is().EqualTo(146L));
+		}
+		Spec(get_float_item) {
+			Assert::That(Root().item.get_float_item("9").as_float(), Is().EqualTo(732.f));
+			Assert::That(citem.get_float_item("9").as_float(), Is().EqualTo(732.f));
+		}
+		Spec(get_double_item) {
+			Assert::That(Root().item.get_double_item("a").as_double(), Is().EqualTo(5.));
+			Assert::That(citem.get_double_item("a").as_double(), Is().EqualTo(5.));
 		}
 		Spec(get_string_item) {
 			Assert::That(Root().item.get_string_item("4").as_string(), Is().EqualTo("asd"));
@@ -191,16 +198,57 @@ Describe(TestReflectedItem) {
 			Assert::That(Root().item.get_array_item("7").is_array(), Is().EqualTo(true));
 			Assert::That(citem.get_array_item("7").is_array(), Is().EqualTo(true));
 		}
-		Spec(get_custom_item) {
+		Spec(get_custom_item_array) {
 			Assert::That(Root().item.get_custom_item<ReflectedItem>("3").is_int(), Is().EqualTo(true));
+			Assert::That(Root().item.get_custom_item<ReflectedItem>("3").as_int(), Is().EqualTo(15));
 			Assert::That(citem.get_custom_item<ConstReflectedItem>("3").is_int(), Is().EqualTo(true));
+			Assert::That(citem.get_custom_item<ConstReflectedItem>("3").as_int(), Is().EqualTo(15));
 		}
-		Spec(get_incorrect_item_type) {
+		Spec(get_custom_item_index) {
+			Assert::That(Root().item.get_item("7").get_custom_item<ReflectedItem>(2).is_int(), Is().EqualTo(true));
+			Assert::That(Root().item.get_item("7").get_custom_item<ReflectedItem>(2).as_int(), Is().EqualTo(42));
+			Assert::That(citem.get_item("7").get_custom_item<ConstReflectedItem>(2).is_int(), Is().EqualTo(true));
+			Assert::That(citem.get_item("7").get_custom_item<ConstReflectedItem>(2).as_int(), Is().EqualTo(42));
+		}
+		Spec(get_incorrect_item_type_int) {
 			AssertThrowsEx(UnexpectedItemTypeException, Root().item.get_int_item("2"));
 			AssertThrowsEx(UnexpectedItemTypeException, Root().item.get_bool_item("3"));
 			AssertThrowsEx(UnexpectedItemTypeException, Root().item.get_int_item("4"));
 			AssertThrowsEx(UnexpectedItemTypeException, Root().item.get_int_item("5"));
 			AssertThrowsEx(UnexpectedItemTypeException, Root().item.get_int_item("7"));
+			AssertThrowsEx(UnexpectedItemTypeException, Root().item.get_int_item("8"));
+			AssertThrowsEx(UnexpectedItemTypeException, Root().item.get_int_item("9"));
+			AssertThrowsEx(UnexpectedItemTypeException, Root().item.get_int_item("a"));
+		}
+		Spec(get_incorrect_item_type_long) {
+			AssertThrowsEx(UnexpectedItemTypeException, Root().item.get_long_item("2"));
+			AssertThrowsEx(UnexpectedItemTypeException, Root().item.get_long_item("3"));
+			AssertThrowsEx(UnexpectedItemTypeException, Root().item.get_long_item("4"));
+			AssertThrowsEx(UnexpectedItemTypeException, Root().item.get_long_item("5"));
+			AssertThrowsEx(UnexpectedItemTypeException, Root().item.get_long_item("7"));
+			AssertThrowsEx(UnexpectedItemTypeException, Root().item.get_bool_item("8"));
+			AssertThrowsEx(UnexpectedItemTypeException, Root().item.get_long_item("9"));
+			AssertThrowsEx(UnexpectedItemTypeException, Root().item.get_long_item("a"));
+		}
+		Spec(get_incorrect_item_type_float) {
+			AssertThrowsEx(UnexpectedItemTypeException, Root().item.get_float_item("2"));
+			AssertThrowsEx(UnexpectedItemTypeException, Root().item.get_float_item("3"));
+			AssertThrowsEx(UnexpectedItemTypeException, Root().item.get_float_item("4"));
+			AssertThrowsEx(UnexpectedItemTypeException, Root().item.get_float_item("5"));
+			AssertThrowsEx(UnexpectedItemTypeException, Root().item.get_float_item("7"));
+			AssertThrowsEx(UnexpectedItemTypeException, Root().item.get_float_item("8"));
+			AssertThrowsEx(UnexpectedItemTypeException, Root().item.get_bool_item("9"));
+			AssertThrowsEx(UnexpectedItemTypeException, Root().item.get_float_item("a"));
+		}
+		Spec(get_incorrect_item_type_double) {
+			AssertThrowsEx(UnexpectedItemTypeException, Root().item.get_double_item("2"));
+			AssertThrowsEx(UnexpectedItemTypeException, Root().item.get_double_item("3"));
+			AssertThrowsEx(UnexpectedItemTypeException, Root().item.get_double_item("4"));
+			AssertThrowsEx(UnexpectedItemTypeException, Root().item.get_double_item("5"));
+			AssertThrowsEx(UnexpectedItemTypeException, Root().item.get_double_item("7"));
+			AssertThrowsEx(UnexpectedItemTypeException, Root().item.get_double_item("8"));
+			AssertThrowsEx(UnexpectedItemTypeException, Root().item.get_double_item("9"));
+			AssertThrowsEx(UnexpectedItemTypeException, Root().item.get_bool_item("a"));
 		}
 		Spec(get_bool_for_none) {
 			Assert::That(Root().item.get_bool_item("!1").is_none(), Is().EqualTo(true));
@@ -211,6 +259,21 @@ Describe(TestReflectedItem) {
 			Assert::That(Root().item.get_int_item("!2").is_none(), Is().EqualTo(true));
 			Root().item.get_int_item("!2") = 17;
 			Assert::That(Root().item.get_int_item("!2").as_int(), Is().EqualTo(17));
+		}
+		Spec(get_long_for_none) {
+			Assert::That(Root().item.get_long_item("!2").is_none(), Is().EqualTo(true));
+			Root().item.get_long_item("!2") = 17L;
+			Assert::That(Root().item.get_long_item("!2").as_long(), Is().EqualTo(17L));
+		}
+		Spec(get_float_for_none) {
+			Assert::That(Root().item.get_float_item("!2").is_none(), Is().EqualTo(true));
+			Root().item.get_float_item("!2") = 17.F;
+			Assert::That(Root().item.get_float_item("!2").as_float(), Is().EqualTo(17.F));
+		}
+		Spec(get_double_for_none) {
+			Assert::That(Root().item.get_double_item("!2").is_none(), Is().EqualTo(true));
+			Root().item.get_double_item("!2") = 17.;
+			Assert::That(Root().item.get_double_item("!2").as_double(), Is().EqualTo(17.));
 		}
 		Spec(get_string_for_none) {
 			Assert::That(Root().item.get_string_item("!3").is_none(), Is().EqualTo(true));
@@ -235,6 +298,7 @@ Describe(TestReflectedItem) {
 		Then(item_has_changes) {
 			Assert::That(Root().item.has_origin(), Is().EqualTo(false));
 			Assert::That(Root().item.has_changes(), Is().EqualTo(true));
+			Assert::That(Root().item.is_changed(), Is().EqualTo(true));
 		}
 		Then(item_is_int) {
 			Assert::That(Root().item.is_int(), Is().EqualTo(true));
@@ -648,328 +712,289 @@ Describe(TestReflectedItem) {
 			}
 		};
 	};
-};
-
-Describe(model_path) {
-	Context(add_path) {
-		When(add_empty_to_empty) {
-			keystring result;
-			void SetUp() {
-				result = path::add("", "");
-			}
-			Then(result_is_empty) {
-				Assert::That(result.c_str(), Is().EqualTo(""));
+	Context(remove_members) {
+		When(remove_item_from_empty) {
+			Then(expected_item_type_will_thrown) {
+				ReflectedItem root{Root().orig, Root().diff};
+				AssertThrowsEx(UnexpectedItemTypeException, root.remove_item(7U));
+				AssertThrowsEx(UnexpectedItemTypeException, root.remove_item("asd"));
 			}
 		};
-		When(add_slash_to_slash) {
-			keystring result;
+		When(remove_item_from_int) {
 			void SetUp() {
-				result = path::add("/", "/");
+				Root().orig = 42;
 			}
-			Then(result_is_empty) {
-				Assert::That(result.c_str(), Is().EqualTo(""));
+			Then(expected_item_type_will_thrown) {
+				ReflectedItem root{Root().orig, Root().diff};
+				AssertThrowsEx(UnexpectedItemTypeException, root.remove_item(7U));
+				AssertThrowsEx(UnexpectedItemTypeException, root.remove_item("asd"));
 			}
 		};
-		When(add_slash_slash_to_slash_slash) {
-			keystring result;
+		When(remove_item_from_string) {
 			void SetUp() {
-				result = path::add("//", "//");
+				Root().orig = "asd";
 			}
-			Then(result_is_empty) {
-				Assert::That(result.c_str(), Is().EqualTo(""));
+			Then(expected_item_type_will_thrown) {
+				ReflectedItem root{Root().orig, Root().diff};
+				AssertThrowsEx(UnexpectedItemTypeException, root.remove_item(7U));
+				AssertThrowsEx(UnexpectedItemTypeException, root.remove_item("asd"));
 			}
 		};
-		When(add_backslash_to_backslash) {
-			keystring result;
+		When(remove_item_from_double) {
 			void SetUp() {
-				result = path::add("\\", "\\");
+				Root().orig = 7.;
 			}
-			Then(result_is_empty) {
-				Assert::That(result.c_str(), Is().EqualTo("\\/\\"));
+			Then(expected_item_type_will_thrown) {
+				ReflectedItem root{Root().orig, Root().diff};
+				AssertThrowsEx(UnexpectedItemTypeException, root.remove_item(7U));
+				AssertThrowsEx(UnexpectedItemTypeException, root.remove_item("asd"));
 			}
 		};
-		When(add_empty_to_parent) {
-			keystring result;
+		When(remove_item_from_int_when_orig_is_array) {
 			void SetUp() {
-				result = path::add("parent", "");
+				Root().orig = property::array{{7U, "test"}};
+				Root().diff = 41;
 			}
-			Then(result_is_parent) {
-				Assert::That(result.c_str(), Is().EqualTo("parent"));
+			Then(expected_item_type_will_thrown) {
+				ReflectedItem root{Root().orig, Root().diff};
+				AssertThrowsEx(UnexpectedItemTypeException, root.remove_item(7U));
 			}
 		};
-		When(add_child_to_empty) {
-			keystring result;
+		When(remove_item_from_string_when_orig_is_dictionary) {
 			void SetUp() {
-				result = path::add("", "child");
+				Root().orig = property::dictionary{{"key", "test"}};
+				Root().diff = "asd";
 			}
-			Then(result_is_child) {
-				Assert::That(result.c_str(), Is().EqualTo("child"));
+			Then(expected_item_type_will_thrown) {
+				ReflectedItem root{Root().orig, Root().diff};
+				AssertThrowsEx(UnexpectedItemTypeException, root.remove_item("key"));
 			}
 		};
-		When(add_child_to_parent) {
-			keystring result;
+		When(remove_item_from_array) {
 			void SetUp() {
-				result = path::add("parent", "child");
+				Root().orig = property::array{{0U, "test"}, {1U, 777.}, {2U, property{} }};
 			}
-			Then(result_is_child) {
-				Assert::That(result.c_str(), Is().EqualTo("parent/child"));
-			}
+			When(middle_item_removed) {
+				void SetUp() {
+					ReflectedItem root{Root().orig, Root().diff};
+					root.remove_item(1U);
+				}
+				Then(orig_is_not_changed) {
+					property check;
+					check[std::size_t(0)] = "test";
+					check[std::size_t(1)] = 777.;
+					check[std::size_t(2)] = property{};
+					Assert::That(Root().orig, Is().EqualTo(check));
+				}
+				Then(diff_is_chagged) {
+					property check;
+					check[std::size_t(0)] = "test";
+					check[std::size_t(1)] = property{};
+					Assert::That(Root().diff, Is().EqualTo(check));
+				}
+				When(last_item_removed) {
+					void SetUp() {
+						ReflectedItem root{Root().orig, Root().diff};
+						root.remove_item(1U);
+					}
+					Then(orig_is_not_changed) {
+						property check;
+						check[std::size_t(0)] = "test";
+						check[std::size_t(1)] = 777.;
+						check[std::size_t(2)] = property{};
+						Assert::That(Root().orig, Is().EqualTo(check));
+					}
+					Then(diff_is_chagged) {
+						property check;
+						check[std::size_t(0)] = "test";
+						Assert::That(Root().diff, Is().EqualTo(check));
+					}
+					When(first_item_removed) {
+						void SetUp() {
+							ReflectedItem root{Root().orig, Root().diff};
+							root.remove_item(0U);
+						}
+						Then(orig_is_not_changed) {
+							property check;
+							check[std::size_t(0)] = "test";
+							check[std::size_t(1)] = 777.;
+							check[std::size_t(2)] = property{};
+							Assert::That(Root().orig, Is().EqualTo(check));
+						}
+						Then(diff_is_chagged) {
+							property check{property::array{}};
+							Assert::That(Root().diff, Is().EqualTo(check));
+						}
+					};
+				};
+			};
 		};
-		When(add_slash_child_slash_to_slash_parent_slash) {
-			keystring result;
+		When(remove_item_from_dictionary) {
 			void SetUp() {
-				result = path::add("/parent/", "/child/");
+				Root().orig = property::dictionary{{"aaa", "test"}, {"bbb", 777.}, {"ccc", property{} }};
 			}
-			Then(result_is_child) {
-				Assert::That(result.c_str(), Is().EqualTo("parent/child"));
-			}
-		};
-		When(add_slash_slash_child_slash_slash_to_slash_slash_parent_slash_slash) {
-			keystring result;
-			void SetUp() {
-				result = path::add("//parent//", "//child//");
-			}
-			Then(result_is_child) {
-				Assert::That(result.c_str(), Is().EqualTo("parent/child"));
-			}
-		};
-		When(add_child_to_family) {
-			keystring result;
-			void SetUp() {
-				result = path::add("grandpa/parent", "child");
-			}
-			Then(result_is_child) {
-				Assert::That(result.c_str(), Is().EqualTo("grandpa/parent/child"));
-			}
-		};
-		When(add_family_to_grandpa) {
-			keystring result;
-			void SetUp() {
-				result = path::add("grandma", "parent/child");
-			}
-			Then(result_is_child) {
-				Assert::That(result.c_str(), Is().EqualTo("grandma/parent/child"));
-			}
-		};
-		When(add_family_to_family) {
-			keystring result;
-			void SetUp() {
-				result = path::add("grandma/parent", "child/grandson");
-			}
-			Then(result_is_child) {
-				Assert::That(result.c_str(), Is().EqualTo("grandma/parent/child/grandson"));
-			}
-		};
-	};
-	Context(front) {
-		When(front_from_empty) {
-			keystring front;
-			keystring tail;
-			void SetUp() {
-				front = path::front("", tail);
-			}
-			Then(front_is_empty) {
-				Assert::That(front.empty(), Is().EqualTo(true));
-			}
-			Then(tail_is_empty) {
-				Assert::That(tail.empty(), Is().EqualTo(true));
-			}
-		};
-		When(front_from_child) {
-			keystring front;
-			keystring tail;
-			void SetUp() {
-				front = path::front("child", tail);
-			}
-			Then(front_is_child) {
-				Assert::That(front.c_str(), Is().EqualTo("child"));
-			}
-			Then(tail_is_empty) {
-				Assert::That(tail.empty(), Is().EqualTo(true));
-			}
-		};
-		When(front_from_parent_slash_child) {
-			keystring front;
-			keystring tail;
-			void SetUp() {
-				front = path::front("parent/child", tail);
-			}
-			Then(front_is_parent) {
-				Assert::That(front.c_str(), Is().EqualTo("parent"));
-			}
-			Then(tail_is_child) {
-				Assert::That(tail.c_str(), Is().EqualTo("child"));
-			}
-		};
-		When(front_from_slash_slash_child) {
-			keystring front;
-			keystring tail;
-			void SetUp() {
-				front = path::front("//child", tail);
-			}
-			Then(front_is_child) {
-				Assert::That(front.c_str(), Is().EqualTo("child"));
-			}
-			Then(tail_is_empty) {
-				Assert::That(tail.empty(), Is().EqualTo(true));
-			}
-		};
-		When(front_from_parent_slash_slash) {
-			keystring front;
-			keystring tail;
-			void SetUp() {
-				front = path::front("parent//", tail);
-			}
-			Then(front_is_parent) {
-				Assert::That(front.c_str(), Is().EqualTo("parent"));
-			}
-			Then(tail_is_empty) {
-				Assert::That(tail.empty(), Is().EqualTo(true));
-			}
-		};
-		When(front_from_slash) {
-			keystring front;
-			keystring tail;
-			void SetUp() {
-				front = path::front("/", tail);
-			}
-			Then(front_is_empty) {
-				Assert::That(front.empty(), Is().EqualTo(true));
-			}
-			Then(tail_is_empty) {
-				Assert::That(tail.empty(), Is().EqualTo(true));
-			}
-		};
-		When(front_from_parent_slash_child_slash_grandson) {
-			keystring front;
-			keystring tail;
-			void SetUp() {
-				front = path::front("parent/child/grandson", tail);
-			}
-			Then(front_is_parent) {
-				Assert::That(front.c_str(), Is().EqualTo("parent"));
-			}
-			Then(tail_is_child_grandson) {
-				Assert::That(tail.c_str(), Is().EqualTo("child/grandson"));
-			}
-		};
-		When(front_from_parent_slash_child_slash_slash_grandson) {
-			keystring front;
-			keystring tail;
-			void SetUp() {
-				front = path::front("parent/child//grandson", tail);
-			}
-			Then(front_is_parent) {
-				Assert::That(front.c_str(), Is().EqualTo("parent"));
-			}
-			Then(tail_is_child_grandson) {
-				Assert::That(tail.c_str(), Is().EqualTo("child//grandson"));
-			}
+			When(middle_item_removed) {
+				void SetUp() {
+					ReflectedItem root{Root().orig, Root().diff};
+					root.remove_item("bbb");
+				}
+				Then(orig_is_not_changed) {
+					property check;
+					check["aaa"] = "test";
+					check["bbb"] = 777.;
+					check["ccc"] = property{};
+					Assert::That(Root().orig, Is().EqualTo(check));
+				}
+				Then(diff_is_chagged) {
+					property check;
+					check["aaa"] = "test";
+					check["ccc"] = property{};
+					Assert::That(Root().diff, Is().EqualTo(check));
+				}
+				When(last_item_removed) {
+					void SetUp() {
+						ReflectedItem root{Root().orig, Root().diff};
+						root.remove_item("ccc");
+					}
+					Then(orig_is_not_changed) {
+						property check;
+						check["aaa"] = "test";
+						check["bbb"] = 777.;
+						check["ccc"] = property{};
+						Assert::That(Root().orig, Is().EqualTo(check));
+					}
+					Then(diff_is_chagged) {
+						property check;
+						check["aaa"] = "test";
+						Assert::That(Root().diff, Is().EqualTo(check));
+					}
+					When(first_item_removed) {
+						void SetUp() {
+							ReflectedItem root{Root().orig, Root().diff};
+							root.remove_item("aaa");
+						}
+						Then(orig_is_not_changed) {
+							property check;
+							check["aaa"] = "test";
+							check["bbb"] = 777.;
+							check["ccc"] = property{};
+							Assert::That(Root().orig, Is().EqualTo(check));
+						}
+						Then(diff_is_chagged) {
+							property check{property::dictionary{}};
+							Assert::That(Root().diff, Is().EqualTo(check));
+						}
+					};
+				};
+			};
 		};
 	};
-	Context(back) {
-		When(back_from_empty) {
-			keystring back;
-			keystring head;
-			void SetUp() {
-				back = path::back("", head);
-			}
-			Then(back_is_empty) {
-				Assert::That(back.empty(), Is().EqualTo(true));
-			}
-			Then(head_is_empty) {
-				Assert::That(head.empty(), Is().EqualTo(true));
-			}
-		};
-		When(back_from_child) {
-			keystring back;
-			keystring head;
-			void SetUp() {
-				back = path::back("child", head);
-			}
-			Then(back_is_child) {
-				Assert::That(back.c_str(), Is().EqualTo("child"));
-			}
-			Then(head_is_empty) {
-				Assert::That(head.empty(), Is().EqualTo(true));
-			}
-		};
-		When(back_from_parent_slash_child) {
-			keystring back;
-			keystring head;
-			void SetUp() {
-				back = path::back("parent/child", head);
-			}
-			Then(back_is_child) {
-				Assert::That(back.c_str(), Is().EqualTo("child"));
-			}
-			Then(head_is_parent) {
-				Assert::That(head.c_str(), Is().EqualTo("parent"));
+	Context(casting) {
+		void SetUp() {
+			ReflectedObject obj{property::none_property(), Root().diff};
+			obj.id() = "123";
+			obj.child("321");
+		}
+		Then(check_diff) {
+			property check;
+			check["properties"]["id"] = "123";
+			check["children"]["321"]["properties"]["id"] = "321";
+			Assert::That(Root().diff, Is().EqualTo(check));
+		}
+		Then(check_cast) {
+			ReflectedItem root{Root().orig, Root().diff};
+			const auto& obj = root.cast<ReflectedObject>();
+			Assert::That(obj.id().as_string(), Is().EqualTo("123"));
+			Assert::That(obj.child("321").id().as_string(), Is().EqualTo("321"));
+		}
+		Then(check_const_cast) {
+			ConstReflectedItem root{Root().orig, Root().diff};
+			const auto& obj = root.cast<ConstReflectedObject>();
+			Assert::That(obj.id().as_string(), Is().EqualTo("123"));
+			Assert::That(obj.child("321").id().as_string(), Is().EqualTo("321"));
+		}
+	};
+	Context(is_changed) {
+		When(item_is_none) {
+			Then(is_not_changed) {
+				Assert::That(Root().item.has_origin(), Is().EqualTo(false));
+				Assert::That(Root().item.has_changes(), Is().EqualTo(false));
+				Assert::That(Root().item.is_changed(), Is().EqualTo(false));
 			}
 		};
-		When(back_from_slash_slash_child) {
-			keystring back;
-			keystring head;
+		When(item_is_changed) {
 			void SetUp() {
-				back = path::back("//child", head);
+				Root().diff = 1;
 			}
-			Then(back_is_child) {
-				Assert::That(back.c_str(), Is().EqualTo("child"));
-			}
-			Then(head_is_empty) {
-				Assert::That(head.empty(), Is().EqualTo(true));
+			Then(is_changed) {
+				Assert::That(Root().item.has_origin(), Is().EqualTo(false));
+				Assert::That(Root().item.has_changes(), Is().EqualTo(true));
+				Assert::That(Root().item.is_changed(), Is().EqualTo(true));
 			}
 		};
-		When(back_from_parent_slash_slash) {
-			keystring back;
-			keystring head;
+		When(item_is_not_changed) {
 			void SetUp() {
-				back = path::back("parent//", head);
+				Root().orig = 1;
 			}
-			Then(back_is_parent) {
-				Assert::That(back.c_str(), Is().EqualTo("parent"));
-			}
-			Then(head_is_empty) {
-				Assert::That(head.empty(), Is().EqualTo(true));
+			Then(is_not_changed) {
+				Assert::That(Root().item.has_origin(), Is().EqualTo(true));
+				Assert::That(Root().item.has_changes(), Is().EqualTo(false));
+				Assert::That(Root().item.is_changed(), Is().EqualTo(true));
 			}
 		};
-		When(back_from_slash) {
-			keystring back;
-			keystring head;
+		When(item_has_changes_and_origin_same_type) {
 			void SetUp() {
-				back = path::back("/", head);
+				Root().orig = 1;
+				Root().diff = 2;
 			}
-			Then(back_is_child) {
-				Assert::That(back.empty(), Is().EqualTo(true));
-			}
-			Then(head_is_empty) {
-				Assert::That(head.empty(), Is().EqualTo(true));
+			Then(is_not_changed) {
+				Assert::That(Root().item.has_origin(), Is().EqualTo(true));
+				Assert::That(Root().item.has_changes(), Is().EqualTo(true));
+				Assert::That(Root().item.is_changed(), Is().EqualTo(true));
 			}
 		};
-		When(back_from_parent_slash_child_slash_grandson) {
-			keystring back;
-			keystring head;
+		When(item_has_changes_and_origin_diff_type) {
 			void SetUp() {
-				back = path::back("parent/child/grandson", head);
+				Root().orig = 1;
+				Root().diff = "string";
 			}
-			Then(back_is_grandson) {
-				Assert::That(back.c_str(), Is().EqualTo("grandson"));
-			}
-			Then(head_is_parent_child) {
-				Assert::That(head.c_str(), Is().EqualTo("parent/child"));
+			Then(is_not_changed) {
+				Assert::That(Root().item.has_origin(), Is().EqualTo(true));
+				Assert::That(Root().item.has_changes(), Is().EqualTo(true));
+				Assert::That(Root().item.is_changed(), Is().EqualTo(true));
 			}
 		};
-		When(back_from_parent_slash_child_slash_slash_grandson) {
-			keystring back;
-			keystring head;
+		When(item_has_changes_and_origin_as_int_with_same_value) {
 			void SetUp() {
-				back = path::back("parent/child//grandson", head);
+				Root().orig = 1;
+				Root().diff = 1;
 			}
-			Then(back_is_child) {
-				Assert::That(back.c_str(), Is().EqualTo("grandson"));
+			Then(is_not_changed) {
+				Assert::That(Root().item.has_origin(), Is().EqualTo(true));
+				Assert::That(Root().item.has_changes(), Is().EqualTo(true));
+				Assert::That(Root().item.is_changed(), Is().EqualTo(false));
 			}
-			Then(head_is_parent_child) {
-				Assert::That(head.c_str(), Is().EqualTo("parent/child"));
+		};
+		When(item_has_changes_and_origin_as_string_with_same_value) {
+			void SetUp() {
+				Root().orig = "qwe";
+				Root().diff = "qwe";
+			}
+			Then(is_not_changed) {
+				Assert::That(Root().item.has_origin(), Is().EqualTo(true));
+				Assert::That(Root().item.has_changes(), Is().EqualTo(true));
+				Assert::That(Root().item.is_changed(), Is().EqualTo(false));
+			}
+		};
+		When(item_has_changes_and_origin_as_array_with_same_value) {
+			void SetUp() {
+				Root().orig[std::size_t(0)] = "qwe";
+				Root().diff[std::size_t(0)] = "qwe";
+			}
+			Then(is_not_changed) {
+				Assert::That(Root().item.has_origin(), Is().EqualTo(true));
+				Assert::That(Root().item.has_changes(), Is().EqualTo(true));
+				Assert::That(Root().item.is_changed(), Is().EqualTo(false));
 			}
 		};
 	};

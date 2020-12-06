@@ -1,5 +1,7 @@
 #!/bin/bash
 
+TAG=-crystax-10.3.2
+
 THIRD_PARTY=~/Develop/3rd_party/
 THIS_DIR=$(pwd)
 
@@ -16,11 +18,11 @@ BUILD_DIR="${THIS_DIR}/build/${TARGET_PLATFORM}/${ARCH}"
 BUILD_TYPE="Debug"
 
 CMAKE_TOOLCHAIN_FILE="${PISK_DIR}/cmake/toolchain.android.${ARCH}.cmake"
-ANDROID_TOOLCHAIN=arm-linux-androideabi-6
-TOOLCHAIN_ROOT=${EXTERNAL_DIR}/sources/${TARGET_PLATFORM}/${ARCH}/${ANDROID_TOOLCHAIN}/
+ANDROID_TOOLCHAIN=arm-linux-androideabi-5
+TOOLCHAIN_ROOT=${EXTERNAL_DIR}/sources${TAG}/${TARGET_PLATFORM}/${ARCH}/${ANDROID_TOOLCHAIN}/
 
-PATH=${EXTERNAL_DIR}/sources/android-sdk/tools:$PATH
-PATH=${EXTERNAL_DIR}/sources/android-sdk/build-tools/25.0.1/:$PATH
+PATH=${EXTERNAL_DIR}/sources${TAG}/android-sdk/tools:$PATH
+PATH=${EXTERNAL_DIR}/sources${TAG}/android-sdk/build-tools/25.0.1/:$PATH
 
 CMAKE_CMD="cmake
 

@@ -1,24 +1,6 @@
 // Project pisk
 // Copyright (C) 2016-2017 Dmitry Shatilov
 //
-// This file is a part of the module model of the project pisk.
-// This file is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
-// Additional restriction according to GPLv3 pt 7:
-// b) required preservation author attributions;
-// c) required preservation links to original sources
-//
 // Original sources:
 //   https://github.com/shatilov-diman/pisk/
 //   https://bitbucket.org/charivariltd/pisk/
@@ -32,6 +14,8 @@
 #include <pisk/bdd.h>
 
 #include <pisk/model/ReflectedObject.h>
+#include <pisk/model/ReflectedScene.h>
+#include <pisk/model/ReflectedEvent.h>
 
 using namespace igloo;
 using namespace pisk::utils;
@@ -181,6 +165,13 @@ Context(enumerate) {
 				Assert::That(child.id().as_string(), Is().EqualTo("123").Or().EqualTo("321"));
 			}
 		}
+		Spec(check_iterator_get_key) {
+			for (auto iter = cobject.children().begin(); iter != cobject.children().end(); ++iter)
+			{
+				Assert::That(iter.get_key(), Is().EqualTo("123").Or().EqualTo("321"));
+				AssertThrowsEx(pisk::utils::PropertyIteratorTypeException, iter.get_index());
+			}
+		}
 	};
 	Context(origin_and_patch) {
 		property orig;
@@ -227,6 +218,13 @@ Context(enumerate) {
 				Assert::That(Parent().cobject.child("123").current_state_id().as_string(), Is().EqualTo("qwe"));
 				Assert::That(Parent().cobject.child("321").current_state_id().is_none(), Is().EqualTo(true));
 			}
+			Spec(check_iterator_get_key) {
+				for (auto iter = Parent().cobject.children().begin(); iter != Parent().cobject.children().end(); ++iter)
+				{
+					Assert::That(iter.get_key(), Is().EqualTo("123").Or().EqualTo("321"));
+					AssertThrowsEx(pisk::utils::PropertyIteratorTypeException, iter.get_index());
+				}
+			}
 		};
 	};
 };
@@ -258,6 +256,13 @@ Context(enumerate_const) {
 			{
 				Assert::That(child.has_changes(), Is().EqualTo(false));
 				Assert::That(child.id().as_string(), Is().EqualTo("123").Or().EqualTo("321"));
+			}
+		}
+		Spec(iterator_get_key_is_123) {
+			for (auto iter = cobject.children().begin(); iter != cobject.children().end(); ++iter)
+			{
+				Assert::That(iter.get_key(), Is().EqualTo("123").Or().EqualTo("321"));
+				AssertThrowsEx(pisk::utils::PropertyIteratorTypeException, iter.get_index());
 			}
 		}
 	};
@@ -319,4 +324,65 @@ Context(enumerate_const) {
 		}
 	};
 };
+
+template<typename TScene>
+static std::size_t calculate_events_base(TScene& scene) {
+	std::size_t count = 0;
+	for (auto event : scene.events())
+	{
+		UNUSED(event);
+		++count;
+	}
+	return count;
+}
+
+static std::size_t calculate_events_by_ref(ReflectedScene& scene) {
+	return calculate_events_base(scene);
+}
+static std::size_t calculate_events_by_cref(const ReflectedScene& scene) {
+	return calculate_events_base(scene);
+}
+
+Describe(TestReflectedItemRangeByIndex) {
+	property orig;
+	property diff;
+
+	ReflectedScene scene{orig, diff};
+	const ReflectedScene& cscene = scene;
+
+	Spec(empty_scene_has_no_events) {
+		Assert::That(calculate_events_by_cref(Root().cscene), Is().EqualTo(0U));
+	}
+	When(add_event) {
+		void SetUp() {
+			Root().scene.push_event<ReflectedEvent>().action() = "qwe";
+		}
+		Then(count_of_events_is_one) {
+			Assert::That(calculate_events_by_ref(Root().scene), Is().EqualTo(1U));
+		}
+	};
+	When(add_two_events) {
+		void SetUp() {
+			Root().scene.push_event<ReflectedEvent>().action() = "qwe";
+			Root().scene.push_event<ReflectedEvent>().action() = "asd";
+		}
+		Then(count_of_events_is_two) {
+			Assert::That(calculate_events_by_cref(Root().scene), Is().EqualTo(2U));
+		}
+		Spec(check_diff) {
+			property check;
+			check["events"][std::size_t(0)]["action"] = "qwe";
+			check["events"][std::size_t(1)]["action"] = "asd";
+			Assert::That(Root().diff, Is().EqualTo(check));
+		}
+		Spec(iterator_get_index) {
+			for (auto iter = Root().cscene.events().begin(); iter != Root().cscene.events().end(); ++iter)
+			{
+				Assert::That(iter.get_index(), Is().EqualTo(std::size_t(0)).Or().EqualTo(std::size_t(1)));
+				AssertThrowsEx(pisk::utils::PropertyIteratorTypeException, iter.get_key());
+			}
+		}
+	};
+};
+
 

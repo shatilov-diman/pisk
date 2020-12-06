@@ -1,24 +1,6 @@
 // Project pisk
 // Copyright (C) 2016-2017 Dmitry Shatilov
 //
-// This file is a part of the module system of the project pisk.
-// This file is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
-// Additional restriction according to GPLv3 pt 7:
-// b) required preservation author attributions;
-// c) required preservation links to original sources
-//
 // Original sources:
 //   https://github.com/shatilov-diman/pisk/
 //   https://bitbucket.org/charivariltd/pisk/
@@ -32,12 +14,14 @@
 
 #pragma once
 
+#include <pisk/utils/noncopyable.h>
 #include <pisk/infrastructure/Logger.h>
 
 #include <pisk/system/Engine.h>
 #include <pisk/system/EngineStrategy.h>
 
 #include "PatchPortal.h"
+#include "EngineSynchronizer.h"
 
 #include <chrono>
 #include <thread>
@@ -51,26 +35,31 @@ namespace system
 namespace impl
 {
 	class EngineTask :
-		private PatchRecipient
+		private PatchRecipient,
+		public utils::noncopyable
 	{
 		EngineStrategy::Configure config;
 
-		PatchGatePtr patch_gate;
+		EngineSynchronizerSlavePtr synchronizer;
 		EngineStrategyPtr strategy;
+		PatchGatePtr patch_gate;
 
+		std::chrono::system_clock::time_point last_update;
 		std::atomic_bool stop;
 		std::thread worker;
 	public:
 
-		EngineTask(PatchGatePtr&& _gate, const system::StrategyFactory& strategy_factory) :
+		EngineTask(const StrategyFactory& strategy_factory, EngineSynchronizerSlavePtr&& _synchronizer, PatchGatePtr&& _gate) :
+			synchronizer(std::move(_synchronizer)),
 			patch_gate(std::move(_gate)),
 			stop(false)
 		{
-			infrastructure::Logger::get().debug("engine_task", "New engine task allocated (0x%x)", this);
-			if (strategy_factory == nullptr)
+			logger::debug("engine_task", "New engine task allocated ({})", this);
+			if (synchronizer == nullptr or strategy_factory == nullptr or patch_gate == nullptr)
 				throw infrastructure::NullPointerException();
+
 			strategy = strategy_factory(*this);
-			if (strategy == nullptr or patch_gate == nullptr)
+			if (strategy == nullptr)
 				throw infrastructure::NullPointerException();
 
 			start();
@@ -78,10 +67,10 @@ namespace impl
 
 		~EngineTask()
 		{
-			infrastructure::Logger::get().debug("engine_task", "Engine task is going to stop (0x%x)", this);
+			logger::debug("engine_task", "Engine task is going to stop ({})", this);
 			request_stop();
 			wait();
-			infrastructure::Logger::get().debug("engine_task", "Engine task destroied (0x%x)", this);
+			logger::debug("engine_task", "Engine task destroied ({})", this);
 		}
 
 		virtual void push(const PatchPtr& patch) noexcept threadsafe
@@ -103,36 +92,64 @@ namespace impl
 		{
 			stop = true;
 		}
-		bool is_not_stopping()
+		bool is_running()
 		{
-			return not stop;
+			if (synchronizer->is_stop_requested())
+				return false;
+			if (stop)
+				return false;
+			return true;
 		}
 
 		int run()
 		{
-			infrastructure::Logger::get().debug("engine_task", "Engine task starting (0x%x)", this);
-			//TODO: fix on_init_app: call on event
+			logger::debug("engine_task", "Engine task starting ({})", this);
+
+			initialize();
+			run_loop();
+			deinitialize();
+
+			logger::debug("engine_task", "Engine task stopping ({})", this);
+			return 0;
+		}
+
+		void initialize()
+		{
+			synchronizer->notify_ready();
+			synchronizer->wait_initialize_signal();
 			config = strategy->on_init_app();
-			while (is_not_stopping())
+			synchronizer->notify_initialize_finished();
+		}
+		void run_loop()
+		{
+			synchronizer->wait_loop_begin_signal();
+			while (is_running())
 			{
 				wait_for_interval();
+				prepatch();
 				process_input_patches();
 				update();
 			}
-			//TODO: fix on_deinit_app: call on event
-			strategy->on_deinit_app();
-			infrastructure::Logger::get().debug("engine_task", "Engine task stopping (0x%x)", this);
-			return 0;
+			synchronizer->notify_loop_finished();
 		}
+		void deinitialize()
+		{
+			synchronizer->wait_deinitialize_signal();
+			strategy->on_deinit_app();
+			synchronizer->notify_deinitialize_finished();
+		}
+
 		void process_input_patches()
 		{
-			while (is_not_stopping())
-			{
-				PatchPtr input_patch = patch_gate->pop();
-				if (input_patch == nullptr)
-					break;
+			std::deque<PatchPtr> patches;
+			while (PatchPtr input_patch = patch_gate->pop())
+				patches.push_back(input_patch);
+			for (auto&& input_patch : patches)
 				strategy->patch_scene(input_patch);
-			}
+		}
+		void prepatch()
+		{
+			strategy->prepatch();
 		}
 		void update()
 		{
@@ -140,7 +157,12 @@ namespace impl
 		}
 		void wait_for_interval()
 		{
-			std::this_thread::sleep_for(config.update_interval);
+			const auto now = std::chrono::system_clock::now();
+			const auto work_time = now - last_update;
+			if (work_time < config.update_interval)
+				std::this_thread::sleep_for(config.update_interval - work_time);
+			last_update = now;
+
 		}
 	};
 	using EngineTaskPtr = std::unique_ptr<EngineTask>;

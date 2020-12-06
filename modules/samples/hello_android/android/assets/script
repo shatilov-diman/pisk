@@ -15,16 +15,6 @@ function len(obj)
 	error("Unexpected type in function 'len'")
 end
 
-function init(cfg)
-	pisk.log("info", "init")
-	pisk.log("info", "==============")
-end
-
-function deinit()
-	pisk.log("info", "deinit")
-	pisk.log("info", "==============")
-end
-
 function on_update_location(location)
 	pisk.log("info", location)
 end
@@ -39,6 +29,7 @@ end
 
 function init(cfg)
 	pisk.log("info", "init")
+	pisk.load_scene("story/story", true)
 	pisk_geolocation2go.subscribe("update_location", "on_update_location")
 	pisk_geolocation2go.subscribe("update_status", "on_update_status")
 	pisk_geolocation2go.subscribe("update_error", "on_update_error")
@@ -57,7 +48,7 @@ end
 function patch_scene(patch)
 	if type(patch["events"]) ~= "table" then return end
 	for i = 1, len(patch["events"]), 1 do
-		if patch["events"][i]["source"] == "audio" then
+		if patch["events"][i]["source"] == "audio" and patch["events"][i]["action"] == "finished" then
 			local update = {}
 			update["children"] = {}
 			update["children"]["root"] = {}

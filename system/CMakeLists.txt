@@ -3,8 +3,10 @@ cmake_minimum_required(VERSION 2.8)
 set(BASE_NAME system)
 
 find_package(igloo REQUIRED)
+find_package(GTest REQUIRED)
+find_package(GMock REQUIRED)
 
-include_directories(${IGLOO_INCLUDE_DIR} ${PISK_INCLUDE_DIRS})
+include_directories(${IGLOO_INCLUDE_DIR} ${GTEST_INCLUDE_DIR} ${GMOCK_INCLUDE_DIR} ${PISK_INCLUDE_DIRS})
 
 set(AUTOSRC_DIRS "sources/system" "sources/system/os/${OSDIR}")
 FILES(MY_HEADERS "*.h" AUTOSRC_DIRS)
@@ -20,7 +22,7 @@ set(MY_TEST_NAME test_${BASE_NAME})
 project(${MY_TEST_NAME})
 
 add_executable(${MY_TEST_NAME} ${MY_SOURCES} ${MY_HEADERS} ${MY_INCLUDES} ${MY_TESTS})
-target_link_libraries(${MY_TEST_NAME} ${OS_SPECIFIC_LIBRARIES} ${PISK_LIBRARIES})
+target_link_libraries(${MY_TEST_NAME} ${GTEST_LIBRARIES} ${GMOCK_LIBRARIES} ${OS_SPECIFIC_LIBRARIES} ${PISK_LIBRARIES})
 add_dependencies(${MY_TEST_NAME} ${PISK_LIBRARIES})
 
 

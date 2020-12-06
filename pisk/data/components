@@ -35,6 +35,12 @@
 		"factory": "get_keyboard_factory"
 	},
 	{
+		"type": "io",
+		"name": "mouse",
+		"module": "io",
+		"factory": "get_mouse_factory"
+	},
+	{
 		"type": "resource_loader",
 		"name": "ogg_loader",
 		"module": "audio_loader",
@@ -74,6 +80,18 @@
 		"dependencies": [
 			"openal"
 		]
+	},
+	{
+		"type": "engine",
+		"name": "graphic",
+		"module": "graphic",
+		"factory": "get_graphic_engine_factory"
+	},
+	{
+		"type": "resource_loader",
+		"name": "shader",
+		"module": "graphic",
+		"factory": "get_shader_loader_factory"
 	}
 ]
 

@@ -1,24 +1,6 @@
 // Project pisk
 // Copyright (C) 2016-2017 Dmitry Shatilov
 //
-// This file is a part of the module geolocation of the project pisk.
-// This file is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
-// Additional restriction according to GPLv3 pt 7:
-// b) required preservation author attributions;
-// c) required preservation links to original sources
-//
 // Original sources:
 //   https://github.com/shatilov-diman/pisk/
 //   https://bitbucket.org/charivariltd/pisk/
@@ -78,7 +60,7 @@ namespace geolocation
 				auto found2 = members.find(keyword);
 				if (found2 == members.end())
 				{
-					infrastructure::Logger::get().warning("geolocation2go", "Unknown keyword '%s'", keyword.c_str());
+					logger::warning("geolocation2go", "Unknown keyword '{}'", keyword);
 					throw infrastructure::InvalidArgumentException();
 				}
 				return found2->second.help_message;
@@ -150,7 +132,7 @@ namespace geolocation
 			auto found = signalers.find(signaler);
 			if (found == signalers.end())
 			{
-				infrastructure::Logger::get().warning("geolocation2go", "Unknown signaler '%s'", signaler.c_str());
+				logger::warning("geolocation2go", "Unknown signaler '{}'", signaler);
 				throw infrastructure::InvalidArgumentException();
 			}
 			return found->second.subscriber(signaler, callback);
@@ -199,7 +181,7 @@ namespace geolocation
 			auto found = members.find(member);
 			if (found == members.end())
 			{
-				infrastructure::Logger::get().warning("geolocation2go", "Unknown member '%s'", member.c_str());
+				logger::warning("geolocation2go", "Unknown member '{}'", member);
 				throw infrastructure::InvalidArgumentException();
 			}
 			return found->second.executor(arguments);
@@ -208,7 +190,7 @@ namespace geolocation
 		{
 			if (arguments.size() != 0)
 			{
-				infrastructure::Logger::get().error("script2go", "Unexpected count of arguments for 'get_available_providers' external function");
+				logger::error("script2go", "Unexpected count of arguments for 'get_available_providers' external function");
 				return {};
 			}
 			utils::property out;
@@ -231,12 +213,12 @@ namespace geolocation
 		{
 			if (arguments.size() != 1)
 			{
-				infrastructure::Logger::get().error("script2go", "Unexpected count of arguments for 'enable_provider/disable_provider' external function");
+				logger::error("script2go", "Unexpected count of arguments for 'enable_provider/disable_provider' external function");
 				throw infrastructure::InvalidArgumentException();
 			}
 			if (not arguments[0].is_string())
 			{
-				infrastructure::Logger::get().error("script2go", "Unexpected argument type at 'enable_provider/disable_provider' external function");
+				logger::error("script2go", "Unexpected argument type at 'enable_provider/disable_provider' external function");
 				throw infrastructure::InvalidArgumentException();
 			}
 			const auto& provider = to_provider(arguments[0].as_keystring());
@@ -249,7 +231,7 @@ namespace geolocation
 		{
 			if (arguments.size() != 0)
 			{
-				infrastructure::Logger::get().error("script2go", "Unexpected count of arguments for 'get_location' external function");
+				logger::error("script2go", "Unexpected count of arguments for 'get_location' external function");
 				throw infrastructure::InvalidArgumentException();
 			}
 			const auto& location = service->get_location();
@@ -260,12 +242,12 @@ namespace geolocation
 		{
 			if (arguments.size() != 1)
 			{
-				infrastructure::Logger::get().error("script2go", "Unexpected count of arguments for 'get_available_providers' external function");
+				logger::error("script2go", "Unexpected count of arguments for 'get_available_providers' external function");
 				throw infrastructure::InvalidArgumentException();
 			}
 			if (not arguments[0].is_string())
 			{
-				infrastructure::Logger::get().error("script2go", "Unexpected argument type at 'get_error' external function");
+				logger::error("script2go", "Unexpected argument type at 'get_error' external function");
 				throw infrastructure::InvalidArgumentException();
 			}
 			const auto& provider = to_provider(arguments[0].as_keystring());
@@ -387,7 +369,7 @@ SafeComponentPtr __cdecl geolocation_service2go_factory(const pisk::tools::Servi
 	const ServicePtr& service = temp_sl.get<Service>();
 	if (service == nullptr)
 	{
-		pisk::infrastructure::Logger::get().warning("geolocation2go", "Unable to locate 'geolocation' service");
+		pisk::logger::warning("geolocation2go", "Unable to locate 'geolocation' service");
 		return {};
 	}
 

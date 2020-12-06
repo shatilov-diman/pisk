@@ -21,7 +21,7 @@ function download_and_unpack() {
         ln -s $4 $3
     fi
 
-    (sleep 5 && while [ 1 ]; do sleep 1; echo y; done) | ${SDK_ROOT_DIR}/tools/android update sdk --no-ui --filter tools,platform-tools,build-tools-25.0.1,android-15,android-21
+    (sleep 5 && while [ 1 ]; do sleep 1; echo y; done) | ${SDK_ROOT_DIR}/tools/android update sdk --no-ui --all --filter tools,platform-tools,build-tools-25.0.1,android-15,android-21
 }
 download_and_unpack $SDK_SRC $SDK_PAGE $SDK_ROOT_DIR $SDK_OUTDIR_NAME
 

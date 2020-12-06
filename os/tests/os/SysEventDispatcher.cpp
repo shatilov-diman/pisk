@@ -1,24 +1,6 @@
 // Project pisk
 // Copyright (C) 2016-2017 Dmitry Shatilov
 //
-// This file is a part of the module os of the project pisk.
-// This file is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
-// Additional restriction according to GPLv3 pt 7:
-// b) required preservation author attributions;
-// c) required preservation links to original sources
-//
 // Original sources:
 //   https://github.com/shatilov-diman/pisk/
 //   https://bitbucket.org/charivariltd/pisk/
@@ -44,15 +26,18 @@ class TestEventHandler :
 	public pisk::os::SysEventHandler<TestEvent>
 {
 	TestEvent last_event;
+	const bool mark_handled;
 
-	virtual void handle(const TestEvent& event) final override
+	virtual bool handle(const TestEvent& event) final override
 	{
 		last_event = event;
+		return mark_handled;
 	}
 public:
-	explicit TestEventHandler(pisk::os::SysEventDispatcherPtr<TestEvent> dispatcher):
+	explicit TestEventHandler(pisk::os::SysEventDispatcherPtr<TestEvent> dispatcher, const bool mark_handled = false):
 		pisk::os::SysEventHandler<TestEvent>(dispatcher),
-		last_event {0}
+		last_event {0},
+		mark_handled(mark_handled)
 	{}
 
 	TestEvent get_last_event()
@@ -61,9 +46,26 @@ public:
 	}
 };
 
+std::shared_ptr<pisk::os::SysEventHandler<TestEvent>> external_last_link;
+
+class TestEventHandlerWithUnsubscribe :
+	public pisk::os::SysEventHandler<TestEvent>
+{
+	virtual bool handle(const TestEvent&) final override
+	{
+		external_last_link.reset();
+		return false;
+	}
+public:
+	explicit TestEventHandlerWithUnsubscribe(pisk::os::SysEventDispatcherPtr<TestEvent> dispatcher):
+		pisk::os::SysEventHandler<TestEvent>(dispatcher)
+	{}
+};
+
 static pisk::os::SysEventDispatcherPtr<TestEvent> CreateEventDispatcher()
 {
-	auto dispatcher = std::make_shared<pisk::os::SysEventDispatcher<TestEvent>>();
+	auto remote = std::make_shared<pisk::os::MainLoopRemoteTasks>();
+	auto dispatcher = std::make_shared<pisk::os::SysEventDispatcher<TestEvent>>(pisk::os::MainLoopRemoteTasksPtr{nullptr, remote});
 
 	return {nullptr, dispatcher};
 }
@@ -73,7 +75,8 @@ Describe(TestSysEventDispatcher) {
 
 	When(dispatch_event_without_listeners) {
 		Then(no_crash) {
-			Root().dispatcher->dispatch({13});
+			const bool result = Root().dispatcher->dispatch({13});
+			Assert::That(result, Is().EqualTo(false));
 		}
 	};
 	When(one_handler_registered) {
@@ -84,7 +87,8 @@ Describe(TestSysEventDispatcher) {
 		When(dispatch_event) {
 			TestEvent event = TestEvent {13};
 			void SetUp() {
-				Root().dispatcher->dispatch(event);
+				const bool result = Root().dispatcher->dispatch(event);
+				Assert::That(result, Is().EqualTo(false));
 			}
 			Then(handler_1_returns_event) {
 				Assert::That(Parent().handler_1->get_last_event().msg, Is().EqualTo(13));
@@ -122,6 +126,38 @@ Describe(TestSysEventDispatcher) {
 				};
 			};
 		};
+	};
+	When(someone_mark_event_as_handled) {
+		std::vector<std::unique_ptr<TestEventHandler>> mark_handlers;
+		std::vector<std::unique_ptr<TestEventHandler>> unmark_handlers;
+		TestEvent event = TestEvent {13};
+		void SetUp() {
+			for (std::size_t index = 0; index < 32; ++index)
+			{
+				mark_handlers.emplace_back(std::make_unique<TestEventHandler>(Root().dispatcher, true));
+				unmark_handlers.emplace_back(std::make_unique<TestEventHandler>(Root().dispatcher, false));
+			}
+			const bool result = Root().dispatcher->dispatch(event);
+			Assert::That(result, Is().EqualTo(true));
+		}
+		Then(all_should_receiv_event) {
+			for (const auto& handler : mark_handlers)
+				Assert::That(handler->get_last_event().msg, Is().EqualTo(13));
+			for (const auto& handler : unmark_handlers)
+				Assert::That(handler->get_last_event().msg, Is().EqualTo(13));
+		}
+	};
+	When(unsubscribe_while_dispatch) {
+		TestEvent event = TestEvent {13};
+		std::weak_ptr<pisk::os::SysEventHandler<TestEvent>> wptr;
+		void SetUp() {
+			wptr = external_last_link = std::make_shared<TestEventHandlerWithUnsubscribe>(Root().dispatcher);
+			Assert::That(wptr.expired(), Is().EqualTo(false));
+			Root().dispatcher->dispatch(event);
+		}
+		Then(wptr_is_expired) {
+			Assert::That(wptr.expired(), Is().EqualTo(true));
+		}
 	};
 };
 

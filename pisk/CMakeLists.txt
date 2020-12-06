@@ -11,6 +11,12 @@ FILES(MY_TESTS "*.cpp" AUTOSRC_DIRS)
 
 file(GLOB_RECURSE MY_INCLUDES LIST_DIRECTORIES true "include/*.h")
 
+if(APPLE)
+	if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+		set(CMAKE_CXX_LINK_FLAGS "${CMAKE_CXX_LINK_FLAGS} -pagezero_size 0x10000 -image_base 0x6000000")
+	endif()
+endif()
+
 
 set(MY_TEST_NAME test_${BASE_NAME})
 project(${MY_TEST_NAME})

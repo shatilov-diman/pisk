@@ -1,24 +1,6 @@
 // Project pisk
 // Copyright (C) 2016-2017 Dmitry Shatilov
 //
-// This file is a part of the module model of the project pisk.
-// This file is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
-// Additional restriction according to GPLv3 pt 7:
-// b) required preservation author attributions;
-// c) required preservation links to original sources
-//
 // Original sources:
 //   https://github.com/shatilov-diman/pisk/
 //   https://bitbucket.org/charivariltd/pisk/
@@ -32,6 +14,7 @@
 #pragma once
 
 #include "ReflectedItem.h"
+#include "ReflectedItemRange.h"
 
 namespace pisk
 {
@@ -54,6 +37,16 @@ namespace model
 			return const_ref();
 		}
 
+		ReflectedItemBase<cv_property> properties()
+		{
+			static const utils::keystring kproperties("properties");
+			return this->get_dictionary_item(kproperties);
+		}
+		ReflectedItemBase<const cv_property> properties() const
+		{
+			return const_ref().property();
+		}
+
 		template <typename State>
 		State state(const utils::keystring& id)
 		{
@@ -63,7 +56,19 @@ namespace model
 		template <typename State>
 		State state(const utils::keystring& id) const
 		{
-			return const_ref().state<State>(id);
+			return const_ref().template state<State>(id);
+		}
+
+		template <typename State>
+		ReflectedItemRange<State, cv_property> states()
+		{
+			static const utils::keystring kstates("states");
+			return ReflectedItemRange<State, cv_property>(this->orig[kstates], this->prop[kstates]);
+		}
+		template <typename State>
+		ReflectedItemRange<State, const cv_property> states() const
+		{
+			return const_ref().states();
 		}
 	};
 	using ConstReflectedPresentation = ReflectedPresentationBase<const utils::property>;

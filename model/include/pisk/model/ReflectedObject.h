@@ -1,24 +1,6 @@
 // Project pisk
 // Copyright (C) 2016-2017 Dmitry Shatilov
 //
-// This file is a part of the module model of the project pisk.
-// This file is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
-// Additional restriction according to GPLv3 pt 7:
-// b) required preservation author attributions;
-// c) required preservation links to original sources
-//
 // Original sources:
 //   https://github.com/shatilov-diman/pisk/
 //   https://bitbucket.org/charivariltd/pisk/
@@ -35,6 +17,8 @@
 #include "ReflectedItemRange.h"
 #include "ReflectedProperty.h"
 #include "ReflectedPresentation.h"
+
+#include "Path.h"
 
 namespace pisk
 {
@@ -72,7 +56,7 @@ namespace model
 		}
 		ReflectedItemBase<const cv_property> properties() const
 		{
-			return const_ref().property(id);
+			return const_ref().properties();
 		}
 		ReflectedPropertyBase<cv_property> property(const utils::keystring& id)
 		{
@@ -102,6 +86,46 @@ namespace model
 			return const_ref().id();
 		}
 
+		ReflectedItemBase<cv_property> enabled()
+		{
+			static const utils::keystring kid("enabled");
+			return properties().get_bool_item(kid);
+		}
+		ReflectedItemBase<const cv_property> enabled() const
+		{
+			return const_ref().enabled();
+		}
+
+		ReflectedItemRange<ReflectedItemBase<cv_property>, cv_property> tags()
+		{
+			static const utils::keystring kid("tags");
+			return ReflectedItemRange<ReflectedItemBase<cv_property>, cv_property>(this->orig[kid], this->prop[kid]);
+		}
+		ReflectedItemRange<ReflectedItemBase<const cv_property>, const cv_property> tags() const
+		{
+			return const_ref().tags();
+		}
+		void add_tag(const utils::keystring& name)
+		{
+			static const utils::keystring kid("tags");
+			auto tags = this->get_array_item(kid);
+			const std::size_t initial_size = tags.size();
+			for (std::size_t index = initial_size-1; index < initial_size; --index)
+				if (tags.get_item(index) == name)
+					return ;
+			tags.get_item(tags.size()) = name;
+		}
+		bool remove_tag(const utils::keystring& tag)
+		{
+			static const utils::keystring kid("tags");
+			auto tags = this->get_array_item(kid);
+			const std::size_t initial_size = tags.size();
+			for (std::size_t index = initial_size-1; index < initial_size; --index)
+				if (tags.get_item(index) == tag)
+					tags.remove_item(index);
+			return initial_size != tags.size();
+		}
+
 		template <typename Presentation>
 		Presentation presentation(const utils::keystring& id)
 		{
@@ -111,7 +135,7 @@ namespace model
 		template <typename Presentation>
 		Presentation presentation(const utils::keystring& id) const
 		{
-			return const_ref().presentation<Presentation>(id);
+			return const_ref().template presentation<Presentation>(id);
 		}
 		template <typename Presentation>
 		Presentation presentation()
@@ -122,24 +146,32 @@ namespace model
 		template <typename Presentation>
 		Presentation presentation() const
 		{
-			return const_ref().presentation<Presentation>();
+			return const_ref().template presentation<Presentation>();
 		}
 
-		ReflectedObjectBase<cv_property> child_by_path(const utils::keystring& id_path)
+		ReflectedObjectBase<cv_property> child_by_path(const PathId& id_path)
 		{
 			if (id_path.empty())
 				throw infrastructure::InvalidArgumentException();
 
-			utils::keystring tail;
-			const utils::keystring& id = path::front(id_path, tail);
+			const utils::keystring& id = id_path.front();
+			const auto& tail = id_path.tail();
 			if (tail.empty())
 				return child(id);
 			return child(id).child_by_path(tail);
 		}
+		ReflectedObjectBase<cv_property> child_by_path(const utils::keystring& id_path)
+		{
+			return child_by_path(PathId::from_keystring(id_path));
+		}
 
-		ReflectedObjectBase<const cv_property> child_by_path(const utils::keystring& id_path) const
+		ReflectedObjectBase<const cv_property> child_by_path(const PathId& id_path) const
 		{
 			return const_ref().child_by_path(id_path);
+		}
+		ReflectedObjectBase<const cv_property> child_by_path(const utils::keystring& id_path) const
+		{
+			return child_by_path(PathId::from_keystring(id_path));
 		}
 
 		template <typename check_type = cv_property, typename = typename std::enable_if<!std::is_const<check_type>::value>::type>

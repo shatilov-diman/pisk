@@ -1,0 +1,16 @@
+data/sources/geolocation/Service.cpp.i
+data/sources/geolocation/os/windows/Providers.cpp.i
+data/sources/geolocation/Service2Go.cpp.i
+data/android/src/ltd/charivari/pisk/geolocation/GeolocationDirector.java.i
+data/.hgeol.i
+data/tests/main.cpp.i
+data/tests/geolocation/ServiceTest.cpp.i
+data/sources/geolocation/IP.cpp.i
+data/include/pisk/geolocation/Service.h.i
+data/.hgignore.i
+data/sources/geolocation/os/unix/Providers.cpp.i
+data/COPYING.i
+data/sources/geolocation/ServiceImpl.h.i
+data/CMakeLists.txt.i
+data/sources/geolocation/os/android/Providers.cpp.i
+data/sources/geolocation/os/macos/Providers.cpp.i

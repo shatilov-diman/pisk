@@ -14,7 +14,8 @@ set(CMAKE_PLATFORM_NO_VERSIONED_SONAME 1)
 set(CMAKE_C_COMPILER ${TOOLCHAIN_ROOT}/bin/${CROSS_PREFIX}gcc)
 set(CMAKE_CXX_COMPILER ${TOOLCHAIN_ROOT}/bin/${CROSS_PREFIX}g++)
 
-set(ANDROID_CFLAGS "-march=${CMAKE_SYSTEM_PROCESSOR} -mfloat-abi=softfp -mfpu=neon")
+#__USE_GNU - work around for crystax: see revision #9041d6a at crystax/android-platform-bionic
+set(ANDROID_CFLAGS "-march=${CMAKE_SYSTEM_PROCESSOR} -mfloat-abi=softfp -mfpu=neon -D__USE_GNU=1")
 set(ANDROID_LDFLAGS "")
 
 #set(CMAKE_C_FLAGS "-std=gnu++14 ${ANDROID_CFLAGS}" CACHE STRING "" FORCE)

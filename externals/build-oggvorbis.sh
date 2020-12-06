@@ -81,6 +81,9 @@ export CFLAGS="${ANDROID_CFLAGS} -I${INSTALL_DIR}/include/"
 export CPPFLAGS="${ANDROID_CPPFLAGS} -I${INSTALL_DIR}/include/"
 export LDFLAGS="${ANDROID_LDFLAGS} -L${INSTALL_DIR}/lib/"
 
+# disable rint: crystax's issue #1716
+export CFLAGS="${CFLAGS} -DDJGPP"
+
 # --with-ogg does not work
 ./configure --prefix="${INSTALL_DIR}" --with-ogg="${OGG}" --with-sysroot="${CROSS_SYSROOT}" --host=${ANDROID_CROSS} || exit 1
 make clean && make -j ${CPU_COUNT} LDFLAGS="-avoid-version ${LDFLAGS}" || exit 1

@@ -1,4 +1,5 @@
 
+* Tests: make tests as libraries. Build test.apk for tests
 * Use gtest & gmock!
 * Optimization: use pool of property::dictionary and unordered_map
 * Library size: strip libraries; use shared std lib

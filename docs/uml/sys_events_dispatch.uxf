@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<diagram program="umlet" version="14.2">
+<diagram program="umlet" version="14.1">
   <zoom_level>8</zoom_level>
   <element>
     <id>UMLClass</id>
@@ -125,7 +125,7 @@ transparency=0
     <coordinates>
       <x>184</x>
       <y>456</y>
-      <w>120</w>
+      <w>128</w>
       <h>56</h>
     </coordinates>
     <panel_attributes>lt=-()
@@ -246,7 +246,7 @@ transparency=0</panel_attributes>
       <x>528</x>
       <y>424</y>
       <w>152</w>
-      <h>40</h>
+      <h>48</h>
     </coordinates>
     <panel_attributes>template=Event
 &lt;&lt;chain responsibility&gt;&gt;
@@ -390,7 +390,7 @@ layer=2</panel_attributes>
     <coordinates>
       <x>296</x>
       <y>304</y>
-      <w>176</w>
+      <w>184</w>
       <h>152</h>
     </coordinates>
     <panel_attributes>lt=&lt;.
@@ -414,7 +414,7 @@ layer=2</panel_attributes>
     <coordinates>
       <x>936</x>
       <y>456</y>
-      <w>120</w>
+      <w>128</w>
       <h>56</h>
     </coordinates>
     <panel_attributes>lt=-()

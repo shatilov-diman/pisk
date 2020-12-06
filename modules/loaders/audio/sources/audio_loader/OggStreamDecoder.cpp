@@ -1,24 +1,6 @@
 // Project pisk
 // Copyright (C) 2016-2017 Dmitry Shatilov
 //
-// This file is a part of the module audio of the project pisk.
-// This file is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
-// Additional restriction according to GPLv3 pt 7:
-// b) required preservation author attributions;
-// c) required preservation links to original sources
-//
 // Original sources:
 //   https://github.com/shatilov-diman/pisk/
 //   https://bitbucket.org/charivariltd/pisk/
@@ -68,7 +50,7 @@ namespace loaders
 			ogg_file.reset();
 		}
 
-		virtual infrastructure::DataStream& get_data_stream() noexcept
+		virtual infrastructure::DataStream& get_data_stream() noexcept override
 		{
 			return *this;
 		}
@@ -85,7 +67,7 @@ namespace loaders
 			const auto result = ov_open_callbacks(this, ogg_file.get(), nullptr, -1, cb);
 			if (result < 0)
 			{
-				infrastructure::Logger::get().error("ogg", "Decoding failed with error: %d", result);
+				logger::error("ogg", "Decoding failed with error: {}", result);
 				throw infrastructure::InitializeError();
 			}
 
@@ -95,12 +77,12 @@ namespace loaders
 			UNUSED(info);
 			if (info->channels == 0 or info->channels > 2)
 			{
-				infrastructure::Logger::get().error("ogg", "Unexpected channels number: %d", info->channels);
+				logger::error("ogg", "Unexpected channels number: {}", info->channels);
 				throw infrastructure::InvalidArgumentException();
 			}
 			if (info->rate < 128 or info->rate > 1024 * 1024 * 1024)
 			{
-				infrastructure::Logger::get().error("ogg", "Unexpected stream bitrate: %d", info->rate);
+				logger::error("ogg", "Unexpected stream bitrate: {}", info->rate);
 				throw infrastructure::InvalidArgumentException();
 			}
 
@@ -109,7 +91,7 @@ namespace loaders
 			const ogg_int64_t pcm_total = ov_pcm_total(ogg_file.get(), -1);
 			if (pcm_total < 0)
 			{
-				infrastructure::Logger::get().error("ogg", "Decoding failed with error: %d", result);
+				logger::error("ogg", "Decoding failed with error: {}", result);
 				throw infrastructure::InitializeError();
 			}
 			pcm_total_size = static_cast<std::size_t>(pcm_total);
@@ -118,10 +100,11 @@ namespace loaders
 			return pcm_total_size;
 		}
 	private:
-		virtual std::size_t tell() const {
+		virtual std::size_t tell() const override
+		{
 			return static_cast<std::size_t>(ov_pcm_tell(ogg_file.get()));
 		}
-		virtual std::size_t seek(const long pos, const Whence whence)
+		virtual std::size_t seek(const long pos, const Whence whence) override
 		{
 			int result = 0;
 			if (whence == Whence::begin)
@@ -133,19 +116,19 @@ namespace loaders
 				const ogg_int64_t size = ov_pcm_total(ogg_file.get(), -1);
 				if (size < 0 or static_cast<std::uint64_t>(size) > std::numeric_limits<std::size_t>::max())
 				{
-					infrastructure::Logger::get().error("ogg", "Unexpected stream size: %ld", size);
+					logger::error("ogg", "Unexpected stream size: %ld", size);
 					return std::numeric_limits<std::size_t>::max();
 				}
 				result = ov_pcm_seek(ogg_file.get(), size + pos);
 			}
 			else
 			{
-				infrastructure::Logger::get().error("ogg", "Unexpected seek direction");
+				logger::error("ogg", "Unexpected seek direction");
 				throw infrastructure::InvalidArgumentException();
 			}
 			if (result < 0)
 			{
-				infrastructure::Logger::get().error("ogg", "Seeking stream failed with error: %d", result);
+				logger::error("ogg", "Seeking stream failed with error: {}", result);
 				return std::numeric_limits<std::size_t>::max();
 			}
 			return static_cast<std::size_t>(result);
@@ -154,7 +137,7 @@ namespace loaders
 		{
 			return read_impl(count, out);
 		}
-		virtual infrastructure::DataBuffer readall() const
+		virtual infrastructure::DataBuffer readall() const override
 		{
 			infrastructure::DataBuffer out;
 			read_impl(std::numeric_limits<std::size_t>::max(), out);
@@ -186,7 +169,7 @@ namespace loaders
 					break;
 				if (ret < 0)
 				{
-					infrastructure::Logger::get().error("ogg", "Reading stream failed with error: %d", ret);
+					logger::error("ogg", "Reading stream failed with error: {}", ret);
 					return std::numeric_limits<std::size_t>::max();
 				}
 				read_count += ret;

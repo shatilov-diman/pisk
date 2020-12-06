@@ -1,24 +1,6 @@
 // Project pisk
 // Copyright (C) 2016-2017 Dmitry Shatilov
 //
-// This file is a part of the module script of the project pisk.
-// This file is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
-// Additional restriction according to GPLv3 pt 7:
-// b) required preservation author attributions;
-// c) required preservation links to original sources
-//
 // Original sources:
 //   https://github.com/shatilov-diman/pisk/
 //   https://bitbucket.org/charivariltd/pisk/
@@ -38,6 +20,7 @@
 
 #include <pisk/system/EngineStrategy.h>
 
+#include <pisk/model/Path.h>
 #include <pisk/model/ReflectedScene.h>
 #include <pisk/model/script/ReflectedPresentation.h>
 
@@ -73,13 +56,16 @@ namespace script
 			execute("script", "deinit", {});
 		}
 
-	private:
+		virtual void prepatch() final override
+		{
+			execute("script", "prepatch", {});
+		}
 
 		virtual void patch_scene(const system::PatchPtr& patch) final override
 		{
 			model::ConstReflectedScene scene_object(scene, *patch);
-			walk(scene_object, "");
-			scene = utils::property::merge(scene, *patch);
+			walk(scene_object, {});
+			utils::property::replace(scene, *patch);
 
 			execute("script", "patch_scene", {*patch});
 		}
@@ -90,11 +76,11 @@ namespace script
 		}
 
 	private:
-		void walk(model::ConstReflectedObject& object, const utils::keystring& id_path)
+		void walk(model::ConstReflectedObject& object, const model::PathId& id_path)
 		try
 		{
 			const utils::keystring& obj_id = object.id().is_string() ? object.id().as_keystring() : "";
-			const utils::keystring& obj_id_path = model::path::add(id_path, obj_id);
+			const auto& obj_id_path = id_path.add(obj_id);
 			process_object(object, obj_id_path);
 			if (object.children().has_changes())
 				for (auto child : object.children())
@@ -103,15 +89,15 @@ namespace script
 		}
 		catch (const model::UnexpectedItemTypeException&)
 		{
-			infrastructure::Logger::get().warning("script", "Unexpected item type");
+			logger::warning("script", "Unexpected item type");
 		}
 
-		void process_object(model::ConstReflectedObject& object, const utils::keystring& id_path)
+		void process_object(model::ConstReflectedObject& object, const model::PathId& id_path)
 		{
 			auto presentation = object.presentation<model::script::ConstPresentation>();
 			if (presentation.is_none())
 			{
-				infrastructure::Logger::get().debug("script", "Object '%s' does not contains script presentation", id_path.c_str());
+				logger::spam("script", "Object '{}' does not contains script presentation", id_path);
 				return;
 			}
 			process_presentation(object, presentation, id_path);
@@ -119,21 +105,21 @@ namespace script
 		void process_presentation(
 			model::ConstReflectedObject& object,
 			model::script::ConstPresentation& presentation,
-			const utils::keystring& id_path
+			const model::PathId& id_path
 		)
 		{
 			const auto& state_id = object.current_state_id();
 			if (object.has_origin())
-				infrastructure::Logger::get().debug("script", "Receive new state for object '%s': '%s'", id_path.c_str(), state_id.as_keystring().c_str());
+				logger::debug("script", "Receive new state for object '{}': '{}'", id_path, state_id.as_keystring());
 			else
-				infrastructure::Logger::get().debug("script", "Receive new object '%s' with initial state: '%s'", id_path.c_str(), state_id.as_keystring().c_str());
+				logger::debug("script", "Receive new object '{}' with initial state: '{}'", id_path, state_id.as_keystring());
 
 			const auto& resource_id = presentation.state(state_id.as_keystring()).res_id();
 			const auto& function = presentation.state(state_id.as_keystring()).function();
 			const auto& arguments = presentation.state(state_id.as_keystring()).arguments();
 			if (not (resource_id.is_string() and function.is_string() and arguments.is_array()))
 			{
-				infrastructure::Logger::get().warning("script", "State '%s' has not requred params or them has incorrect types (object: '%s')", state_id.as_keystring().c_str(), id_path.c_str());
+				logger::warning("script", "State '{}' has not requred params or them has incorrect types (object: '{}')", state_id.as_keystring(), id_path);
 				return;
 			}
 			execute(resource_id.as_keystring(), function.as_keystring(), to_arguments(arguments));
@@ -174,7 +160,7 @@ namespace script
 				}
 				return { out };
 			}
-			infrastructure::Logger::get().critical("script", "to_property: unexpected item type");
+			logger::critical("script", "to_property: unexpected item type");
 			throw infrastructure::LogicErrorException();
 		}
 

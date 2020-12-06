@@ -1,24 +1,6 @@
 // Project pisk
 // Copyright (C) 2016-2017 Dmitry Shatilov
 //
-// This file is a part of the module geolocation of the project pisk.
-// This file is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
-// Additional restriction according to GPLv3 pt 7:
-// b) required preservation author attributions;
-// c) required preservation links to original sources
-//
 // Original sources:
 //   https://github.com/shatilov-diman/pisk/
 //   https://bitbucket.org/charivariltd/pisk/
@@ -33,6 +15,7 @@
 
 #include <pisk/defines.h>
 
+#include <pisk/infrastructure/Logger.h>
 #include <pisk/utils/signaler.h>
 #include <pisk/utils/property_tree.h>
 
@@ -78,15 +61,18 @@ namespace geolocation
 		std::map<Provider, Status> status;
 		std::map<Provider, Error> error;
 
-		virtual void release()
+		virtual void release() override
 		{
+			logger::info("geolocation", "destroy service");
 			delete this;
 		}
 
 	public:
 		explicit ServiceImpl(Providers&& providers):
 			providers(std::move(providers))
-		{}
+		{
+			logger::info("geolocation", "construct service");
+		}
 
 		virtual std::vector<Provider> get_available_providers() const final override
 		{
@@ -98,6 +84,7 @@ namespace geolocation
 
 		virtual bool enable_provider(const Provider provider) threadsafe final override
 		{
+			logger::info("geolocation", "enable provider");
 			auto it = providers.find(provider);
 			if (it == providers.end())
 				return false;
@@ -112,6 +99,7 @@ namespace geolocation
 
 		virtual bool disable_provider(const Provider provider) threadsafe final override
 		{
+			logger::info("geolocation", "disable provider");
 			auto it = providers.find(provider);
 			if (it == providers.end())
 				return false;
@@ -142,6 +130,7 @@ namespace geolocation
 	private:
 		void subscribe(const Provider provider)
 		{
+			logger::info("geolocation", "subscribe provider");
 			LocationSignaler& update_signaler = providers.at(provider)->on_update_location;
 			update_subscriptions[provider] = update_signaler.subscribe(std::bind(&ServiceImpl::_on_update_location, this, std::placeholders::_1));
 
@@ -153,6 +142,7 @@ namespace geolocation
 		}
 		void unsubscribe(const Provider provider)
 		{
+			logger::info("geolocation", "unsubscribe provider");
 			update_subscriptions.erase(provider);
 			error_subscriptions.erase(provider);
 		}
@@ -164,6 +154,7 @@ namespace geolocation
 	private:
 		void _on_update_location(const Location& new_location)
 		{
+			logger::spam("geolocation", "on update location");
 			bool updated = false;
 			{
 				std::lock_guard<std::mutex> guard(mutex);
@@ -185,6 +176,7 @@ namespace geolocation
 		}
 		void _on_update_status(const Status& new_status)
 		{
+			logger::debug("geolocation", "on update status");
 			bool updated = false;
 			{
 				std::lock_guard<std::mutex> guard(mutex);
@@ -203,6 +195,7 @@ namespace geolocation
 		}
 		void _on_update_error(const Error& new_error)
 		{
+			logger::error("geolocation", "on error: {}", new_error.msg);
 			bool updated = false;
 			{
 				std::lock_guard<std::mutex> guard(mutex);

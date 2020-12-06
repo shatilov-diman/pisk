@@ -1,24 +1,6 @@
 // Project pisk
 // Copyright (C) 2016-2017 Dmitry Shatilov
 //
-// This file is a part of the module base of the project pisk.
-// This file is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
-// Additional restriction according to GPLv3 pt 7:
-// b) required preservation author attributions;
-// c) required preservation links to original sources
-//
 // Original sources:
 //   https://github.com/shatilov-diman/pisk/
 //   https://bitbucket.org/charivariltd/pisk/
@@ -52,7 +34,7 @@ namespace infrastructure
 		public utils::noncopyable
 	{
 	public:
-		using ModulePtr = std::shared_ptr<Module>;
+		using ModulePtr = tools::shared_relesable_ptr<Module>;
 		using ProcedurePtr = void (*)(void);
 
 		virtual ProcedurePtr find_procedure(const std::string& name) = 0;
@@ -70,7 +52,7 @@ namespace infrastructure
 
 	/* For clean all actions should processed in next order: first interface, second holder */
 
-	template <typename Interface, typename InterfacePtr = std::shared_ptr<Interface>>
+	template <typename Interface, typename InterfacePtr = tools::shared_relesable_ptr<Interface>>
 	class ModuleHolderProxy
 	{
 		InterfacePtr interface;
@@ -90,24 +72,24 @@ namespace infrastructure
 
 		ModuleHolderProxy(const ModuleHolderProxy& ref) = default;
 
-		template <typename InputInterface, typename = typename std::enable_if<std::is_convertible<InputInterface*, Interface*>::value>::type>
-		ModuleHolderProxy(const ModuleHolderProxy<InputInterface>& ref) :
+		template <typename InputInterface, typename InputInterfacePtr, typename = typename std::enable_if<std::is_convertible<InputInterface*, Interface*>::value>::type>
+		ModuleHolderProxy(const ModuleHolderProxy<InputInterface, InputInterfacePtr>& ref) :
 			ModuleHolderProxy(ref.template cast<Interface>())
 		{}
 
 		ModuleHolderProxy(ModuleHolderProxy&& ref) = default;
 
-		template <typename InputInterface, typename = typename std::enable_if<std::is_convertible<InputInterface*, Interface*>::value>::type>
-		ModuleHolderProxy(ModuleHolderProxy<InputInterface>&& ref) :
+		template <typename InputInterface, typename InputInterfacePtr, typename = typename std::enable_if<std::is_convertible<InputInterface*, Interface*>::value>::type>
+		ModuleHolderProxy(ModuleHolderProxy<InputInterface, InputInterfacePtr>&& ref) :
 			ModuleHolderProxy(ref.template cast_n_move<Interface>())
 		{}
 
-		ModuleHolderProxy<Interface, std::weak_ptr<Interface>> weak() const
+		ModuleHolderProxy<Interface, tools::weak_relesable_ptr<Interface>> weak() const
 		{
 			return {holder, interface};
 		}
-		template <typename = typename std::enable_if<std::is_convertible<InterfacePtr, std::weak_ptr<void>>::value>::type>
-		ModuleHolderProxy<Interface, std::shared_ptr<Interface>> lock() const
+		template <typename = typename std::enable_if<std::is_convertible<InterfacePtr, tools::weak_relesable_ptr<void>>::value>::type>
+		ModuleHolderProxy<Interface, tools::shared_relesable_ptr<Interface>> lock() const
 		{
 			return {holder, interface.lock()};
 		}
@@ -130,34 +112,34 @@ namespace infrastructure
 			ModuleHolderProxy X(std::move(*this));
 		}
 
-		ModuleHolderProxy& operator =(const ModuleHolderProxy<Interface>& ref)
+		ModuleHolderProxy& operator =(const ModuleHolderProxy<Interface, InterfacePtr>& ref)
 		{
 			interface = ref.interface;
 			holder = ref.holder;
 			return *this;
 		}
 
-		template <typename InputInterface, typename = typename std::enable_if<std::is_convertible<InputInterface*, Interface*>::value>::type>
-		ModuleHolderProxy& operator =(const ModuleHolderProxy<InputInterface>& ref)
+		template <typename InputInterface, typename InputInterfacePtr, typename = typename std::enable_if<std::is_convertible<InputInterface*, Interface*>::value>::type>
+		ModuleHolderProxy& operator =(const ModuleHolderProxy<InputInterface, InputInterfacePtr>& ref)
 		{
 			return *this = ref.template cast<InterfacePtr>();
 		}
 
-		ModuleHolderProxy& operator =(ModuleHolderProxy<Interface>&& ref)
+		ModuleHolderProxy& operator =(ModuleHolderProxy<Interface, InterfacePtr>&& ref)
 		{
 			interface = std::move(ref.interface);
 			holder = std::move(ref.holder);
 			return *this;
 		}
 
-		template <typename InputInterface, typename = typename std::enable_if<std::is_convertible<InputInterface*, Interface*>::value>::type>
-		ModuleHolderProxy& operator =(ModuleHolderProxy<InputInterface>&& ref)
+		template <typename InputInterface, typename InputInterfacePtr, typename = typename std::enable_if<std::is_convertible<InputInterface*, Interface*>::value>::type>
+		ModuleHolderProxy& operator =(ModuleHolderProxy<InputInterface, InputInterfacePtr>&& ref)
 		{
 			return *this = ref.template cast_n_move<InterfacePtr>();
 		}
 
-		template <typename RightInterface>
-		bool operator ==(const ModuleHolderProxy<RightInterface>& right) const
+		template <typename RightInterface, typename RightInterfacePtr>
+		bool operator ==(const ModuleHolderProxy<RightInterface, RightInterfacePtr>& right) const
 		{
 			return interface == right.interface;
 		}
@@ -169,8 +151,8 @@ namespace infrastructure
 		{
 			return left == right.interface;
 		}
-		template <typename InterfaceLeft>
-		friend bool operator ==(const ModuleHolderProxy<InterfaceLeft>& left, const ModuleHolderProxy& right)
+		template <typename LeftInterface, typename LeftInterfacePtr>
+		friend bool operator ==(const ModuleHolderProxy<LeftInterface, LeftInterfacePtr>& left, const ModuleHolderProxy& right)
 		{
 			return left.interface == right.interface;
 		}
@@ -190,8 +172,8 @@ namespace infrastructure
 		{
 			return interface < right;
 		}
-		template <typename RightInterface>
-		bool operator <(const ModuleHolderProxy<RightInterface>& right) const
+		template <typename RightInterface, typename RightInterfacePtr>
+		bool operator <(const ModuleHolderProxy<RightInterface, RightInterfacePtr>& right) const
 		{
 			return interface < right.interface;
 		}
@@ -216,6 +198,15 @@ namespace infrastructure
 		const InterfacePtr operator ->() const
 		{
 			return interface;
+		}
+
+		Interface* get()
+		{
+			return interface.get();
+		}
+		const Interface* get() const
+		{
+			return interface.get();
 		}
 	};
 }

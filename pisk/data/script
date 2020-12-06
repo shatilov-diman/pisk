@@ -1,0 +1,268 @@
+Quaternion = require "scripts.Quaternion"
+
+function create_patch()
+	local patch = {}
+	local mt = {__index = function(table, key) rawset(table, key, create_patch()) return rawget(table, key) end}
+	setmetatable(patch, mt)
+	return patch
+end
+
+scene = create_patch()
+keys = {}
+mousekeys = {}
+mousemove = nil
+
+
+function len(obj)
+	if type(obj) == "number" then return error("Unable to get length of number") end
+ 	if type(obj) == "function" then return error("Unable to get length of function") end
+
+	if type(obj) == "nil" then return 0 end
+	if type(obj) == "string" then return strlen(obj) end
+	if type(obj) == "table" then
+		local count = 0
+		for _ in pairs(obj) do count = count + 1 end
+		return count
+	end
+	error("Unexpected type in function 'len'")
+end
+
+function on_update_location(location)
+	pisk.log("info", location)
+end
+
+function on_update_status(status)
+	pisk.log("info", status)
+end
+
+function on_update_error(err)
+	pisk.log("info", err)
+end
+
+function load_def_scene()
+	local intro_scene = create_patch()
+	intro_scene.children["root"].properties["id"] = "root"
+	intro_scene.children["root"].properties["state"] = "purring"
+	intro_scene.children["root"].presentations["audio"].states["purring"].res_id = "story/purring"
+	intro_scene.children["root"].presentations["audio"].states["meow"].res_id = "story/meow"
+	scene = create_patch()
+	push_changes(intro_scene)
+end
+
+function init(cfg)
+	pisk.log("info", "init")
+	if pisk_geolocation2go ~= nil then
+		pisk_geolocation2go.subscribe("update_location", "on_update_location")
+		pisk_geolocation2go.subscribe("update_status", "on_update_status")
+		pisk_geolocation2go.subscribe("update_error", "on_update_error")
+
+		pisk_geolocation2go.enable_provider("IP")
+		pisk_geolocation2go.enable_provider("PhoneCell")
+		pisk_geolocation2go.enable_provider("Sattelite")
+	end
+	pisk.log("info", "load_objects")
+	bind_keys()
+	bind_mouse()
+	--load_def_scene()
+	pisk.load_scene("story/story", false)
+	for key, value in pairs(scene.children) do
+		if key == "camera_01" then
+			value.presentations.location.properties.local_velocity = {
+				x = 0,
+				y = 0,
+				z = 0,
+			}
+		else
+			value.presentations.location.properties.local_velocity = {
+				x = math.random() / 100,
+				y = math.random() / 100,
+				z = math.random() / 100,
+			}
+		end
+	end
+	pisk.log("info", "==============")
+end
+
+function deinit()
+	pisk.log("info", "deinit")
+	pisk.log("info", "==============")
+end
+
+function prepatch()
+end
+
+function push_changes(patch)
+	update_tree(scene, patch)
+	pisk.push_changes(patch)
+end
+
+function patch_scene(patch)
+	if type(patch.events) == "table" then
+		process_events(patch.events)
+	else
+		update_tree(scene, patch)
+	end
+end
+
+function update_tree(tree, patch)
+	for key, value in pairs(patch) do
+		if type(value) == "table" then
+			update_tree(tree[key], value)
+		else
+			tree[key] = value
+		end
+	end
+end
+
+function process_events(events)
+	for i = 1, len(events), 1 do
+		local event = events[i]
+		if event.source == "audio" and event.action == "finished" then
+			local update = create_patch()
+			if scene.children["root"].properties["state"] == "purring" then
+				update.children["root"].properties["state"] = "meow"
+			else
+				update.children["root"].properties["state"] = "purring"
+			end
+			scene.children["root"].properties["state"] = update.children["root"].properties["state"]
+			push_changes(update)
+		end
+		if event.source == "keyboard" then
+			local pressed = event.action == "pressed"
+			local released = event.action == "released"
+			if pressed or released then
+				local fn = keys[event.key]
+				if fn ~= nil then
+					fn(pressed)
+				end
+			end
+		end
+		if event.source == "mouse" then
+			local pressed = event.action == "pressed"
+			local released = event.action == "released"
+			if pressed or released then
+				local fn = mousekeys[event.key]
+				if fn ~= nil then
+					fn(event.x, event.y, pressed)
+				end
+			end
+			local moved = event.type == "move"
+			if moved then
+				local fn = mousemove
+				if fn ~= nil then
+					fn(event.x, event.y)
+				end
+			end
+		end
+	end
+end
+
+function bind_keys()
+	local velocity = 0.1
+	keys[string.byte('w')] = function(pressed)
+		local cam01_loc = scene.children["camera_01"].presentations.location
+		if cam01_loc == nil then return end
+		cam01_loc.properties.local_velocity = {
+			x = cam01_loc.properties.local_velocity.x,
+			y = cam01_loc.properties.local_velocity.y,
+			z = cam01_loc.properties.local_velocity.z + (pressed and -velocity or velocity),
+		}
+	end
+	keys[string.byte('s')] = function(pressed)
+		local cam01_loc = scene.children["camera_01"].presentations.location
+		if cam01_loc == nil then return end
+		cam01_loc.properties.local_velocity = {
+			x = cam01_loc.properties.local_velocity.x,
+			y = cam01_loc.properties.local_velocity.y,
+			z = cam01_loc.properties.local_velocity.z + (pressed and velocity or -velocity),
+		}
+	end
+	keys[string.byte('a')] = function(pressed)
+		local cam01_loc = scene.children["camera_01"].presentations.location
+		if cam01_loc == nil then return end
+		cam01_loc.properties.local_velocity = {
+			x = cam01_loc.properties.local_velocity.x + (pressed and -velocity or velocity),
+			y = cam01_loc.properties.local_velocity.y,
+			z = cam01_loc.properties.local_velocity.z,
+		}
+	end
+	keys[string.byte('d')] = function(pressed)
+		local cam01_loc = scene.children["camera_01"].presentations.location
+		if cam01_loc == nil then return end
+		cam01_loc.properties.local_velocity = {
+			x = cam01_loc.properties.local_velocity.x + (pressed and velocity or -velocity),
+			y = cam01_loc.properties.local_velocity.y,
+			z = cam01_loc.properties.local_velocity.z,
+		}
+	end
+	keys[string.byte('q')] = function(pressed)
+		local cam01_loc = scene.children["camera_01"].presentations.location
+		if cam01_loc == nil then return end
+		cam01_loc.properties.local_velocity = {
+			x = cam01_loc.properties.local_velocity.x,
+			y = cam01_loc.properties.local_velocity.y + (pressed and velocity or -velocity),
+			z = cam01_loc.properties.local_velocity.z,
+		}
+	end
+	keys[string.byte('e')] = function(pressed)
+		local cam01_loc = scene.children["camera_01"].presentations.location
+		if cam01_loc == nil then return end
+		cam01_loc.properties.local_velocity = {
+			x = cam01_loc.properties.local_velocity.x,
+			y = cam01_loc.properties.local_velocity.y + (pressed and -velocity or velocity),
+			z = cam01_loc.properties.local_velocity.z,
+		}
+	end
+end
+
+function bind_mouse()
+	mousemove = function (dx, dy)
+		local cam01_loc = scene.children["camera_01"].presentations.location
+		if cam01_loc == nil then return end
+
+		local dq = {x = dy / 800, y = dx / 800, z = 0, w = 1}
+		cam01_loc.properties.quaternion = Quaternion.mul(dq, cam01_loc.properties.quaternion)
+
+		local update = create_patch()
+		update.children["camera_01"].presentations.location = cam01_loc
+		push_changes(update)
+	end
+end
+
+function update()
+	if scene.children ~= nil then
+		local update = create_patch()
+		for key, child in pairs(scene.children) do
+			update_child(update, key, child)
+		end
+		if len(update) > 0 then
+			push_changes(update)
+		end
+	end
+end
+
+function update_child(update, key, child)
+	local loc = child.presentations.location
+	local lv = loc.properties.local_velocity
+	local lq = loc.properties.quaternion
+	if lq == nil or lv == nil or lv.x == 0 and lv.y == 0 and lv.z == 0 then
+		return
+	end
+
+	local v
+	if key == "camera_01" then
+		v = Quaternion.rotate_vector(lq, lv, true)
+	else
+		v = Quaternion.rotate_vector(lq, lv)
+	end
+
+	local p = loc.properties.position
+	local new_pos = {
+		x = p.x + v.x,
+		y = p.y + v.y,
+		z = p.z + v.z,
+	}
+	loc.properties.position = new_pos
+	update.children[key].presentations.location = loc
+end
+

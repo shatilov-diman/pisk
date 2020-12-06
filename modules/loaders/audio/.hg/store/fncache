@@ -1,0 +1,10 @@
+data/sources/audio_loader/StreamResource.h.i
+data/sources/audio_loader/StreamLoader.h.i
+data/.hgeol.i
+data/tests/main.cpp.i
+data/sources/audio_loader/OggStreamDecoder.cpp.i
+data/.hgignore.i
+data/sources/audio_loader/StreamDecoder.h.i
+data/sources/audio_loader/OggLoader.cpp.i
+data/COPYING.i
+data/CMakeLists.txt.i

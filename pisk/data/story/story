@@ -1,0 +1,3661 @@
+{
+	"properties": {
+		"state": "",
+		"name": "Test story",
+		"description": "Test story about the test",
+		"lang": "ru",
+		"entry_point": "chapter_rock",
+		"health": {
+			"value": 100,
+			"min": 0,
+			"max": 100,
+			"on_min": "chapter_die"
+		},
+		"bag": {
+			"money": {
+				"value": 73,
+				"min": 0
+			}
+		}
+	},
+	"children": {
+		"camera_01": {
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 0, "y": 0, "z": 0 },
+						"quaternion": { "x": 0.0, "y": 0, "z": 0, "w": 1 },
+						"scale": { "x": 1, "y": 1, "z": 1 }
+					}
+				},
+				"graphic": {
+					"xproperties": {
+						"type": "camera",
+						"projection": "ortho",
+						"tag": "",
+						"order": 1
+					},
+					"properties": {
+						"type": "camera",
+						"projection": "perspective",
+						"fov": 45,
+						"znear": 0.001,
+						"zfar": 1000,
+						"tag": "",
+						"order": 1
+					},
+					"states": {
+						"": {
+							"x_shaders": {
+								"vertex": "story/vertex_shaders/default",
+								"fragment": "story/pixel_shaders/default"
+							}
+						}
+					}
+				}
+			}
+		},
+		"object_01": {
+			"properties": {
+				"id": "object_01",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 0, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 },
+						"scale": { "x": 0.5, "y": 0.5, "z": 0.5 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_1": {
+			"properties": {
+				"id": "objectx_1",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_2": {
+			"properties": {
+				"id": "objectx_2",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_3": {
+			"properties": {
+				"id": "objectx_3",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_4": {
+			"properties": {
+				"id": "objectx_4",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_5": {
+			"properties": {
+				"id": "objectx_5",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_6": {
+			"properties": {
+				"id": "objectx_6",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_7": {
+			"properties": {
+				"id": "objectx_7",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_8": {
+			"properties": {
+				"id": "objectx_8",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_9": {
+			"properties": {
+				"id": "objectx_9",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_10": {
+			"properties": {
+				"id": "objectx_10",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_11": {
+			"properties": {
+				"id": "objectx_11",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_12": {
+			"properties": {
+				"id": "objectx_12",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_13": {
+			"properties": {
+				"id": "objectx_13",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_14": {
+			"properties": {
+				"id": "objectx_14",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_15": {
+			"properties": {
+				"id": "objectx_15",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_16": {
+			"properties": {
+				"id": "objectx_16",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_17": {
+			"properties": {
+				"id": "objectx_17",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_18": {
+			"properties": {
+				"id": "objectx_18",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_19": {
+			"properties": {
+				"id": "objectx_19",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_20": {
+			"properties": {
+				"id": "objectx_20",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_21": {
+			"properties": {
+				"id": "objectx_21",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_22": {
+			"properties": {
+				"id": "objectx_22",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_23": {
+			"properties": {
+				"id": "objectx_23",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_24": {
+			"properties": {
+				"id": "objectx_24",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_25": {
+			"properties": {
+				"id": "objectx_25",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_26": {
+			"properties": {
+				"id": "objectx_26",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_27": {
+			"properties": {
+				"id": "objectx_27",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_28": {
+			"properties": {
+				"id": "objectx_28",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_29": {
+			"properties": {
+				"id": "objectx_29",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_30": {
+			"properties": {
+				"id": "objectx_30",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_31": {
+			"properties": {
+				"id": "objectx_31",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_32": {
+			"properties": {
+				"id": "objectx_32",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_33": {
+			"properties": {
+				"id": "objectx_33",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_34": {
+			"properties": {
+				"id": "objectx_34",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_35": {
+			"properties": {
+				"id": "objectx_35",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_36": {
+			"properties": {
+				"id": "objectx_36",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_37": {
+			"properties": {
+				"id": "objectx_37",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_38": {
+			"properties": {
+				"id": "objectx_38",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_39": {
+			"properties": {
+				"id": "objectx_39",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_40": {
+			"properties": {
+				"id": "objectx_40",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_41": {
+			"properties": {
+				"id": "objectx_41",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_42": {
+			"properties": {
+				"id": "objectx_42",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_43": {
+			"properties": {
+				"id": "objectx_43",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_44": {
+			"properties": {
+				"id": "objectx_44",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_45": {
+			"properties": {
+				"id": "objectx_45",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_46": {
+			"properties": {
+				"id": "objectx_46",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_47": {
+			"properties": {
+				"id": "objectx_47",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_48": {
+			"properties": {
+				"id": "objectx_48",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_49": {
+			"properties": {
+				"id": "objectx_49",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_50": {
+			"properties": {
+				"id": "objectx_50",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_51": {
+			"properties": {
+				"id": "objectx_51",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_52": {
+			"properties": {
+				"id": "objectx_52",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_53": {
+			"properties": {
+				"id": "objectx_53",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_54": {
+			"properties": {
+				"id": "objectx_54",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_55": {
+			"properties": {
+				"id": "objectx_55",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_56": {
+			"properties": {
+				"id": "objectx_56",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_57": {
+			"properties": {
+				"id": "objectx_57",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_58": {
+			"properties": {
+				"id": "objectx_58",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_59": {
+			"properties": {
+				"id": "objectx_59",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_60": {
+			"properties": {
+				"id": "objectx_60",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_61": {
+			"properties": {
+				"id": "objectx_61",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_62": {
+			"properties": {
+				"id": "objectx_62",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_63": {
+			"properties": {
+				"id": "objectx_63",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_64": {
+			"properties": {
+				"id": "objectx_64",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_65": {
+			"properties": {
+				"id": "objectx_65",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_66": {
+			"properties": {
+				"id": "objectx_66",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_67": {
+			"properties": {
+				"id": "objectx_67",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_68": {
+			"properties": {
+				"id": "objectx_68",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_69": {
+			"properties": {
+				"id": "objectx_69",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_70": {
+			"properties": {
+				"id": "objectx_70",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_71": {
+			"properties": {
+				"id": "objectx_71",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_72": {
+			"properties": {
+				"id": "objectx_72",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_73": {
+			"properties": {
+				"id": "objectx_73",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_74": {
+			"properties": {
+				"id": "objectx_74",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_75": {
+			"properties": {
+				"id": "objectx_75",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_76": {
+			"properties": {
+				"id": "objectx_76",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_77": {
+			"properties": {
+				"id": "objectx_77",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_78": {
+			"properties": {
+				"id": "objectx_78",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_79": {
+			"properties": {
+				"id": "objectx_79",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_80": {
+			"properties": {
+				"id": "objectx_80",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_81": {
+			"properties": {
+				"id": "objectx_81",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_82": {
+			"properties": {
+				"id": "objectx_82",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_83": {
+			"properties": {
+				"id": "objectx_83",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_84": {
+			"properties": {
+				"id": "objectx_84",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_85": {
+			"properties": {
+				"id": "objectx_85",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_86": {
+			"properties": {
+				"id": "objectx_86",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_87": {
+			"properties": {
+				"id": "objectx_87",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_88": {
+			"properties": {
+				"id": "objectx_88",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_89": {
+			"properties": {
+				"id": "objectx_89",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_90": {
+			"properties": {
+				"id": "objectx_90",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_91": {
+			"properties": {
+				"id": "objectx_91",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_92": {
+			"properties": {
+				"id": "objectx_92",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_93": {
+			"properties": {
+				"id": "objectx_93",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_94": {
+			"properties": {
+				"id": "objectx_94",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_95": {
+			"properties": {
+				"id": "objectx_95",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_96": {
+			"properties": {
+				"id": "objectx_96",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_97": {
+			"properties": {
+				"id": "objectx_97",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_98": {
+			"properties": {
+				"id": "objectx_98",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"objectx_99": {
+			"properties": {
+				"id": "objectx_99",
+				"state": "default"
+			},
+			"presentations": {
+				"location": {
+					"properties": {
+						"position": { "x": 2, "y": 0, "z": -1 },
+						"quaternion": { "x": 0, "y": 0, "z": 0, "w": 1 }
+					}
+				},
+				"graphic": {
+					"properties": {
+						"type": "sprite",
+						"tags": []
+					},
+					"states": {
+						"default": {
+							"mesh": "story/models/meshes/quad",
+							"parts": {
+								"": {
+									"shaders": {
+										"vertex": "story/models/shaders/vertex_pass",
+										"fragment": "story/models/shaders/fragment_raster"
+									},
+									"textures": {
+										"billboard": "story/models/textures/sells"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+

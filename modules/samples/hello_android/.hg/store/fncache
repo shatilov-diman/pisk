@@ -1,0 +1,15 @@
+data/build.sh.i
+data/.hgeol.i
+data/reinstall_and_run.sh.i
+data/android/assets/components.i
+data/android/assets/story/purring.i
+data/.hgignore.i
+data/android/keystore.i
+data/android/src/com/sample/hello_android/MyNativeActivity.java.i
+data/run_debug.sh.i
+data/COPYING.i
+data/android/AndroidManifest.xml.i
+data/android/assets/script.i
+data/android/assets/story/meow.i
+data/CMakeLists.txt.i
+data/run_debug.gdb.i

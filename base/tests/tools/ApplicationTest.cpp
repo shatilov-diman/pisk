@@ -1,24 +1,6 @@
 // Project pisk
 // Copyright (C) 2016-2017 Dmitry Shatilov
 //
-// This file is a part of the module base of the project pisk.
-// This file is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
-// Additional restriction according to GPLv3 pt 7:
-// b) required preservation author attributions;
-// c) required preservation links to original sources
-//
 // Original sources:
 //   https://github.com/shatilov-diman/pisk/
 //   https://bitbucket.org/charivariltd/pisk/
@@ -95,33 +77,6 @@ class TestModule : public pisk::infrastructure::Module {
 	virtual void release() final override { delete this; }
 };
 
-class TestWindow : public Window
-{
-	EventsContainer& events;
-
-	virtual void release() final override {
-		delete this;
-	}
-	virtual void destroy() final override {
-		events.window().Deinit.emit({*this});
-	}
-
-public:
-	explicit TestWindow(EventsContainer& events) :
-		events(events)
-	{
-		events.window().Init.emit({*this});
-	}
-	~TestWindow()
-	{
-		events.window().Deinit.emit({*this});
-	}
-
-	EventsContainer& get_events() {
-		return events;
-	}
-};
-
 class TestModuleLoader
 {
 public:
@@ -159,19 +114,15 @@ class TestApplication
 	ModuleLoaderFn module_loader;
 	pisk::tools::unique_relesable_ptr<Application> impl;
 
-	std::vector<test_event_type> steps;
 	std::atomic_int step;
 public:
+	pisk::utils::signaler<void> on_configure;
+
 	explicit TestApplication(const ModuleLoaderFn& module_loader) :
 		module_loader(module_loader),
 		impl(pisk::tools::make_application())
 	{
 		step = -1;
-	}
-
-	const std::vector<test_event_type>& get_received_events_list()
-	{
-		return steps;
 	}
 
 	void run()
@@ -195,21 +146,17 @@ public:
 			}
 		};
 
-		steps.clear();
-		subscribe();
 		impl->run({
 			components,
 			[](const pisk::tools::ServiceRegistry&) -> void { },
 			[descriptions](const pisk::tools::ServiceRegistry&) -> components::DescriptionsList {
 				return descriptions;
 			},
-			[](const pisk::tools::ServiceRegistry&) -> void { },
+			[this](const pisk::tools::ServiceRegistry&) -> void {
+				on_configure.emit();
+			},
 			module_loader
 		});
-	}
-	EventsContainer& get_events() threadsafe noexcept
-	{
-		return impl->get_events();
 	}
 
 private:
@@ -219,32 +166,6 @@ private:
 	pisk::utils::auto_unsubscriber win_deinit;
 	pisk::utils::auto_unsubscriber key_down;
 	pisk::utils::auto_unsubscriber key_up;
-	void subscribe()
-	{
-		win_deinit = get_events().app().AppStart.subscribe(std::bind(&TestApplication::on_init, this));
-		app_start = get_events().app().AppStop.subscribe(std::bind(&TestApplication::on_deinit, this));
-		key_down = get_events().key_events().Down.subscribe(std::bind(&TestApplication::on_key_down, this, std::placeholders::_1));
-		key_up = get_events().key_events().Up.subscribe(std::bind(&TestApplication::on_key_up, this, std::placeholders::_1));
-	}
-	void on_init()
-	{
-		steps.push_back(InitApp);
-		get_events().key_events().Down.emit({pisk::tools::ioevents::keyboard, pisk::tools::ioevents::IOKey::VKEY::Escape});
-		get_events().key_events().Up.emit({pisk::tools::ioevents::keyboard, pisk::tools::ioevents::IOKey::VKEY::Escape});
-	}
-	void on_deinit()
-	{
-		steps.push_back(DeinitApp);
-	}
-	void on_key_down(const ioevents::IOKey::Event&)
-	{
-		steps.push_back(KeyDown);
-	}
-	void on_key_up(const ioevents::IOKey::Event&)
-	{
-		steps.push_back(KeyUp);
-		impl->stop();
-	}
 };
 
 template <typename ModuleLoader>
@@ -263,9 +184,6 @@ Describe(ApplicationTest) {
 	It(common_usage) {
 		TestApplicationEx<TestModuleLoader> app;
 		app.run();
-
-		const std::vector<test_event_type> check({InitApp, KeyDown, KeyUp, DeinitApp});
-		Assert::That(app.get_received_events_list(), EqualsContainer(check));
 	}
 
 	When(factory_does_not_provide_main_loop) {
@@ -276,9 +194,6 @@ Describe(ApplicationTest) {
 			TestApplicationEx<TestModuleLoader> app;
 			AssertThrows(pisk::infrastructure::NullPointerException,
 				app.run(test_components_desc));
-
-			const std::vector<test_event_type> check({});
-			Assert::That(app.get_received_events_list(), EqualsContainer(check));
 		}
 	};
 
@@ -290,9 +205,6 @@ Describe(ApplicationTest) {
 			TestApplicationEx<TestModuleLoader> app;
 			AssertThrows(pisk::infrastructure::Exception,
 				app.run(test_components_desc));
-
-			const std::vector<test_event_type> check({InitApp, KeyDown, KeyUp});
-			Assert::That(app.get_received_events_list(), EqualsContainer(check));
 		}
 	};
 	When(run_throw_unknown_exception) {
@@ -302,9 +214,6 @@ Describe(ApplicationTest) {
 		Then(no_deinit_event) {
 			TestApplicationEx<TestModuleLoader> app;
 			AssertThrows(int, app.run(test_components_desc));
-
-			const std::vector<test_event_type> check({InitApp, KeyDown, KeyUp});
-			Assert::That(app.get_received_events_list(), EqualsContainer(check));
 		}
 	};
 };
@@ -437,7 +346,7 @@ Describe(order_load_unload_modules) {
 	}
 	When(no_loaded_modules) {
 		Then(no_unloaded_modules) {
-			Root().app->get_events().app().AppStart += []() {
+			Root().app->on_configure += []() {
 				Assert::That(test_order_load_index, Is().EqualTo(0U));
 			};
 			AssertThrows(pisk::infrastructure::NullPointerException,
@@ -446,7 +355,7 @@ Describe(order_load_unload_modules) {
 	};
 	When(one_module_loaded) {
 		Then(one_module_unloaded) {
-			Root().app->get_events().app().AppStart += []() {
+			Root().app->on_configure += []() {
 				Assert::That(test_order_load_index, Is().EqualTo(1U));
 			};
 			Root().app->run(pisk::tools::components::DescriptionsList{
@@ -456,7 +365,7 @@ Describe(order_load_unload_modules) {
 	};
 	When(two_modules_loaded) {
 		Then(two_modules_unloaded) {
-			Root().app->get_events().app().AppStart += []() {
+			Root().app->on_configure += []() {
 				Assert::That(test_order_load_index, Is().EqualTo(2U));
 			};
 			Root().app->run(pisk::tools::components::DescriptionsList{

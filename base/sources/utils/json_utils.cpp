@@ -1,24 +1,6 @@
 // Project pisk
 // Copyright (C) 2016-2017 Dmitry Shatilov
 //
-// This file is a part of the module base of the project pisk.
-// This file is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
-// Additional restriction according to GPLv3 pt 7:
-// b) required preservation author attributions;
-// c) required preservation links to original sources
-//
 // Original sources:
 //   https://github.com/shatilov-diman/pisk/
 //   https://bitbucket.org/charivariltd/pisk/
@@ -32,8 +14,13 @@
 #include <pisk/defines.h>
 #include <pisk/utils/json_utils.h>
 
+#include <pisk/infrastructure/Logger.h>
+
 #include <json/json.h>
 #include <json/reader.h>
+
+#include <memory>
+#include <sstream>
 
 namespace pisk
 {
@@ -42,12 +29,24 @@ namespace utils
 namespace json
 {
 	Json::Value EXPORT load(const std::string& document) threadsafe noexcept
+	try
 	{
-		Json::Reader reader;
+		Json::CharReaderBuilder builder;
+		auto reader = std::unique_ptr<Json::CharReader>(builder.newCharReader());
 		Json::Value root;
-		reader.parse(document, root, false);
+		std::string errors;
+		if (reader->parse(document.data(), document.data() + document.size(), &root, &errors) == false)
+		{
+			logger::error("jsoncpp", "Failed to parse json: {}", errors);
+		}
 		return root;
 	}
+	catch (const std::exception& ex)
+	{
+		logger::error("jsoncpp", "Failed to parse json: {}", ex.what());
+		return {};
+	}
+
 	Json::Value EXPORT load(const infrastructure::DataBuffer& content) threadsafe noexcept
 	{
 		std::string document(content.begin(), content.end());
@@ -59,10 +58,22 @@ namespace json
 		return load(content);
 	}
 	std::string save(const Json::Value& value) threadsafe noexcept
+	try
 	{
-		Json::FastWriter writer;
-		writer.omitEndingLineFeed();
-		return writer.write(value);
+		Json::StreamWriterBuilder builder;
+		builder["indentation"] = "";
+		auto writer = std::unique_ptr<Json::StreamWriter>(builder.newStreamWriter());
+		std::stringstream out;
+		if (const auto res = writer->write(value, &out))
+		{
+			logger::error("jsoncpp", "Failed to save json to string: {}", res);
+		}
+		return out.str();
+	}
+	catch (const std::exception& ex)
+	{
+		logger::error("jsoncpp", "Failed to save json to string: {}", ex.what());
+		return {};
 	}
 
 	utils::property convert(const Json::Value& jroot) threadsafe noexcept

@@ -1,0 +1,13 @@
+modules/services/http = ./modules/services/http
+modules/services/geolocation = ./modules/services/geolocation
+
+modules/loaders/audio = ./modules/loaders/audio
+modules/loaders/lua = ./modules/loaders/lua
+
+modules/engines/graphic = ./modules/engines/graphic
+modules/engines/script = ./modules/engines/script
+modules/engines/audio = ./modules/engines/audio
+modules/engines/io = ./modules/engines/io
+
+modules/samples/hello_android = ./modules/samples/hello_android
+

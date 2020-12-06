@@ -1,24 +1,6 @@
 // Project pisk
 // Copyright (C) 2016-2017 Dmitry Shatilov
 //
-// This file is a part of the module os of the project pisk.
-// This file is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
-// Additional restriction according to GPLv3 pt 7:
-// b) required preservation author attributions;
-// c) required preservation links to original sources
-//
 // Original sources:
 //   https://github.com/shatilov-diman/pisk/
 //   https://bitbucket.org/charivariltd/pisk/
@@ -52,28 +34,28 @@ namespace impl
 		{}
 		virtual ~Module()
 		{
-			infrastructure::Logger::get().debug("module", "Free library 0x%x", module);
+			logger::debug("module", "Free library {}", module);
 			::dlclose(module);
 			module = NULL;
 		}
 	public:
 
-		static infrastructure::ModulePtr load(const std::string& prefix, const std::string& basename)
+		static infrastructure::ModulePtr load(const std::string& prefix, const std::string& basename, const std::string& suffix)
 		{
-			const std::string& path = make_name(prefix, basename);
+			const std::string& path = make_name(prefix, basename, suffix);
 			HMODULE module = ::dlopen(path.c_str(), RTLD_NOW);
 			const char* err = dlerror();
 			if (module == nullptr)
 			{
-				infrastructure::Logger::get().error("module", "Load library '%s' was failed: %s", path.c_str(), err);
+				logger::error("module", "Load library '{}' was failed: {}", path, err);
 				return nullptr;
 			}
-			infrastructure::Logger::get().debug("module", "Load library '%s': 0x%x", path.c_str(), module);
+			logger::debug("module", "Load library '{}': {}", path, module);
 			return tools::make_shared_releasable_raw<Module>(new Module(module));
 		}
-		static std::string make_name(const std::string& prefix, const std::string& basename)
+		static std::string make_name(const std::string& prefix, const std::string& basename, const std::string& suffix)
 		{
-			return prefix + "lib" + basename + ".so";
+			return prefix + basename + suffix;
 		}
 
 		virtual void release() final override

@@ -1,0 +1,15 @@
+data/sources/script/EngineStrategy.h.i
+data/sources/script/Service2GoEngineStrategy.h.i
+data/sources/script/ScriptManager.h.i
+data/.hgeol.i
+data/include/pisk/model/script/ReflectedPresentation.h.i
+data/sources/script/EngineStrategyEx.h.i
+data/include/pisk/script/Script.h.i
+data/.hgignore.i
+data/include/pisk/script/Service2Go.h.i
+data/sources/script/Engine.cpp.i
+data/sources/script/ReflectedScriptPresentation.h.i
+data/COPYING.i
+data/tests/script/EngineTest.cpp.i
+data/tests/main.cpp.i
+data/CMakeLists.txt.i

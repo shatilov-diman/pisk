@@ -1,24 +1,6 @@
 // Project pisk
 // Copyright (C) 2016-2017 Dmitry Shatilov
 //
-// This file is a part of the module geolocation of the project pisk.
-// This file is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
-// Additional restriction according to GPLv3 pt 7:
-// b) required preservation author attributions;
-// c) required preservation links to original sources
-//
 // Original sources:
 //   https://github.com/shatilov-diman/pisk/
 //   https://bitbucket.org/charivariltd/pisk/
@@ -68,11 +50,15 @@ namespace impl
 			geolocation_class(nullptr),
 			geolocation(nullptr)
 		{
+			logger::info("geolocation", "jni, JNIGeolocation pre-init, {}", this);
 			init_geolocation_director();
+			logger::info("geolocation", "jni, JNIGeolocation post-init, {}", this);
 		}
 		~JNIGeolocation()
 		{
+			logger::info("geolocation", "jni, JNIGeolocation pre-deinit, {}", this);
 			deinit_geolocation_director();
+			logger::info("geolocation", "jni, JNIGeolocation post-deinit, {}", this);
 		}
 
 	private:
@@ -124,11 +110,11 @@ namespace impl
 		}
 		catch (const os::impl::JNIErrorException&)
 		{
-			infrastructure::Logger::get().warning("geolocation", "jni, exception catched while deinit_geolocation_director. Ignore it.");
+			logger::warning("geolocation", "jni, exception catched while deinit_geolocation_director. Ignore it.");
 		}
 		catch (const infrastructure::Exception&)
 		{
-			infrastructure::Logger::get().critical("geolocation", "jni, exception catched while deinit_geolocation_director. Ignore it.");
+			logger::critical("geolocation", "jni, exception catched while deinit_geolocation_director. Ignore it.");
 		}
 
 		void detach_native_objectptr()
@@ -144,11 +130,11 @@ namespace impl
 		}
 		catch (const os::impl::JNIErrorException&)
 		{
-			infrastructure::Logger::get().error("geolocation", "jni, exception catched while detach_native_objectptr. Ignore it.");
+			logger::error("geolocation", "jni, exception catched while detach_native_objectptr. Ignore it.");
 		}
 		catch (const infrastructure::Exception&)
 		{
-			infrastructure::Logger::get().critical("geolocation", "jni, exception catched while detach_native_objectptr. Ignore it.");
+			logger::critical("geolocation", "jni, exception catched while detach_native_objectptr. Ignore it.");
 		}
 
 	public:
@@ -173,6 +159,8 @@ namespace impl
 		bool exec(const std::string& method_name)
 		try
 		{
+			logger::debug("geolocation", "jni, execute '{}'", method_name);
+
 			os::impl::JNIThreadEnv jni(application);
 
 			const jmethodID jmethodid = jni->GetMethodID(geolocation_class, method_name.c_str(), "()Z");
@@ -185,7 +173,7 @@ namespace impl
 		}
 		catch (const os::impl::JNIErrorException&)
 		{
-			infrastructure::Logger::get().error("geolocation", "jni, exec catch error while process method '%s'", method_name.c_str());
+			logger::error("geolocation", "jni, exec catch error while process method '{}'", method_name);
 			return false;
 		}
 
@@ -193,7 +181,7 @@ namespace impl
 		void jni_on_provider_enabled(const utils::keystring& providername)
 		try
 		{
-			infrastructure::Logger::get().info("geolocation", "jni, on_provider_enabled %s", providername.c_str());
+			logger::info("geolocation", "jni, on_provider_enabled {}", providername);
 
 			Status status;
 			status.timestamp = std::chrono::system_clock::now();
@@ -203,13 +191,13 @@ namespace impl
 		}
 		catch (const os::impl::JNIErrorException& ex)
 		{
-			infrastructure::Logger::get().error("geolocation", "jni, jni_on_provider_enabled catch error while process provider '%s'", providername.c_str());
+			logger::error("geolocation", "jni, jni_on_provider_enabled catch error while process provider '{}'", providername);
 		}
 
 		void jni_on_provider_disabled(const utils::keystring& providername)
 		try
 		{
-			infrastructure::Logger::get().info("geolocation", "jni, on_provider_disabled %s", providername.c_str());
+			logger::info("geolocation", "jni, on_provider_disabled {}", providername);
 
 			Status status;
 			status.timestamp = std::chrono::system_clock::now();
@@ -219,14 +207,14 @@ namespace impl
 		}
 		catch (const os::impl::JNIErrorException& ex)
 		{
-			infrastructure::Logger::get().error("geolocation", "jni, jni_on_provider_disabled catch error while process provider '%s'", providername.c_str());
+			logger::error("geolocation", "jni, jni_on_provider_disabled catch error while process provider '{}'", providername);
 		}
 
 		void jni_on_location_changed(const utils::keystring& providername, const double accuracy, const double latitude, const double longitude)
 		try
 		{
-			infrastructure::Logger::get().info("geolocation", "jni, on_location_changed %s, accuracy %lf, latitude %lf, longitude %lf",
-				providername.c_str(), accuracy, latitude, longitude
+			logger::info("geolocation", "jni, on_location_changed {}, accuracy {}, latitude {}, longitude {}",
+				providername, accuracy, latitude, longitude
 			);
 
 			Location location;
@@ -239,7 +227,7 @@ namespace impl
 		}
 		catch (const os::impl::JNIErrorException& ex)
 		{
-			infrastructure::Logger::get().error("geolocation", "jni, jni_on_location_changed catch error while process provider '%s'", providername.c_str());
+			logger::error("geolocation", "jni, jni_on_location_changed catch error while process provider '{}'", providername);
 		}
 
 	private:
@@ -249,7 +237,7 @@ namespace impl
 				return Provider::IP;
 			if (providername == "gps")
 				return Provider::Sattelite;
-			infrastructure::Logger::get().error("geolocation", "jni, unexpected provider name %s", providername.c_str());
+			logger::error("geolocation", "jni, unexpected provider name {}", providername);
 			return Provider::Unknown;
 		}
 	};
@@ -312,7 +300,7 @@ namespace impl
 		auto app = temp_sl.get<pisk::os::android::OsAppInstance>();
 		if (app == nullptr)
 		{
-			pisk::infrastructure::Logger::get().critical("geolocation", "Unable to locate OsAppInstance");
+			pisk::logger::critical("geolocation", "Unable to locate OsAppInstance");
 			throw pisk::infrastructure::NullPointerException();
 		}
 

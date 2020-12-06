@@ -1,24 +1,6 @@
 // Project pisk
 // Copyright (C) 2016-2017 Dmitry Shatilov
 //
-// This file is a part of the module os of the project pisk.
-// This file is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
-// Additional restriction according to GPLv3 pt 7:
-// b) required preservation author attributions;
-// c) required preservation links to original sources
-//
 // Original sources:
 //   https://github.com/shatilov-diman/pisk/
 //   https://bitbucket.org/charivariltd/pisk/
@@ -46,7 +28,7 @@ namespace impl
 	{
 		if (jni->ExceptionCheck())
 		{
-			infrastructure::Logger::get().critical("module", "Java exception occured while process error");
+			logger::critical("module", "Java exception occured while process error");
 			throw infrastructure::LogicErrorException();
 		}
 	}
@@ -59,7 +41,7 @@ namespace impl
 	}
 	inline void dump_exception_to_log(JNIThreadEnv& jni, jthrowable exception)
 	{
-		infrastructure::Logger::get().error("module", "Java exception occured:");
+		logger::error("module", "Java exception occured:");
 
 		const jclass jLog = jni->FindClass("android/util/Log");
 		check_result_light(jni, jLog);
@@ -73,7 +55,7 @@ namespace impl
 		const char* str = jni->GetStringUTFChars(static_cast<jstring>(jobj), JNI_FALSE);
 		check_result_light(jni);
 
-		infrastructure::Logger::get().info("module", str);
+		logger::info("module", str);
 
 		jni->ReleaseStringUTFChars(static_cast<jstring>(jobj), str);
 		check_result_light(jni);

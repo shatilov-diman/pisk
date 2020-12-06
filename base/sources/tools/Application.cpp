@@ -1,24 +1,6 @@
 // Project pisk
 // Copyright (C) 2016-2017 Dmitry Shatilov
 //
-// This file is a part of the module base of the project pisk.
-// This file is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
-// Additional restriction according to GPLv3 pt 7:
-// b) required preservation author attributions;
-// c) required preservation links to original sources
-//
 // Original sources:
 //   https://github.com/shatilov-diman/pisk/
 //   https://bitbucket.org/charivariltd/pisk/
@@ -117,29 +99,29 @@ namespace tools
 					components.push_back(safecomponent);
 				};
 
-				infrastructure::Logger::get().info("app", "Loading base components");
-				components::Loader::load(system_components_desc, configurator.module_loader, component_loader, store_component);
-
-				infrastructure::Logger::get().info("app", "Configure core components");
-				configurator.configure_core_components(temp_sl);
-
-				infrastructure::Logger::get().info("app", "Register os components");
+				logger::info("app", "Register os components");
 				load_os_components(configurator.os_components, component_loader, store_component);
 
-				infrastructure::Logger::get().info("app", "Loading component's list");
+				logger::info("app", "Loading base components");
+				components::Loader::load(system_components_desc, configurator.module_loader, component_loader, store_component);
+
+				logger::info("app", "Configure core components");
+				configurator.configure_core_components(temp_sl);
+
+				logger::info("app", "Loading component's list");
 				const components::DescriptionsList& components_description = configurator.components_list_provider(temp_sl);
 
-				infrastructure::Logger::get().info("app", "Loading components from the list");
+				logger::info("app", "Loading components from the list");
 				components::Loader::load(components_description, configurator.module_loader, component_loader, store_component);
 
-				infrastructure::Logger::get().info("app", "Configure components");
+				logger::info("app", "Configure components");
 				configurator.configure_components(temp_sl);
 
-				infrastructure::Logger::get().info("app", "Looking for a MainLoop component");
+				logger::info("app", "Looking for a MainLoop component");
 				loop_component = temp_sl.get<MainLoop>(MainLoop::uid);
 				if (loop_component == nullptr)
 				{
-					infrastructure::Logger::get().critical("app", "Unable to create MainLoop, app: 0x%x", this);
+					logger::critical("app", "Unable to create MainLoop, app: {}", this);
 					throw infrastructure::NullPointerException();
 				}
 
@@ -148,19 +130,19 @@ namespace tools
 
 			~ComponentsManager()
 			{
-				infrastructure::Logger::get().info("app", "Releasing components");
+				logger::info("app", "Releasing components");
 				loop_component.reset();
 
 				using SafeWPtr = infrastructure::ModuleHolderProxy<core::Component, std::weak_ptr<core::Component>>;
 
-				infrastructure::Logger::get().info("app", "Search leak in components");
+				logger::info("app", "Search leak in components");
 				std::deque<SafeWPtr> weaks;
 				for (const auto& cmp : components)
 					weaks.emplace_back(cmp.weak());
 				components.clear();
 				for (const auto& weak : weaks)
 					if (const auto& cmp = weak.lock())
-						infrastructure::Logger::get().warning("app", "core::Component leak detected, name: %s, app: 0x%x", typeid(*cmp).name(), this);
+						logger::warning("app", "core::Component leak detected, name: {}, app: {}", typeid(decltype((*cmp))).name(), this);
 				while (not weaks.empty())//Insure that modules releasing in backward order
 					weaks.pop_back();
 			}
@@ -177,11 +159,11 @@ namespace tools
 			{
 				for (auto& pr : os_components)
 				{
-					infrastructure::Logger::get().info("app", "Load os component '%s'", pr.name.c_str());
+					logger::info("app", "Load os component '{}'", pr.name);
 					auto component = load_component(pr.factory, {}, {});
 					if (component == nullptr)
 					{
-						infrastructure::Logger::get().warning("app", "Os component just didn't make; skip it");
+						logger::warning("app", "Os component just didn't make; skip it");
 						continue;
 					}
 					store_component(pr.name.get_content(), component);
@@ -192,7 +174,6 @@ namespace tools
 		class Application :
 			public tools::Application
 		{
-			EventsContainer events;
 			InterfacePtr<MainLoop> loop;
 
 		public:
@@ -200,39 +181,35 @@ namespace tools
 				delete this;
 			}
 
-			virtual EventsContainer& get_events() threadsafe noexcept {
-				return events;
-			}
-
 			//TODO: threadsafe
 			virtual void stop() threadsafe noexcept
 			try
 			{
-				infrastructure::Logger::get().debug("app", "Stop loop, app: 0x%x", this);
+				logger::debug("app", "Stop loop, app: {}", this);
 				if (loop != nullptr)
 					loop->stop();
 			}
 			catch (const infrastructure::Exception&)
 			{
-				infrastructure::Logger::get().error("app", "Exception caught while stop, app: 0x%x", this);
+				logger::error("app", "Exception caught while stop, app: {}", this);
 			}
 
 			//TODO: threadsafe
 			virtual void run(const AppConfigurator& configurator)
 			try
 			{
-				infrastructure::Logger::get().debug("app", "Run app: 0x%x", this);
+				logger::debug("app", "Run app: {}", this);
 				try_run(configurator);
-				infrastructure::Logger::get().debug("app", "Stop app: 0x%x", this);
+				logger::debug("app", "Stop app: {}", this);
 			}
 			catch (const infrastructure::Exception&)
 			{
-				infrastructure::Logger::get().critical("app", "Exception caught while run, app: 0x%x", this);
+				logger::critical("app", "Exception caught while run, app: {}", this);
 				throw;
 			}
 			catch (...)
 			{
-				infrastructure::Logger::get().critical("app", "Unknown exception caught while run, app: 0x%x", this);
+				logger::critical("app", "Unknown exception caught while run, app: {}", this);
 				throw;
 			}
 
@@ -242,17 +219,14 @@ namespace tools
 				ComponentsManager components(configurator);
 				try
 				{
-
-					get_events().app().AppStart.emit();
 					loop = components.get_loop();
 
-					infrastructure::Logger::get().debug("app", "Before start loop, app: 0x%x", this);
-					loop->run();
-					infrastructure::Logger::get().debug("app", "After stop loop, app: 0x%x", this);
+					logger::debug("app", "Before start loop, app: {}", this);
+					loop->spinup();
+					logger::debug("app", "After stop loop, app: {}", this);
 
 					//we will be here after call stop()
 					loop.reset();
-					get_events().app().AppStop.emit();
 				}
 				catch (...)
 				{

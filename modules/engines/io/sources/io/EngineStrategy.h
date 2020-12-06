@@ -1,24 +1,6 @@
 // Project pisk
 // Copyright (C) 2016-2017 Dmitry Shatilov
 //
-// This file is a part of the module io of the project pisk.
-// This file is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
-// Additional restriction according to GPLv3 pt 7:
-// b) required preservation author attributions;
-// c) required preservation links to original sources
-//
 // Original sources:
 //   https://github.com/shatilov-diman/pisk/
 //   https://bitbucket.org/charivariltd/pisk/
@@ -36,10 +18,13 @@
 
 #include <pisk/system/EngineStrategy.h>
 #include <pisk/model/ReflectedKeyboardEvent.h>
+#include <pisk/model/ReflectedMouseEvent.h>
 
 #include <mutex>
 
 #include "Keyboard.h"
+#include "Mouse.h"
+
 #include "KeyboardEventDerivativeBuilder.h"
 
 namespace pisk { namespace utils { namespace iterators
@@ -59,16 +44,20 @@ namespace io
 		public system::EngineStrategyBase
 	{
 		KeyboardPtr keyboard;
+		MousePtr mouse;
+
 		KeyboardEventDerivativeBuilder keyboard_derivatives;
 
 		std::deque<utils::auto_unsubscriber> subscriptions;
 
  	public:
-		EngineStrategy(const KeyboardPtr& keyboard, system::PatchRecipient& patch_recipient):
+		EngineStrategy(const KeyboardPtr& keyboard, const MousePtr& mouse, system::PatchRecipient& patch_recipient):
 			system::EngineStrategyBase(patch_recipient),
-			keyboard(keyboard)
+			keyboard(keyboard),
+			mouse(mouse)
 		{
 			subscribe_keyboard();
+			subscribe_mouse();
 		}
 
 		void subscribe_keyboard()
@@ -77,12 +66,12 @@ namespace io
 				return;
 
 			subscriptions.emplace_back(keyboard->down.subscribe([this](const int key) {
-				pisk::infrastructure::Logger::get().debug("io", "Key pressed: %d", key);
+				pisk::logger::debug("io", "Key pressed: {}", key);
 				this->get_keyboard_derivatives().on_key_pressed(key);
 				this->on_compose(model::io::keyboard_action::pressed, key);
 			}));
 			subscriptions.emplace_back(keyboard->up.subscribe([this](const int key) {
-				pisk::infrastructure::Logger::get().debug("io", "Key released: %d", key);
+				pisk::logger::debug("io", "Key released: {}", key);
 				this->get_keyboard_derivatives().on_key_released(key);
 				this->on_compose(model::io::keyboard_action::released, key);
 			}));
@@ -91,7 +80,7 @@ namespace io
 			{
 				auto& signaler = get_keyboard_derivatives().get_signaler(action);
 
-				subscriptions.emplace_back(signaler.subscribe([this, action](const auto& event) {
+				subscriptions.emplace_back(signaler.subscribe([this](const auto& event) {
 					this->on_compose(event.action, event.key);
 				}));
 			}
@@ -102,6 +91,69 @@ namespace io
 			system::Patch patch = model::io::ReflectedKeyboardEvent::make_patch(action, key);
 			push_event(std::move(patch));
 		}
+
+		void subscribe_mouse()
+		{
+			if (mouse == nullptr)
+				return;
+
+			subscriptions.emplace_back(mouse->up.subscribe([this](const Mouse::ButtonType& button_type) {
+				pisk::logger::debug("io", "Mouse button released: {}", button_type);
+
+				static const utils::keystring pressed("pressed");
+				system::Patch patch;
+				model::io::ReflectedMouseButtonEvent event(utils::property::none_property(), patch);
+				event.action() = pressed;
+				event.button() = get_button(button_type);
+				push_event(std::move(patch));
+			}));
+			subscriptions.emplace_back(mouse->down.subscribe([this](const Mouse::ButtonType& button_type) {
+				pisk::logger::debug("io", "Mouse button pressed: {}", button_type);
+
+				static const utils::keystring released("released");
+				system::Patch patch;
+				model::io::ReflectedMouseButtonEvent event(utils::property::none_property(), patch);
+				event.action() = released;
+				event.button() = get_button(button_type);
+				push_event(std::move(patch));
+			}));
+			subscriptions.emplace_back(mouse->wheel.subscribe([this](const Mouse::WheelSide& wheel_side) {
+				pisk::logger::debug("io", "Mouse wheel rolled: {}", wheel_side);
+				system::Patch patch;
+				model::io::ReflectedMouseWheelEvent event(utils::property::none_property(), patch);
+				event.wheel() = get_wheel(wheel_side);
+				push_event(std::move(patch));
+			}));
+			subscriptions.emplace_back(mouse->move.subscribe([this](const Mouse::Shift& shift) {
+				pisk::logger::debug("io", "Mouse moved: ({}, {})", shift.dx, shift.dy);
+				system::Patch patch;
+				model::io::ReflectedMouseMoveEvent event(utils::property::none_property(), patch);
+				event.x() = shift.dx;
+				event.y() = shift.dy;
+				push_event(std::move(patch));
+			}));
+		}
+
+		static utils::keystring get_button(const Mouse::ButtonType& button)
+		{
+			switch (button)
+			{
+			case Mouse::ButtonType::Left: return model::io::ReflectedMouseButtonEvent::lbutton();
+			case Mouse::ButtonType::Middle: return model::io::ReflectedMouseButtonEvent::mbutton();
+			case Mouse::ButtonType::Right: return model::io::ReflectedMouseButtonEvent::rbutton();
+			default: return "unknown";
+			}
+		}
+		static utils::keystring get_wheel(const Mouse::WheelSide& wheel)
+		{
+			switch (wheel)
+			{
+			case Mouse::WheelSide::Up: return model::io::ReflectedMouseWheelEvent::up_wheel();
+			case Mouse::WheelSide::Down: return model::io::ReflectedMouseWheelEvent::down_wheel();
+			default: return "unknown";
+			}
+		}
+
 	private:
 		virtual Configure on_init_app() final override
 		{
@@ -109,6 +161,9 @@ namespace io
 		}
 
 		virtual void on_deinit_app() final override
+		{}
+
+		virtual void prepatch() final override
 		{}
 
 		virtual void patch_scene(const system::PatchPtr&) final override

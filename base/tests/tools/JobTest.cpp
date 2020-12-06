@@ -1,24 +1,6 @@
 // Project pisk
 // Copyright (C) 2016-2017 Dmitry Shatilov
 //
-// This file is a part of the module base of the project pisk.
-// This file is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
-// Additional restriction according to GPLv3 pt 7:
-// b) required preservation author attributions;
-// c) required preservation links to original sources
-//
 // Original sources:
 //   https://github.com/shatilov-diman/pisk/
 //   https://bitbucket.org/charivariltd/pisk/
@@ -109,6 +91,7 @@ Describe(CyclicalScopedJobTest) {
 						x = 1;
 					else
 						x = -1;//check that, second called once
+					return true;
 				}
 			);
 		}
@@ -125,10 +108,31 @@ Describe(CyclicalScopedJobTest) {
 				[&]() {
 					//wait, while main thread join our thread
 					std::this_thread::sleep_for(std::chrono::milliseconds(100));
+					return true;
 				}
 			);
 		}
 		Assert::That(static_cast<bool>(stopped_while_run), Is().EqualTo(true));
+	}
+	It(iteration_and_deinit_is_not_called_if_init_returns_false) {
+		std::atomic_int x(0);
+		{
+			CyclicalScopedJob job(
+				[&](const CyclicalScopedJob&) {
+					x = x + 1;
+				},
+				[&]() {
+					x = x + 1;
+				},
+				[&]() {
+					//wait, while main thread join our thread
+					std::this_thread::sleep_for(std::chrono::milliseconds(100));
+					x = x + 1;
+					return false;
+				}
+			);
+		}
+		Assert::That(static_cast<int>(x), Is().EqualTo(1));
 	}
 	It(thrown_exception_if_first_argument_is_nullptr) {
 		AssertThrowsEx(

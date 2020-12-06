@@ -1,0 +1,16 @@
+data/include/pisk/audio/AudioStream.h.i
+data/sources/audio/AudioContext.h.i
+data/.hgeol.i
+data/tests/main.cpp.i
+data/sources/audio/EngineController.h.i
+data/tests/audio/EngineTest.cpp.i
+data/sources/audio/AudioListener.h.i
+data/.hgignore.i
+data/sources/audio/EngineStrategy.h.i
+data/sources/audio/openal.h.i
+data/include/pisk/model/audio/ReflectedPresentation.h.i
+data/sources/audio/Engine.h.i
+data/COPYING.i
+data/sources/audio/AudioSource.h.i
+data/sources/audio/Engine.cpp.i
+data/CMakeLists.txt.i

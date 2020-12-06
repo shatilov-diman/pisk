@@ -1,24 +1,6 @@
 // Project pisk
 // Copyright (C) 2016-2017 Dmitry Shatilov
 //
-// This file is a part of the module audio of the project pisk.
-// This file is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
-// Additional restriction according to GPLv3 pt 7:
-// b) required preservation author attributions;
-// c) required preservation links to original sources
-//
 // Original sources:
 //   https://github.com/shatilov-diman/pisk/
 //   https://bitbucket.org/charivariltd/pisk/
@@ -36,6 +18,8 @@
 #include <pisk/infrastructure/Logger.h>
 
 #include <pisk/system/ResourceManager.h>
+
+#include <pisk/model/Path.h>
 
 #include <memory>
 #include <string>
@@ -58,7 +42,8 @@ namespace audio
 		AudioListener listener;
 		std::map<utils::keystring, AudioSourcePtr> audio_sources;
 	public:
-		utils::signaler<utils::keystring> on_stop;
+		utils::signaler<utils::keystring> on_start_play;
+		utils::signaler<utils::keystring> on_finish_play;
 
 		explicit Engine(const AudioLoaderFn& _audio_loader):
 			audio_loader(_audio_loader)
@@ -67,24 +52,26 @@ namespace audio
 				throw infrastructure::NullPointerException();
 		}
 
-		void play(const utils::keystring& id_path, const utils::keystring& res_id)
+		void play(const model::PathId& id_path, const utils::keystring& res_id)
 		{
-			infrastructure::Logger::get().debug("audio", "Play %s for %s", res_id.c_str(), id_path.c_str());
+			logger::debug("audio", "Play {} for {}", res_id, id_path);
 			auto&& audio_source = load_audio(res_id);
 			if (audio_source != nullptr)
 			{
+				auto&& id_path_str = id_path.to_keystring();
 				audio_source->play_once();
-				audio_sources[id_path] = std::move(audio_source);
+				audio_sources[id_path_str] = std::move(audio_source);
+				on_start_play.emit(id_path_str);
 			}
 		}
-		void stop(const utils::keystring& id_path)
+		void stop(const model::PathId& id_path)
 		{
-			infrastructure::Logger::get().debug("audio", "Stop for %s", id_path.c_str());
-			audio_sources.erase(id_path);
+			logger::debug("audio", "Stop for {}", id_path);
+			audio_sources.erase(id_path.to_keystring());
 		}
 		void stop_all()
 		{
-			infrastructure::Logger::get().debug("audio", "Stop all");
+			logger::debug("audio", "Stop all");
 			audio_sources.clear();
 		}
 
@@ -99,7 +86,7 @@ namespace audio
 				if (iter.second->is_stopped())
 				{
 					trush.emplace_back(std::move(iter.second));
-					on_stop.emit(iter.first);
+					on_finish_play.emit(iter.first);
 				}
 			}
 			for (auto iter = audio_sources.begin(); iter != audio_sources.end();)

@@ -1,24 +1,6 @@
 // Project pisk
 // Copyright (C) 2016-2017 Dmitry Shatilov
 //
-// This file is a part of the module system of the project pisk.
-// This file is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
-// Additional restriction according to GPLv3 pt 7:
-// b) required preservation author attributions;
-// c) required preservation links to original sources
-//
 // Original sources:
 //   https://github.com/shatilov-diman/pisk/
 //   https://bitbucket.org/charivariltd/pisk/
@@ -109,7 +91,7 @@ class BinaryResourceLoader :
 {
 	pisk::infrastructure::DataStreamPtr data;
 
-	virtual void release() {
+	virtual void release() override {
 		delete this;
 	}
 
@@ -125,7 +107,7 @@ public:
 class SuperBinaryResourceLoader :
 	public pisk::system::ResourceLoader
 {
-	virtual void release() {
+	virtual void release() override {
 		delete this;
 	}
 
@@ -141,9 +123,9 @@ public:
 
 template <typename TDataFactory>
 class TestDataStream : public pisk::infrastructure::DataStream {
-	virtual std::size_t tell() const { throw pisk::infrastructure::LogicErrorException(); }
-	virtual std::size_t seek(const long, const Whence) { throw pisk::infrastructure::LogicErrorException(); }
-	virtual std::size_t read(const std::size_t, pisk::infrastructure::DataBuffer&) { throw pisk::infrastructure::LogicErrorException(); }
+	virtual std::size_t tell() const override { throw pisk::infrastructure::LogicErrorException(); }
+	virtual std::size_t seek(const long, const Whence) override { throw pisk::infrastructure::LogicErrorException(); }
+	virtual std::size_t read(const std::size_t, pisk::infrastructure::DataBuffer&) override { throw pisk::infrastructure::LogicErrorException(); }
 
 	virtual pisk::infrastructure::DataBuffer readall() const override final {
 		return TDataFactory::get();
@@ -154,15 +136,14 @@ public:
 
 class TestFileDataStream : public pisk::infrastructure::DataStream {
 	typedef pisk::infrastructure::DataBuffer::value_type value_type;
-	typedef std::basic_ifstream<value_type> ifstream;
-	typedef std::istreambuf_iterator<value_type> iterator;
+	typedef std::istreambuf_iterator<std::ifstream::char_type> iterator;
 
-	ifstream file;
+	std::ifstream file;
 
 public:
 	static pisk::infrastructure::DataStreamPtr open(const std::string& rid)
 	{
-		ifstream file(rid.c_str(), std::ios::binary);
+		std::ifstream file(rid.c_str(), std::ios::binary);
 		if (file.is_open() == false)
 			return nullptr;
 		return std::unique_ptr<TestFileDataStream>(new TestFileDataStream(std::move(file)));
@@ -170,12 +151,12 @@ public:
 
 private:
 
-	TestFileDataStream(ifstream&& file) :
+	TestFileDataStream(std::ifstream&& file) :
 		file(std::move(file))
 	{}
 
 	const std::streamsize size() const {
-		ifstream& ref = const_cast<ifstream&>(file);
+		std::ifstream& ref = const_cast<std::ifstream&>(file);
 		const std::streampos pos = ref.tellg();
 		ref.seekg(0, std::ios::end);
 		const std::streampos content_end = ref.tellg();
@@ -183,12 +164,12 @@ private:
 		return content_end;
 	}
 
-	virtual std::size_t tell() const { throw pisk::infrastructure::LogicErrorException(); }
-	virtual std::size_t seek(const long, const Whence) { throw pisk::infrastructure::LogicErrorException(); }
-	virtual std::size_t read(const std::size_t, pisk::infrastructure::DataBuffer&) { throw pisk::infrastructure::LogicErrorException(); }
+	virtual std::size_t tell() const override { throw pisk::infrastructure::LogicErrorException(); }
+	virtual std::size_t seek(const long, const Whence) override { throw pisk::infrastructure::LogicErrorException(); }
+	virtual std::size_t read(const std::size_t, pisk::infrastructure::DataBuffer&) override { throw pisk::infrastructure::LogicErrorException(); }
 
 	virtual pisk::infrastructure::DataBuffer readall() const override final {
-		ifstream& ref = const_cast<ifstream&>(file);
+		std::ifstream& ref = const_cast<std::ifstream&>(file);
 		const std::streampos pos = ref.tellg();
 
 		pisk::infrastructure::DataBuffer out;
@@ -226,9 +207,9 @@ public:
 	explicit TestStreamDecoder(pisk::infrastructure::DataStreamPtr&& data):
 		raw(std::move(data))
 	{}
-	virtual std::size_t tell() const { throw pisk::infrastructure::LogicErrorException(); }
-	virtual std::size_t seek(const long, const Whence) { throw pisk::infrastructure::LogicErrorException(); }
-	virtual std::size_t read(const std::size_t, pisk::infrastructure::DataBuffer&) { throw pisk::infrastructure::LogicErrorException(); }
+	virtual std::size_t tell() const override { throw pisk::infrastructure::LogicErrorException(); }
+	virtual std::size_t seek(const long, const Whence) override { throw pisk::infrastructure::LogicErrorException(); }
+	virtual std::size_t read(const std::size_t, pisk::infrastructure::DataBuffer&) override { throw pisk::infrastructure::LogicErrorException(); }
 
 	virtual pisk::infrastructure::DataBuffer readall() const final override
 	{

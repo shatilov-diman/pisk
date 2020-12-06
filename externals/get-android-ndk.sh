@@ -4,9 +4,12 @@ pushd ${COMMON_BUILD_ROOT}
 
 # 1. Get sources
 #https://dl.crystax.net/builds/902/linux/crystax-ndk-10.3.2-b902-linux-x86_64.tar.xz
-NDK_DAYNO=908
-NDK_PAGE=https://dl.crystax.net/builds/${NDK_DAYNO}/linux
-NDK_SRC=crystax-ndk-10.3.2-b${NDK_DAYNO}-linux-x86_64
+#NDK_DAYNO=908
+#NDK_PAGE=https://dl.crystax.net/builds/${NDK_DAYNO}/linux
+#NDK_SRC=crystax-ndk-10.3.2-b${NDK_DAYNO}-linux-x86_64
+#https://www.crystax.net/download/crystax-ndk-10.3.2-linux-x86_64.tar.xz
+NDK_PAGE=https://www.crystax.net/download/
+NDK_SRC=crystax-ndk-10.3.2-linux-x86_64
 NDK_OUTDIR_NAME=crystax-ndk-10.3.2
 NDK_ROOT_DIR=crystax-ndk
 

@@ -1,24 +1,6 @@
 // Project pisk
 // Copyright (C) 2016-2017 Dmitry Shatilov
 //
-// This file is a part of the module system of the project pisk.
-// This file is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
-// Additional restriction according to GPLv3 pt 7:
-// b) required preservation author attributions;
-// c) required preservation links to original sources
-//
 // Original sources:
 //   https://github.com/shatilov-diman/pisk/
 //   https://bitbucket.org/charivariltd/pisk/
@@ -45,7 +27,7 @@ Describe(PatchDispatcherTest) {
 	When(make_along_portal) {
 		system::PatchGatePtr gate;
 		void SetUp() {
-			gate = std::move(Root().portal->make_gate());
+			gate = Root().portal->make_gate();
 			Assert::That(gate, Is().Not().EqualTo(nullptr));
 		}
 		When(pop_from_empty_portal) {
@@ -66,8 +48,8 @@ Describe(PatchDispatcherTest) {
 		system::PatchGatePtr gate1;
 		system::PatchGatePtr gate2;
 		void SetUp() {
-			gate1 = std::move(Root().portal->make_gate());
-			gate2 = std::move(Root().portal->make_gate());
+			gate1 = Root().portal->make_gate();
+			gate2 = Root().portal->make_gate();
 			Assert::That(gate1, Is().Not().EqualTo(nullptr));
 			Assert::That(gate2, Is().Not().EqualTo(nullptr));
 		}
@@ -105,9 +87,9 @@ Describe(PatchDispatcherTest) {
 		system::PatchGatePtr gate2;
 		system::PatchGatePtr gate3;
 		void SetUp() {
-			gate1 = std::move(Root().portal->make_gate());
-			gate2 = std::move(Root().portal->make_gate());
-			gate3 = std::move(Root().portal->make_gate());
+			gate1 = Root().portal->make_gate();
+			gate2 = Root().portal->make_gate();
+			gate3 = Root().portal->make_gate();
 			Assert::That(gate1, Is().Not().EqualTo(nullptr));
 			Assert::That(gate2, Is().Not().EqualTo(nullptr));
 			Assert::That(gate3, Is().Not().EqualTo(nullptr));

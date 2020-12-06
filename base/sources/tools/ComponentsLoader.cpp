@@ -1,24 +1,6 @@
 // Project pisk
 // Copyright (C) 2016-2017 Dmitry Shatilov
 //
-// This file is a part of the module base of the project pisk.
-// This file is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
-// Additional restriction according to GPLv3 pt 7:
-// b) required preservation author attributions;
-// c) required preservation links to original sources
-//
 // Original sources:
 //   https://github.com/shatilov-diman/pisk/
 //   https://bitbucket.org/charivariltd/pisk/
@@ -54,7 +36,7 @@ namespace components
 		utils::property list = load_components_list(data);
 		if (list.is_none())
 		{
-			infrastructure::Logger::get().critical("component_loader", "Unable to load components descriptor");
+			logger::critical("component_loader", "Unable to load components descriptor");
 			return {};
 		}
 
@@ -62,7 +44,7 @@ namespace components
 	}
 	catch (const infrastructure::Exception&)
 	{
-		infrastructure::Logger::get().critical("component_loader", "Exception occured while load components descriptor");
+		logger::critical("component_loader", "Exception occured while load components descriptor");
 		return {};
 	}
 
@@ -71,7 +53,7 @@ namespace components
 		utils::property root = utils::json::parse_json_to_property(data);
 		if (root.is_array() == false)
 		{
-			infrastructure::Logger::get().critical("component_loader", "Unable to parse components descriptor");
+			logger::critical("component_loader", "Unable to parse components descriptor");
 			return utils::property();
 		}
 		return root;
@@ -83,7 +65,7 @@ namespace components
 			return {};
 		if (not desc["dependencies"].is_array())
 		{
-			infrastructure::Logger::get().warning("component_loader", "Unexpected type of 'dependencies' node; skip it");
+			logger::warning("component_loader", "Unexpected type of 'dependencies' node; skip it");
 			return {};
 		}
 
@@ -93,7 +75,7 @@ namespace components
 			if (libname.second.is_string())
 				out.push_back(libname.second.as_string());
 			else
-				infrastructure::Logger::get().warning("component_loader", "Unexpected type of 'dependency'; skip it");
+				logger::warning("component_loader", "Unexpected type of 'dependency'; skip it");
 		}
 		return out;
 	}
@@ -107,13 +89,13 @@ namespace components
 		{
 			if (desc.is_dictionary() == false)
 			{
-				infrastructure::Logger::get().error("component_loader", "Incorrect record at the component descriptor");
+				logger::error("component_loader", "Incorrect record at the component descriptor");
 				continue;
 			}
 			if (desc["type"].is_string() == false || desc["module"].is_string() == false
 				|| desc["factory"].is_string() == false || desc["component"].is_string() == false)
 			{
-				infrastructure::Logger::get().error("component_loader", "No expected record at the component descriptor");
+				logger::error("component_loader", "No expected record at the component descriptor");
 				continue;
 			}
 
@@ -126,7 +108,7 @@ namespace components
 
 			if (components_name_set.find(component_name) != components_name_set.end())
 			{
-				infrastructure::Logger::get().error("component_loader", "Unable to load two component with same name: '%s'", component_name.c_str());
+				logger::error("component_loader", "Unable to load two component with same name: '{}'", component_name);
 				continue;
 			}
 			out.emplace_back(Description {type_name, component_name, module_name, factory_name, config, std::move(dependecies)});
@@ -143,11 +125,11 @@ namespace components
 	{
 		for (const auto& libname : desc.dependencies)
 		{
-			infrastructure::Logger::get().debug("component_loader", "Check dependency '%s' for module '%s' for component '%s'", libname.c_str(), desc.module.c_str(), desc.name.c_str());
+			logger::debug("component_loader", "Check dependency '{}' for module '{}' for component '{}'", libname, desc.module, desc.name);
 			infrastructure::ModulePtr module = get_module(libname);
 			if (module == nullptr)
 			{
-				infrastructure::Logger::get().error("component_loader", "Unable to load dependency '%s' for module '%s' for component '%s'", libname.c_str(), desc.module.c_str(), desc.name.c_str());
+				logger::error("component_loader", "Unable to load dependency '{}' for module '{}' for component '{}'", libname, desc.module, desc.name);
 				return false;
 			}
 			dependencies.push_back(module);
@@ -156,14 +138,14 @@ namespace components
 	}
 	catch (const infrastructure::Exception&)
 	{
-		infrastructure::Logger::get().error("component_loader", "Unable to load dependency component '%s'", desc.name.c_str());
+		logger::error("component_loader", "Unable to load dependency component '{}'", desc.name);
 		return false;
 	}
 
 	static infrastructure::ModulePtr load_module(const Description& desc, ModuleLoader get_module, const std::string& module_name)
 	try
 	{
-		infrastructure::Logger::get().debug("component_loader", "Load module '%s' for component '%s'", desc.module.c_str(), desc.name.c_str());
+		logger::debug("component_loader", "Load module '{}' for component '{}'", desc.module, desc.name);
 		return get_module(module_name);
 	}
 	catch (const infrastructure::Exception&)
@@ -196,27 +178,27 @@ namespace components
 				auto factory_getter = module->get_procedure<ComponentFactoryGetter>(desc.factory);
 				if (factory_getter == nullptr)
 				{
-					infrastructure::Logger::get().warning("component_loader", "Unable to locate factory '%s' for component '%s'", desc.factory.c_str(), desc.name.c_str());
+					logger::warning("component_loader", "Unable to locate factory '{}' for component '{}'", desc.factory, desc.name);
 					continue;
 				}
 				auto factory = static_cast<ComponentFactoryFn>(factory_getter());
 				if (factory == nullptr)
 				{
-					infrastructure::Logger::get().warning("component_loader", "Unable to get factory '%s' for component '%s'", desc.factory.c_str(), desc.name.c_str());
+					logger::warning("component_loader", "Unable to get factory '{}' for component '{}'", desc.factory, desc.name);
 					continue;
 				}
 				auto component = load_component(factory, module, desc.config);
 				if (component == nullptr)
 				{
-					infrastructure::Logger::get().warning("component_loader", "Unable to load component '%s'", desc.name.c_str());
+					logger::warning("component_loader", "Unable to load component '{}'", desc.name);
 					continue;
 				}
 				store_component(desc.name, component);
-				infrastructure::Logger::get().info("component_loader", "Component '%s' loaded", desc.name.c_str());
+				logger::info("component_loader", "Component '{}' loaded", desc.name);
 			}
 			catch (const infrastructure::Exception&)
 			{
-				infrastructure::Logger::get().error("component_loader", "Unable to load component '%s'", desc.name.c_str());
+				logger::error("component_loader", "Unable to load component '{}'", desc.name);
 			}
 		}
 	}

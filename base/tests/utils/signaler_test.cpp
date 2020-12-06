@@ -1,24 +1,6 @@
 // Project pisk
 // Copyright (C) 2016-2017 Dmitry Shatilov
 //
-// This file is a part of the module base of the project pisk.
-// This file is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
-// Additional restriction according to GPLv3 pt 7:
-// b) required preservation author attributions;
-// c) required preservation links to original sources
-//
 // Original sources:
 //   https://github.com/shatilov-diman/pisk/
 //   https://bitbucket.org/charivariltd/pisk/
@@ -31,6 +13,7 @@
 
 #include <pisk/bdd.h>
 #include <pisk/utils/signaler.h>
+#include <pisk/utils/noncopyable.h>
 
 #include <functional>
 #include <exception>
@@ -148,6 +131,11 @@ Describe(signaler_test) {
 				Assert::That(Parent().vkey1, Is().EqualTo(num));
 				Assert::That(Parent().vkey2, Is().EqualTo(num));
 			}
+			Then(rigth_emittion_notifies_both) {
+				Root().keyboard.KeyDown.remit({num});
+				Assert::That(Parent().vkey1, Is().EqualTo(num));
+				Assert::That(Parent().vkey2, Is().EqualTo(num));
+			}
 			When(unsubscribe_first) {
 				const std::size_t num = __LINE__;
 				void SetUp() {
@@ -159,6 +147,68 @@ Describe(signaler_test) {
 					Assert::That(Parent().Parent().vkey2, Is().EqualTo(num));
 				}
 			};
+		};
+	};
+	Context(order_of_call_event) {
+		std::size_t index = 0;
+		std::size_t vkey1 = 0;
+		std::size_t vkey2 = 0;
+		void SetUp() {
+			Root().keyboard.Event1 += [this]() {
+				vkey1 = ++index;
+			};
+			Root().keyboard.Event1 += [this]() {
+				vkey2 = ++index;
+			};
+		}
+		When(emit) {
+			void SetUp() {
+				Root().keyboard.Event1.emit();
+			}
+			Then(FIFO) {
+				Assert::That(Parent().vkey1, Is().EqualTo(1U));
+				Assert::That(Parent().vkey2, Is().EqualTo(2U));
+			}
+		};
+		When(remit) {
+			void SetUp() {
+				Root().keyboard.Event1.remit();
+			}
+			Then(LIFO) {
+				Assert::That(Parent().vkey1, Is().EqualTo(2U));
+				Assert::That(Parent().vkey2, Is().EqualTo(1U));
+			}
+		};
+	};
+	Context(order_of_call_void_event) {
+		std::size_t index = 0;
+		std::size_t vkey1 = 0;
+		std::size_t vkey2 = 0;
+		void SetUp() {
+			Root().keyboard.Event1 += [this]() {
+				vkey1 = ++index;
+			};
+			Root().keyboard.Event1 += [this]() {
+				vkey2 = ++index;
+			};
+		}
+		When(emit) {
+			void SetUp() {
+				Root().keyboard.Event1.emit();
+			}
+			Then(FIFO) {
+				Assert::That(Parent().vkey1, Is().EqualTo(1U));
+				Assert::That(Parent().vkey2, Is().EqualTo(2U));
+			}
+		};
+		When(remit) {
+			void SetUp() {
+				Root().keyboard.Event1.remit();
+			}
+			Then(LIFO) {
+				Assert::That(Parent().vkey1, Is().EqualTo(2U));
+				Assert::That(Parent().vkey2, Is().EqualTo(1U));
+			}
 		};
 	};
 	Context(independent_subscribtions) {
@@ -259,7 +309,7 @@ Describe(signaler_test) {
 		std::size_t vkey1 = 0;
 		signaler<void>::eventhandler handler1;
 		void SetUp() {
-			handler1 = [this]() {
+			handler1 = []() {
 				throw std::runtime_error("");
 			};
 		}
@@ -272,6 +322,184 @@ Describe(signaler_test) {
 			}
 		};
 	};
+	When(unsubscribe_in_the_subscription_under_emit) {
+		std::size_t vkey1 = 0;
+		signaler<TestKeyboardDevice::IOKeyEvent>::eventhandler handler1;
+		void SetUp() {
+			handler1 = [this](const TestKeyboardDevice::IOKeyEvent& evnt) {
+				vkey1 = evnt.vkey;
+				Root().keyboard.KeyUp -= handler1;
+			};
+			Root().keyboard.KeyUp += handler1;
+		}
+		Then(second_emit_doesnot_done) {
+			Root().keyboard.KeyUp.emit({ 13U });
+			Root().keyboard.KeyUp.emit({ 42U });
+			Assert::That(vkey1, Is().EqualTo(13U));
+		}
+	};
+	When(unsubscribe_under_emit_under_emit) {
+		std::size_t vkey1 = 0U;
+		signaler<TestKeyboardDevice::IOKeyEvent>::eventhandler handler1;
+		void SetUp() {
+			handler1 = [this](const TestKeyboardDevice::IOKeyEvent& evnt) {
+				vkey1 = evnt.vkey;
+				if (vkey1 < 15U)
+					Root().keyboard.KeyUp.emit({ 15U });
+				else
+					Root().keyboard.KeyUp -= handler1;
+			};
+			Root().keyboard.KeyUp += handler1;
+		}
+		Then(second_emit_doesnot_done) {
+			Root().keyboard.KeyUp.emit({ 13U });
+			Root().keyboard.KeyUp.emit({ 42U });
+			Assert::That(vkey1, Is().EqualTo(15U));
+		}
+	};
+	When(clear_under_emit) {
+		std::size_t vkey1 = 0U;
+		signaler<TestKeyboardDevice::IOKeyEvent>::eventhandler handler1;
+		void SetUp() {
+			handler1 = [this](const TestKeyboardDevice::IOKeyEvent& evnt) {
+				vkey1 = evnt.vkey;
+				Root().keyboard.KeyUp.clear();
+			};
+			Root().keyboard.KeyUp += handler1;
+		}
+		Then(second_emit_doesnot_done) {
+			Root().keyboard.KeyUp.emit({ 13U });
+			Root().keyboard.KeyUp.emit({ 42U });
+			Assert::That(vkey1, Is().EqualTo(13U));
+		}
+	};
+	When(clear_under_emit_under_emit) {
+		std::size_t vkey1 = 0U;
+		signaler<TestKeyboardDevice::IOKeyEvent>::eventhandler handler1;
+		void SetUp() {
+			handler1 = [this](const TestKeyboardDevice::IOKeyEvent& evnt) {
+				vkey1 = evnt.vkey;
+				if (vkey1 < 15U)
+					Root().keyboard.KeyUp.emit({ 15U });
+				else
+					Root().keyboard.KeyUp.clear();
+			};
+			Root().keyboard.KeyUp += handler1;
+		}
+		Then(second_emit_doesnot_done) {
+			Root().keyboard.KeyUp.emit({ 13U });
+			Root().keyboard.KeyUp.emit({ 42U });
+			Assert::That(vkey1, Is().EqualTo(15U));
+		}
+	};
+	When(unsubscribe_in_the_subscription_under_emit2) {
+		std::size_t vkey1 = 0U;
+		std::size_t vkey2 = 0U;
+		signaler<TestKeyboardDevice::IOKeyEvent>::eventhandler handler1;
+		signaler<TestKeyboardDevice::IOKeyEvent>::eventhandler handler2;
+		void SetUp() {
+			handler1 = [this](const TestKeyboardDevice::IOKeyEvent& evnt) {
+				vkey1 = evnt.vkey;
+			};
+			handler2 = [this](const TestKeyboardDevice::IOKeyEvent& evnt) {
+				vkey2 = evnt.vkey;
+				Root().keyboard.KeyUp -= Root().keyboard.KeyDown;
+			};
+			Root().keyboard.KeyUp += handler1;
+			Root().keyboard.KeyDown += handler2;
+			Root().keyboard.KeyUp += Root().keyboard.KeyDown;
+		}
+		Then(second_emit_doesnot_done) {
+			Root().keyboard.KeyUp.emit({ 13U });
+			Root().keyboard.KeyUp.emit({ 42U });
+			Assert::That(vkey1, Is().EqualTo(42U));
+			Assert::That(vkey2, Is().EqualTo(13U));
+		}
+	};
+	When(unsubscribe_under_emit_under_emit2) {
+		std::size_t vkey1 = 0U;
+		std::size_t vkey2 = 0U;
+		signaler<TestKeyboardDevice::IOKeyEvent>::eventhandler handler1;
+		signaler<TestKeyboardDevice::IOKeyEvent>::eventhandler handler2;
+		void SetUp() {
+			handler1 = [this](const TestKeyboardDevice::IOKeyEvent& evnt) {
+				vkey1 = evnt.vkey;
+			};
+			handler2 = [this](const TestKeyboardDevice::IOKeyEvent& evnt) {
+				vkey2 = evnt.vkey;
+				if (vkey1 < 15U)
+					Root().keyboard.KeyUp.emit({ 15U });
+				else
+					Root().keyboard.KeyUp -= Root().keyboard.KeyDown;
+			};
+			Root().keyboard.KeyUp += handler1;
+			Root().keyboard.KeyDown += handler2;
+			Root().keyboard.KeyUp += Root().keyboard.KeyDown;
+		}
+		Then(second_emit_doesnot_done) {
+			Root().keyboard.KeyUp.emit({ 13U });
+			Root().keyboard.KeyUp.emit({ 42U });
+			Assert::That(vkey1, Is().EqualTo(42U));
+			Assert::That(vkey2, Is().EqualTo(15U));
+			Root().keyboard.KeyDown.emit({ 41U });
+			Assert::That(vkey2, Is().EqualTo(41U));
+		}
+	};
+	When(clear_under_emit2) {
+		std::size_t vkey1 = 0U;
+		std::size_t vkey2 = 0U;
+		signaler<TestKeyboardDevice::IOKeyEvent>::eventhandler handler1;
+		signaler<TestKeyboardDevice::IOKeyEvent>::eventhandler handler2;
+		void SetUp() {
+			handler1 = [this](const TestKeyboardDevice::IOKeyEvent& evnt) {
+				vkey1 = evnt.vkey;
+			};
+			handler2 = [this](const TestKeyboardDevice::IOKeyEvent& evnt) {
+				vkey2 = evnt.vkey;
+				Root().keyboard.KeyUp.clear();
+			};
+			Root().keyboard.KeyUp += handler1;
+			Root().keyboard.KeyDown += handler2;
+			Root().keyboard.KeyUp += Root().keyboard.KeyDown;
+		}
+		Then(second_emit_doesnot_done) {
+			Root().keyboard.KeyUp.emit({ 13U });
+			Root().keyboard.KeyUp.emit({ 42U });
+			Root().keyboard.KeyDown.emit({ 41U });
+			Assert::That(vkey1, Is().EqualTo(13U));
+			Assert::That(vkey2, Is().EqualTo(41U));
+		}
+	};
+	When(clear_under_emit_under_emit2) {
+		std::size_t vkey1 = 0U;
+		std::size_t vkey2 = 0U;
+		signaler<TestKeyboardDevice::IOKeyEvent>::eventhandler handler1;
+		signaler<TestKeyboardDevice::IOKeyEvent>::eventhandler handler2;
+		void SetUp() {
+			handler1 = [this](const TestKeyboardDevice::IOKeyEvent& evnt) {
+				vkey1 = evnt.vkey;
+			};
+			handler2 = [this](const TestKeyboardDevice::IOKeyEvent& evnt) {
+				vkey2 = evnt.vkey;
+				if (vkey1 < 15U)
+					Root().keyboard.KeyUp.emit({ 15U });
+				else
+					Root().keyboard.KeyUp.clear();
+			};
+			Root().keyboard.KeyUp += handler1;
+			Root().keyboard.KeyDown += handler2;
+			Root().keyboard.KeyUp += Root().keyboard.KeyDown;
+		}
+		Then(second_emit_doesnot_done) {
+			Root().keyboard.KeyUp.emit({ 13U });
+			Root().keyboard.KeyUp.emit({ 42U });
+			Assert::That(vkey1, Is().EqualTo(15U));
+			Assert::That(vkey2, Is().EqualTo(15U));
+			Root().keyboard.KeyDown.emit({ 41U });
+			Assert::That(vkey2, Is().EqualTo(41U));
+		}
+	};
+
 };
 
 Describe(subscribtions) {
@@ -317,6 +545,24 @@ Describe(subscribtions) {
 					Root().keyboard.KeyDown.subscribe([this](const TestKeyboardDevice::IOKeyEvent& event) {
 						Root().vkey = event.vkey;
 					});
+				TestKeyboardDevice::IOKeyEvent evnt = {Root().v1};
+				Root().keyboard.KeyDown.emit(evnt);
+				Assert::That(Root().vkey, Is().EqualTo(Root().v1));
+			}
+			{
+				TestKeyboardDevice::IOKeyEvent evnt = {Root().v2};
+				Root().keyboard.KeyDown.emit(evnt);
+				Assert::That(Root().vkey, Is().EqualTo(Root().v1));
+			}
+		}
+		Spec(test_subscriptions_holder) {
+			{
+				subscribtions_holder_proxy<noncopyable> subscribtions_holder;
+				subscribtions_holder.store_subscribtion(
+					Root().keyboard.KeyDown.subscribe([this](const TestKeyboardDevice::IOKeyEvent& event) {
+						Root().vkey = event.vkey;
+					})
+				);
 				TestKeyboardDevice::IOKeyEvent evnt = {Root().v1};
 				Root().keyboard.KeyDown.emit(evnt);
 				Assert::That(Root().vkey, Is().EqualTo(Root().v1));

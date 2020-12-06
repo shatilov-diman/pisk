@@ -1,24 +1,6 @@
 // Project pisk
 // Copyright (C) 2016-2017 Dmitry Shatilov
 //
-// This file is a part of the module system of the project pisk.
-// This file is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
-// Additional restriction according to GPLv3 pt 7:
-// b) required preservation author attributions;
-// c) required preservation links to original sources
-//
 // Original sources:
 //   https://github.com/shatilov-diman/pisk/
 //   https://bitbucket.org/charivariltd/pisk/
@@ -56,18 +38,9 @@ Describe(EngineFactoryTest) {
 	std::unique_ptr<pisk::system::impl::EngineComponentFactory> factory;
 
 	void SetUp() {
-		pisk::system::PatchPortalPtr&& portal = CreatePatchPortal();
-		factory = std::make_unique<pisk::system::impl::EngineComponentFactory>(std::move(portal));
+		factory = std::make_unique<pisk::system::impl::EngineComponentFactory>();
 	}
 
-	When(pass_nullptr_to_constructor) {
-		Then(exception_throws) {
-			AssertThrows(
-				pisk::infrastructure::NullPointerException,
-				std::make_unique<pisk::system::impl::EngineComponentFactory>(nullptr)
-			);
-		}
-	};
 	When(pass_nullptr_to_make_engine) {
 		Then(exception_throws) {
 			AssertThrows(
@@ -81,6 +54,8 @@ Describe(EngineFactoryTest) {
 			auto engine = Root().factory->make_engine(Root().instance_maker, [](pisk::system::PatchRecipient&) {
 				return std::make_unique<EngineStrateyTestBase>();
 			});
+			Root().factory->start();
+			Root().factory->stop();
 		}
 	};
 	When(engine_destroied) {
@@ -88,6 +63,9 @@ Describe(EngineFactoryTest) {
 			auto engine = Root().factory->make_engine(Root().instance_maker, [](pisk::system::PatchRecipient&) {
 				return std::make_unique<EngineStrateyTestBase>();
 			});
+			Root().factory->start();
+			Root().factory->stop();
+
 			Assert::That(static_cast<bool>(EngineStrateyTestBase::destroied), Is().EqualTo(false));
 			engine.reset();
 			Assert::That(static_cast<bool>(EngineStrateyTestBase::destroied), Is().EqualTo(true));

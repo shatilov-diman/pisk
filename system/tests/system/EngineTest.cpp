@@ -1,24 +1,6 @@
 // Project pisk
 // Copyright (C) 2016-2017 Dmitry Shatilov
 //
-// This file is a part of the module system of the project pisk.
-// This file is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
-// Additional restriction according to GPLv3 pt 7:
-// b) required preservation author attributions;
-// c) required preservation links to original sources
-//
 // Original sources:
 //   https://github.com/shatilov-diman/pisk/
 //   https://bitbucket.org/charivariltd/pisk/
@@ -33,27 +15,40 @@
 
 #include "TestEngineStrategy.h"
 
+namespace pisk {
+namespace system {
+	EngineSynchronizerPtr make_engine_synchronizer();
+}//namespace system
+}//namespace pisk
+
 using namespace igloo;
 using namespace pisk;
-using namespace pisk::system::impl;
-
+using namespace pisk::system;
 
 Describe(EngineTest) {
 	When(pass_nullptr_task_to_engine) {
 		Then(exception_throws) {
 			AssertThrows(
 				pisk::infrastructure::NullPointerException,
-				std::make_shared<Engine>(nullptr)
+				std::make_shared<impl::Engine>(nullptr)
 			);
 		}
 	};
 	When(pass_valid_ptr_to_make_engine) {
-		std::shared_ptr<Engine> engine;
+		EngineSynchronizerPtr engine_synchronizer;
+		std::shared_ptr<impl::Engine> engine;
 
 		void SetUp() {
+			engine_synchronizer = make_engine_synchronizer();
+
 			auto&& gate = std::make_unique<TestPatchGate>();
-			auto&& task = make_engine_task<EngineStrateyTestBase>(std::move(gate));
-			engine = std::make_shared<Engine>(std::move(task));
+			auto&& task = make_engine_task<EngineStrateyTestBase>(std::move(gate), engine_synchronizer->make_slave());
+			engine = std::make_shared<impl::Engine>(std::move(task));
+
+			engine_synchronizer->initialize_signal();
+			engine_synchronizer->run_loop_signal();
+			engine_synchronizer->stop_all();
+			engine_synchronizer->deinitialize_signal();
 		}
 
 		Then(strategy_thread_id_is_diff_from_current) {
@@ -68,7 +63,7 @@ Describe(EngineTest) {
 				Assert::That(static_cast<bool>(EngineStrateyTestBase::destroied), Is().EqualTo(true));
 			}
 			/*TODO:
-	 			* check thread stopes after engine destroied
+	 			* check thread will stopped after engine has had destroied
 			Then(thread_stops) {
 				Assert::That(static_cast<bool>(EngineStrateyTestBase::destroied), Is().EqualTo(true));
 			}*/

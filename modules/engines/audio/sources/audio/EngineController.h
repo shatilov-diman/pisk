@@ -1,24 +1,6 @@
 // Project pisk
 // Copyright (C) 2016-2017 Dmitry Shatilov
 //
-// This file is a part of the module audio of the project pisk.
-// This file is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
-// Additional restriction according to GPLv3 pt 7:
-// b) required preservation author attributions;
-// c) required preservation links to original sources
-//
 // Original sources:
 //   https://github.com/shatilov-diman/pisk/
 //   https://bitbucket.org/charivariltd/pisk/
@@ -33,6 +15,7 @@
 
 #include <pisk/utils/signaler.h>
 
+#include <pisk/model/Path.h>
 #include <pisk/model/ReflectedScene.h>
 #include <pisk/model/audio/ReflectedPresentation.h>
 
@@ -44,28 +27,18 @@ namespace audio
 {
 	class EngineController
 	{
-		static const utils::keystring k_inactive;
-		static const utils::keystring k_children;
-		static const utils::keystring k_presentations;
-
-		static const utils::keystring k_properties;
-		static const utils::keystring k_object_id;
-		static const utils::keystring k_active_state;
-
-		static const utils::keystring k_states;
-
-		static const utils::keystring k_engine_id;
-		static const utils::keystring k_res_id;
-
 		utils::property scene;
 		Engine audio_engine;
+
 	public:
-		utils::signaler<utils::keystring> on_stop;
+		utils::signaler<utils::keystring> on_start_play;
+		utils::signaler<utils::keystring> on_finish_play;
 
 		explicit EngineController(const AudioLoaderFn& audio_loader):
 			audio_engine(audio_loader)
 		{
-			audio_engine.on_stop += this->on_stop;
+			audio_engine.on_start_play += this->on_start_play;
+			audio_engine.on_finish_play += this->on_finish_play;
 		}
 		~EngineController()
 		{}
@@ -81,18 +54,13 @@ namespace audio
 				throw pisk::infrastructure::LogicErrorException();
 
 			model::ConstReflectedScene scene_object(scene, *patch);
-			walk(scene_object, "");
-			scene = utils::property::merge(scene, *patch);
+			walk(scene_object, {});
+			utils::property::replace(scene, *patch);
 		}
 
 		void update()
 		{
 			audio_engine.update();
-		}
-
-		system::PatchPtr get_changes()
-		{
-			return {};
 		}
 
 	private:
@@ -101,11 +69,11 @@ namespace audio
 			audio_engine.stop_all();
 		}
 
-		void walk(model::ConstReflectedObject& object, const utils::keystring& id_path)
+		void walk(model::ConstReflectedObject& object, const model::PathId& id_path)
 		try
 		{
 			const utils::keystring& obj_id = object.id().is_string() ? object.id().as_keystring() : "";
-			const utils::keystring& obj_id_path = model::path::add(id_path, obj_id);
+			const auto& obj_id_path = id_path.add(obj_id);
 			process_object(object, obj_id_path);
 			if (object.children().has_changes())
 				for (auto child : object.children())
@@ -118,15 +86,15 @@ namespace audio
 		}
 		catch (const model::UnexpectedItemTypeException&)
 		{
-			infrastructure::Logger::get().warning("audio", "Unexpected item type");
+			logger::warning("audio", "Unexpected item type");
 		}
 
-		void process_object(model::ConstReflectedObject& object, const utils::keystring& id_path)
+		void process_object(model::ConstReflectedObject& object, const model::PathId& id_path)
 		{
 			auto presentation = object.presentation<model::audio::ConstPresentation>();
 			if (presentation.is_none())
 			{
-				infrastructure::Logger::get().debug("audio", "Object '%s' does not contains audio presentation", id_path.c_str());
+				logger::spam("audio", "Object '{}' does not contains audio presentation", id_path);
 				return;
 			}
 			process_presentation(object, presentation, id_path);
@@ -134,25 +102,25 @@ namespace audio
 		void process_presentation(
 			model::ConstReflectedObject& object,
 			model::audio::ConstPresentation& presentation,
-			const utils::keystring& id_path
+			const model::PathId& id_path
 		)
 		{
 			const auto& state_id = object.current_state_id();
 			if (object.has_origin())
-				infrastructure::Logger::get().debug("audio", "Receive new state for object '%s': '%s'", id_path.c_str(), state_id.as_keystring().c_str());
+				logger::debug("audio", "Receive new state for object '{}': '{}'", id_path, state_id.as_keystring());
 			else
-				infrastructure::Logger::get().debug("audio", "Receive new object '%s' with initial state: '%s'", id_path.c_str(), state_id.as_keystring().c_str());
+				logger::debug("audio", "Receive new object '{}' with initial state: '{}'", id_path, state_id.as_keystring());
 
 			const auto& resource_id = presentation.state(state_id.as_keystring()).res_id();
 			if (resource_id.is_none())
 			{
-				infrastructure::Logger::get().debug("audio", "State '%s' does not contains res_id (object: '%s')", state_id.as_keystring().c_str(), id_path.c_str());
+				logger::debug("audio", "State '{}' does not contains res_id (object: '{}')", state_id.as_keystring(), id_path);
 				audio_engine.stop(id_path);
 				return;
 			}
 			audio_engine.play(id_path, resource_id.as_keystring());
 		}
-		void on_remove(const utils::keystring& id_path)
+		void on_remove(const model::PathId& id_path)
 		{
 			audio_engine.stop(id_path);
 		}

@@ -1,24 +1,6 @@
 // Project pisk
 // Copyright (C) 2016-2017 Dmitry Shatilov
 //
-// This file is a part of the module audio of the project pisk.
-// This file is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
-// Additional restriction according to GPLv3 pt 7:
-// b) required preservation author attributions;
-// c) required preservation links to original sources
-//
 // Original sources:
 //   https://github.com/shatilov-diman/pisk/
 //   https://bitbucket.org/charivariltd/pisk/
@@ -39,20 +21,6 @@
 
 using namespace pisk;
 using namespace pisk::audio;
-
-const utils::keystring EngineController::k_inactive = "inactive";
-const utils::keystring EngineController::k_children = "children";
-const utils::keystring EngineController::k_presentations = "presentations";
-
-const utils::keystring EngineController::k_properties = "properties";
-const utils::keystring EngineController::k_object_id = "id";
-const utils::keystring EngineController::k_active_state = "state";
-
-const utils::keystring EngineController::k_states = "states";
-
-const utils::keystring EngineController::k_engine_id = "audio";
-const utils::keystring EngineController::k_res_id = "res_id";
-
 using namespace pisk::tools;
 
 SafeComponentPtr __cdecl audio_engine_factory(const ServiceRegistry& temp_sl, const InstanceFactory& factory, const pisk::utils::property&)
@@ -68,8 +36,11 @@ SafeComponentPtr __cdecl audio_engine_factory(const ServiceRegistry& temp_sl, co
 		try {
 			StreamResourcePtr&& stream_resource = res_manager->load<StreamResource>(res_id.get_content());
 			return std::make_unique<AudioSource>(std::move(stream_resource));
+		} catch (system::ResourceNotFound&) {
+			logger::error("openal", "Audio resource '{}' not found", res_id);
+			return nullptr;
 		} catch (infrastructure::Exception&) {
-			infrastructure::Logger::get().error("openal", "Load audio failed");
+			logger::error("openal", "Loading of audio resource '{}' was failed", res_id);
 			return nullptr;
 		}
 	};

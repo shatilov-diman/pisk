@@ -1,24 +1,6 @@
 // Project pisk
 // Copyright (C) 2016-2017 Dmitry Shatilov
 //
-// This file is a part of the module base of the project pisk.
-// This file is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
-// Additional restriction according to GPLv3 pt 7:
-// b) required preservation author attributions;
-// c) required preservation links to original sources
-//
 // Original sources:
 //   https://github.com/shatilov-diman/pisk/
 //   https://bitbucket.org/charivariltd/pisk/
@@ -41,6 +23,7 @@
 #include <memory>
 #include <deque>
 #include <mutex>
+#include <set>
 
 namespace pisk
 {
@@ -49,6 +32,24 @@ namespace utils
 	class subscribtion : public noncopyable {
 	};
 	using auto_unsubscriber = std::shared_ptr<subscribtion>;
+
+	template<typename base>
+	class subscribtions_holder_proxy :
+		public base
+	{
+		std::deque<utils::auto_unsubscriber> subscribtions;
+
+	public:
+		template <typename ... TArgs>
+		subscribtions_holder_proxy(TArgs&& ... args):
+			base(std::forward<TArgs>(args)...)
+		{}
+
+		void store_subscribtion(utils::auto_unsubscriber&& subscribtion)
+		{
+			subscribtions.emplace_back(std::move(subscribtion));
+		}
+	};
 
 namespace details {
 
@@ -109,30 +110,52 @@ namespace details {
 		}
 		void unsubscribe(const eventhandler& handler) noexcept
 		{
-			for (auto iter = handlers.begin(); iter != handlers.end();)
+			for (auto iter = handlers.begin(); iter != handlers.end(); ++iter)
 			{
 				if (iter->target_type() == handler.target_type() &&
 					iter->template target<eventhandler>() == handler.template target<eventhandler>())
-					iter = handlers.erase(iter);
-				else
-					++iter;
+					*iter = nullptr;
 			}
 		}
-		template <typename T = TEvent>
-		void emit(const typename utils::disable_if<std::is_void<T>::value, T>::type& event) const
+		template <typename T = TEvent, typename E = typename utils::disable_if<std::is_void<T>::value, T>::type>
+		void emit(const E& event) const
 		{
 			for (const eventhandler& handler : handlers)
-				handler(event);
+				if (handler != nullptr)
+					handler(event);
 		}
-		void emit() const
+		template <typename T = TEvent, typename R = std::enable_if_t<std::is_void<T>::value>>
+		R emit() const
 		{
 			for (const eventhandler& handler : handlers)
-				handler();
+				if (handler != nullptr)
+					handler();
+		}
+		template <typename T = TEvent, typename E = typename utils::disable_if<std::is_void<T>::value, T>::type>
+		void remit(const E& event) const
+		{
+			for (const eventhandler& handler : iterators::backwards(handlers))
+				if (handler != nullptr)
+					handler(event);
+		}
+		template <typename T = TEvent, typename R = std::enable_if_t<std::is_void<T>::value>>
+		R remit() const
+		{
+			for (const eventhandler& handler : iterators::backwards(handlers))
+				if (handler != nullptr)
+					handler();
 		}
 		void clear() noexcept
 		{
-			handlers.clear();
+			for (auto iter = handlers.begin(); iter != handlers.end(); ++iter)
+				*iter = nullptr;
 		}
+		void clean() noexcept
+		{
+			auto newend = std::remove(handlers.begin(), handlers.end(), nullptr);
+			handlers.erase(newend, handlers.end());
+		}
+
 	private:
 		std::deque<eventhandler> handlers;
 	};
@@ -141,11 +164,8 @@ namespace details {
 	template <typename TEvent>
 	class signaler : public std::enable_shared_from_this<signaler<TEvent>>
 	{
-		mutable std::mutex guard;
-		std::shared_ptr<light_signaler<TEvent>> impl = std::make_shared<light_signaler<TEvent>>();
-		std::deque <std::shared_ptr<light_signaler<TEvent>>> signalers;
-
 	public:
+		using signalerptr = std::shared_ptr<signaler<TEvent>>;
 		using eventhandler = typename details::eventhandler<TEvent>::type;
 
 		auto_unsubscriber subscribe(const eventhandler& handler) threadsafe noexcept {
@@ -153,51 +173,78 @@ namespace details {
 			return std::make_shared<_subscribtion>(this->shared_from_this(), handler);
 		}
 
-		void operator += (const signaler& sign) threadsafe noexcept
+		void operator += (const signalerptr& sign) threadsafe noexcept
 		{
-			std::unique_lock<std::mutex> lock(guard);
-			signalers.push_back(sign.impl);
-			std::copy(sign.signalers.begin(), sign.signalers.end(), std::back_inserter(signalers));
+			std::lock_guard<std::recursive_mutex> lock(guard);
+			signalers.insert(sign);
 		}
-		void operator -= (const signaler& sign) threadsafe noexcept
+		void operator -= (const signalerptr& sign) threadsafe noexcept
 		{
-			std::unique_lock<std::mutex> lock(guard);
-			auto newend = std::remove(signalers.begin(), signalers.end(), sign.impl);
-			for (const auto& signaler : sign.signalers)
-				newend = std::remove(signalers.begin(), newend, signaler);
-			signalers.erase(newend, signalers.end());
+			std::lock_guard<std::recursive_mutex> lock(guard);
+			signalers.erase(sign);
 		}
 		void operator += (const eventhandler& handler) threadsafe noexcept
 		{
-			std::unique_lock<std::mutex> lock(guard);
-			impl->subscribe(handler);
+			std::lock_guard<std::recursive_mutex> lock(guard);
+			impl.subscribe(handler);
 		}
 		void operator -= (const eventhandler& handler) threadsafe noexcept
 		{
-			std::unique_lock<std::mutex> lock(guard);
-			impl->unsubscribe(handler);
+			std::lock_guard<std::recursive_mutex> lock(guard);
+			impl.unsubscribe(handler);
 		}
-		template <typename T = TEvent>
-		void emit(const typename utils::disable_if<std::is_void<T>::value, T>::type& event) const threadsafe
+		template <typename T = TEvent, typename E = typename utils::disable_if<std::is_void<T>::value, T>::type>
+		void emit(const E& event) const threadsafe
 		{
-			std::unique_lock<std::mutex> lock(guard);
-			impl->emit(event);
-			for (const auto& sign : signalers)
-				sign->emit(event);
+			std::lock_guard<std::recursive_mutex> lock(guard);
+			impl.emit(event);
+			auto copy_signalers = signalers;
+			for (const auto& signaler : copy_signalers)
+				if (signalers.find(signaler) != signalers.end())
+					signaler->emit(event);
 		}
-		void emit() const threadsafe
+		template <typename T = TEvent, typename R = std::enable_if_t<std::is_void<T>::value>>
+		R emit() const threadsafe
 		{
-			std::unique_lock<std::mutex> lock(guard);
-			impl->emit();
-			for (const auto& sign : signalers)
-				sign->emit();
+			std::lock_guard<std::recursive_mutex> lock(guard);
+			impl.emit();
+			auto copy_signalers = signalers;
+			for (const auto& signaler : copy_signalers)
+				if (signalers.find(signaler) != signalers.end())
+					signaler->emit();
+		}
+		template <typename T = TEvent, typename E = typename utils::disable_if<std::is_void<T>::value, T>::type>
+		void remit(const E& event) const threadsafe
+		{
+			std::lock_guard<std::recursive_mutex> lock(guard);
+			auto copy_signalers = signalers;
+			for (const auto& signaler : iterators::backwards(copy_signalers))
+				if (signalers.find(signaler) != signalers.end())
+					signaler->remit(event);
+			impl.remit(event);
+		}
+		template <typename T = TEvent, typename R = std::enable_if_t<std::is_void<T>::value>>
+		R remit() const threadsafe
+		{
+			std::lock_guard<std::recursive_mutex> lock(guard);
+			auto copy_signalers = signalers;
+			for (const auto& signaler : iterators::backwards(copy_signalers))
+				if (signalers.find(signaler) != signalers.end())
+					signaler->remit();
+			impl.remit();
 		}
 		void clear() threadsafe noexcept
 		{
-			std::unique_lock<std::mutex> lock(guard);
-			impl->clear();
+			std::lock_guard<std::recursive_mutex> lock(guard);
+			impl.clear();
 			signalers.clear();
 		}
+
+	private:
+
+		mutable std::recursive_mutex guard;
+		light_signaler<TEvent> impl;
+		std::set <signalerptr> signalers;
 	};
 }
 
@@ -214,10 +261,10 @@ namespace details {
 		}
 
 		void operator += (const signaler& sign) threadsafe noexcept {
-			impl->operator += (*sign.impl);
+			impl->operator += (sign.impl);
 		}
 		void operator -= (const signaler& sign) threadsafe noexcept {
-			impl->operator -= (*sign.impl);
+			impl->operator -= (sign.impl);
 		}
 		void operator += (const eventhandler& handler) threadsafe noexcept {
 			impl->operator += (handler);
@@ -225,15 +272,23 @@ namespace details {
 		void operator -= (const eventhandler& handler) threadsafe noexcept {
 			impl->operator -= (handler);
 		}
-		template <typename T = TEvent>
-		void emit(const typename utils::disable_if<std::is_void<T>::value, T>::type& event) const threadsafe {
+		template <typename T = TEvent, typename E = typename utils::disable_if<std::is_void<T>::value, T>::type>
+		void emit(const E& event) const threadsafe {
 			return impl->emit(event);
 		}
-		void emit() const threadsafe {
+		template <typename T = TEvent, typename R = std::enable_if_t<std::is_void<T>::value>>
+		R emit() const threadsafe {
 			return impl->emit();
 		}
-		void clear() threadsafe noexcept
-		{
+		template <typename T = TEvent, typename E = typename utils::disable_if<std::is_void<T>::value, T>::type>
+		void remit(const E& event) const threadsafe {
+			return impl->remit(event);
+		}
+		template <typename T = TEvent, typename R = std::enable_if_t<std::is_void<T>::value>>
+		R remit() const threadsafe {
+			return impl->remit();
+		}
+		void clear() threadsafe noexcept {
 			return impl->clear();
 		}
 	};
